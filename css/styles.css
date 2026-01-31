@@ -341,7 +341,7 @@ nav {
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1.5rem;
 }
 
@@ -566,9 +566,14 @@ footer {
     }
 
     .about-image img,
-    .about-image video,
-    .hero-image img {
+    .about-image video {
         width: 100%;
         height: auto;
+    }
+
+    .hero-image img {
+        width: 60%;
+        margin: 0 auto;
+        display: block;
     }
 }
