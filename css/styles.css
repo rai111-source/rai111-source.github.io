@@ -43,7 +43,12 @@ body {
     overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     color: var(--dark-navy);
     font-weight: 700;
     line-height: 1.2;
@@ -245,7 +250,7 @@ nav {
 .hero-image img {
     max-width: 100%;
     height: auto;
-    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.15));
     border-radius: 20px;
 }
 
@@ -257,7 +262,7 @@ nav {
 
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
 }
 
@@ -334,7 +339,7 @@ nav {
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1.5rem;
 }
 
@@ -342,7 +347,8 @@ nav {
     border-radius: var(--radius);
     overflow: hidden;
     position: relative;
-    aspect-ratio: 1; /* Square images */
+    aspect-ratio: 1;
+    /* Square images */
     box-shadow: var(--shadow-sm);
     group: relative;
 }
@@ -363,7 +369,7 @@ nav {
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
     padding: 1.5rem;
     color: white;
     opacity: 0;
@@ -490,12 +496,12 @@ footer {
         grid-template-columns: 1fr;
         text-align: center;
     }
-    
+
     .contact-container {
         grid-template-columns: 1fr;
         padding: 2rem;
     }
-    
+
     .hero h1 {
         font-size: 2.8rem;
     }
@@ -503,7 +509,8 @@ footer {
 
 @media (max-width: 768px) {
     .nav-links {
-        display: none; /* Hide desktop menu */
+        display: none;
+        /* Hide desktop menu */
         position: absolute;
         top: 100%;
         left: 0;
@@ -533,5 +540,33 @@ footer {
 
     .hero-image {
         margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --section-padding: 3rem 1rem;
+    }
+
+    .container {
+        padding: 0 1.25rem;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .section-title h2 {
+        font-size: 2rem;
+    }
+
+    .about-image img,
+    .hero-image img {
+        width: 100%;
+        height: auto;
     }
 }
