@@ -60,7 +60,8 @@ a {
     transition: var(--transition);
 }
 
-img {
+img,
+video {
     max-width: 100%;
     display: block;
 }
@@ -316,7 +317,8 @@ nav {
     position: relative;
 }
 
-.about-image img {
+.about-image img,
+.about-image video {
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
 }
@@ -350,7 +352,6 @@ nav {
     aspect-ratio: 1;
     /* Square images */
     box-shadow: var(--shadow-sm);
-    group: relative;
 }
 
 .gallery-item img {
@@ -565,6 +566,7 @@ footer {
     }
 
     .about-image img,
+    .about-image video,
     .hero-image img {
         width: 100%;
         height: auto;
