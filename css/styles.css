@@ -41,6 +41,8 @@ body {
     background-color: var(--light-bg);
     line-height: 1.6;
     overflow-x: hidden;
+    padding-top: 40px;
+    /* Height of marquee */
 }
 
 h1,
@@ -141,12 +143,16 @@ ul {
     position: relative;
     z-index: 1002;
     font-size: 0.9rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 .marquee-text {
     display: inline-block;
     white-space: nowrap;
-    animation: marquee 15s linear infinite;
+    animation: marquee 25s linear infinite;
     padding-left: 100%;
     font-weight: 600;
 }
@@ -166,7 +172,8 @@ header {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     position: fixed;
-    top: 0;
+    top: 40px;
+    /* Height of marquee (approx) */
     width: 100%;
     z-index: 1000;
     box-shadow: var(--shadow-sm);
