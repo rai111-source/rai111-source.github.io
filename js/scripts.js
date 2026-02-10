@@ -1,7 +1,7 @@
 /* Little Layers Co - Main Scripts */
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // -- State --
     let cart = JSON.parse(localStorage.getItem('littleLayersCart')) || [];
 
@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -- Initialization --
     updateCartCount();
-    
+
     if (cartItemsContainer) {
         renderCart();
     }
-    
+
     if (checkoutItemsContainer) {
         renderCheckout();
     }
@@ -162,11 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>${item.name}</span>
                         </div>
                     </td>
-                    <td>$${item.price}</td>
+                    <td>₹${item.price}</td>
                     <td>
                         <input type="number" class="cart-quantity-input" min="1" value="${item.quantity}" data-id="${item.id}">
                     </td>
-                    <td>$${item.price * item.quantity}</td>
+                    <td>₹${item.price * item.quantity}</td>
                     <td>
                         <button class="btn-remove" data-id="${item.id}">Remove</button>
                     </td>
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `</tbody></table>`;
         cartItemsContainer.innerHTML = html;
         if (cartTotalPriceElement) {
-            cartTotalPriceElement.textContent = `$${getCartTotal()}`;
+            cartTotalPriceElement.textContent = `₹${getCartTotal()}`;
         }
 
         // Attach event listeners to new elements
@@ -205,14 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="summary-item">
                     <span>${item.name} x ${item.quantity}</span>
-                    <span>$${item.price * item.quantity}</span>
+                    <span>₹${item.price * item.quantity}</span>
                 </div>
             `;
         });
 
         checkoutItemsContainer.innerHTML = html;
         if (checkoutTotalElement) {
-            checkoutTotalElement.textContent = `$${getCartTotal()}`;
+            checkoutTotalElement.textContent = `₹${getCartTotal()}`;
         }
     }
 });
