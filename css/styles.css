@@ -132,6 +132,35 @@ ul {
     border-radius: 2px;
 }
 
+/* --- Marquee --- */
+.marquee-container {
+    background-color: var(--dark-navy);
+    color: var(--white);
+    padding: 10px 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 1002;
+    font-size: 0.9rem;
+}
+
+.marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 15s linear infinite;
+    padding-left: 100%;
+    font-weight: 600;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(-100%, 0);
+    }
+}
+
 /* --- Header & Navigation --- */
 header {
     background-color: rgba(255, 255, 255, 0.95);
@@ -712,19 +741,7 @@ footer {
     }
 }
 
-grid-template-columns: 1fr;
-text-align: center;
-}
 
-.contact-container {
-    grid-template-columns: 1fr;
-    padding: 2rem;
-}
-
-.hero h1 {
-    font-size: 2.8rem;
-}
-}
 
 @media (max-width: 768px) {
     .nav-links {
