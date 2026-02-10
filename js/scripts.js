@@ -2,19 +2,39 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    /* --- Mobile Navigation --- */
+    // -- State --
+    let cart = JSON.parse(localStorage.getItem('littleLayersCart')) || [];
+
+    // -- Elements --
+    const cartCountElements = document.querySelectorAll('#cart-count');
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartTotalPriceElement = document.getElementById('cart-total-price');
+    const cartSummary = document.getElementById('cart-summary');
+    const checkoutItemsContainer = document.getElementById('checkout-items');
+    const checkoutTotalElement = document.getElementById('checkout-total');
+    const checkoutForm = document.getElementById('checkout-form');
+
+    // -- Initialization --
+    updateCartCount();
+    
+    if (cartItemsContainer) {
+        renderCart();
+    }
+    
+    if (checkoutItemsContainer) {
+        renderCheckout();
+    }
+
+    /* --- Event Listeners --- */
+
+    // Mobile Menu
     const mobileBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
-    
     if (mobileBtn && navLinks) {
         mobileBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
-            
-            // Toggle icon between hamburger and close (if we were using an icon library)
-            // For now, we rely on the visual toggle of the menu
         });
-
-        // Close menu when a link is clicked
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
@@ -22,38 +42,177 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* --- Smooth Scrolling --- */
+    // Smooth Scrolling
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            
             const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            
+            if (targetId === '#' || !targetId.startsWith('#')) return; // Allow normal links
             const targetElement = document.querySelector(targetId);
-            
             if (targetElement) {
-                // Offset for fixed header
                 const headerOffset = 80;
                 const elementPosition = targetElement.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth"
-                });
+                window.scrollTo({ top: offsetPosition, behavior: "smooth" });
             }
         });
     });
 
-    /* --- Form Submission (Demo) --- */
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // In a real app, you'd send this data to a backend
-            alert('Thank you for your message! Use a service like Formspree to make this functional on GitHub Pages.');
-            contactForm.reset();
+    // Add to Cart
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const product = {
+                id: button.dataset.id,
+                name: button.dataset.name,
+                price: parseFloat(button.dataset.price),
+                image: button.dataset.image,
+                quantity: 1
+            };
+            addToCart(product);
+            alert(`${product.name} added to cart!`);
         });
+    });
+
+    // Checkout Form
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Order placed successfully! (This is a mock checkout)');
+            localStorage.removeItem('littleLayersCart');
+            window.location.href = 'index.html';
+        });
+    }
+
+    /* --- Cart Functions --- */
+
+    function addToCart(productToAdd) {
+        const existingItemIndex = cart.findIndex(item => item.id === productToAdd.id);
+
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += 1;
+        } else {
+            cart.push(productToAdd);
+        }
+
+        saveCart();
+    }
+
+    function removeFromCart(productId) {
+        cart = cart.filter(item => item.id !== productId);
+        saveCart();
+        renderCart(); // Re-render if on cart page
+    }
+
+    function updateQuantity(productId, newQuantity) {
+        const itemIndex = cart.findIndex(item => item.id === productId);
+        if (itemIndex > -1) {
+            if (newQuantity < 1) {
+                removeFromCart(productId);
+            } else {
+                cart[itemIndex].quantity = parseInt(newQuantity);
+                saveCart();
+                renderCart();
+            }
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem('littleLayersCart', JSON.stringify(cart));
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+        cartCountElements.forEach(el => el.textContent = totalItems);
+    }
+
+    function getCartTotal() {
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+
+    function renderCart() {
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+            if (cartSummary) cartSummary.style.display = 'none';
+            return;
+        }
+
+        if (cartSummary) cartSummary.style.display = 'block';
+
+        let html = `
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        cart.forEach(item => {
+            html += `
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                            <span>${item.name}</span>
+                        </div>
+                    </td>
+                    <td>$${item.price}</td>
+                    <td>
+                        <input type="number" class="cart-quantity-input" min="1" value="${item.quantity}" data-id="${item.id}">
+                    </td>
+                    <td>$${item.price * item.quantity}</td>
+                    <td>
+                        <button class="btn-remove" data-id="${item.id}">Remove</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `</tbody></table>`;
+        cartItemsContainer.innerHTML = html;
+        if (cartTotalPriceElement) {
+            cartTotalPriceElement.textContent = `$${getCartTotal()}`;
+        }
+
+        // Attach event listeners to new elements
+        document.querySelectorAll('.cart-quantity-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                updateQuantity(e.target.dataset.id, e.target.value);
+            });
+        });
+
+        document.querySelectorAll('.btn-remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                removeFromCart(e.target.dataset.id);
+            });
+        });
+    }
+
+    function renderCheckout() {
+        if (cart.length === 0) {
+            checkoutItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+            return;
+        }
+
+        let html = '';
+        cart.forEach(item => {
+            html += `
+                <div class="summary-item">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span>$${item.price * item.quantity}</span>
+                </div>
+            `;
+        });
+
+        checkoutItemsContainer.innerHTML = html;
+        if (checkoutTotalElement) {
+            checkoutTotalElement.textContent = `$${getCartTotal()}`;
+        }
     }
 });

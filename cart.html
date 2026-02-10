@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Little Layers Co</title>
+    <meta name="description" content="View your shopping cart and proceed to checkout.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="Images/Logo.png" alt="Little Layers Co Logo">
+                    Little Layers Co
+                </a>
+
+                <div class="mobile-menu-btn">
+                    <span>&#9776;</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="products.html">Products</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="index.html#about">About</a>
+                    <a href="index.html#gallery">Gallery</a>
+                    <a href="index.html#contact">Contact</a>
+                    <a href="cart.html" class="active cart-link">Cart (<span id="cart-count">0</span>)</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Your Cart</h1>
+            <p>Review your items before checkout.</p>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section class="cart-section">
+        <div class="container">
+            <div id="cart-items-container">
+                <!-- Cart items will be injected here by JS -->
+                <p>Your cart is empty.</p>
+            </div>
+
+            <div class="cart-summary" id="cart-summary" style="display: none;">
+                <div class="cart-total">
+                    <h3>Total: <span id="cart-total-price">$0</span></h3>
+                </div>
+                <div class="cart-actions">
+                    <a href="products.html" class="btn btn-outline">Continue Shopping</a>
+                    <a href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <a href="index.html" class="footer-logo">Little Layers Co</a>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="products.html">Products</a>
+                <a href="index.html#services">Services</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+            <p class="copyright">&copy; 2026 Little Layers Co. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>

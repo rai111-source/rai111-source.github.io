@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Little Layers Co</title>
+    <meta name="description" content="Complete your purchase.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="Images/Logo.png" alt="Little Layers Co Logo">
+                    Little Layers Co
+                </a>
+
+                <div class="mobile-menu-btn">
+                    <span>&#9776;</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="products.html">Products</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="index.html#about">About</a>
+                    <a href="index.html#gallery">Gallery</a>
+                    <a href="index.html#contact">Contact</a>
+                    <a href="cart.html" class="active cart-link">Cart (<span id="cart-count">0</span>)</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Checkout</h1>
+            <p>Enter your details to place the order.</p>
+        </div>
+    </section>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-grid">
+                <!-- Form -->
+                <div class="checkout-form-container">
+                    <h2>Shipping Details</h2>
+                    <form id="checkout-form" class="checkout-form">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zip">Zip Code</label>
+                            <input type="text" id="zip" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+
+                        <h2>Payment Details</h2>
+                        <div class="form-group">
+                            <label for="card">Card Number (Mock)</label>
+                            <input type="text" id="card" placeholder="0000 0000 0000 0000" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    <div id="checkout-items">
+                        <!-- Items injected via JS -->
+                    </div>
+                    <div class="summary-total">
+                        <h3>Total: <span id="checkout-total">$0</span></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <a href="index.html" class="footer-logo">Little Layers Co</a>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="products.html">Products</a>
+                <a href="index.html#services">Services</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+            <p class="copyright">&copy; 2026 Little Layers Co. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>
