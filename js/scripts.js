@@ -1,4 +1,4 @@
-/* Little Layers Co - Main Scripts */
+/* LittleLayers.Co - Main Scripts */
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -143,11 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <table class="cart-table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Action</th>
+                        <th style="padding-bottom: 20px; text-transform: uppercase; font-size: 13px; color: var(--color-text-main);">Product</th>
+                        <th style="padding-bottom: 20px; text-transform: uppercase; font-size: 13px; color: var(--color-text-main);">Price</th>
+                        <th style="padding-bottom: 20px; text-transform: uppercase; font-size: 13px; color: var(--color-text-main);">Quantity</th>
+                        <th style="padding-bottom: 20px; text-transform: uppercase; font-size: 13px; color: var(--color-text-main);">Total</th>
+                        <th style="padding-bottom: 20px; text-transform: uppercase; font-size: 13px; color: var(--color-text-main);">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,20 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cart.forEach(item => {
             html += `
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                            <span>${item.name}</span>
+                <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 20px 0;">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                            <span style="font-weight: 500; font-size: 15px;">${item.name}</span>
                         </div>
                     </td>
-                    <td>₹${item.price}</td>
-                    <td>
-                        <input type="number" class="cart-quantity-input" min="1" value="${item.quantity}" data-id="${item.id}">
+                    <td style="padding: 20px 0; font-size: 14px; color: var(--color-text-muted); text-align: center;">₹${item.price}</td>
+                    <td style="padding: 20px 0; text-align: center;">
+                        <input type="number" class="cart-quantity-input" min="1" value="${item.quantity}" data-id="${item.id}" style="width: 60px; padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; text-align: center;">
                     </td>
-                    <td>₹${item.price * item.quantity}</td>
-                    <td>
-                        <button class="btn-remove" data-id="${item.id}">Remove</button>
+                    <td style="padding: 20px 0; font-weight: 500; text-align: center;">₹${item.price * item.quantity}</td>
+                    <td style="padding: 20px 0; text-align: right;">
+                        <button class="btn-remove" data-id="${item.id}" style="color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">Remove</button>
                     </td>
                 </tr>
             `;
