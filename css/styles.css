@@ -21,6 +21,12 @@
     padding: 0;
 }
 
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body {
     font-family: var(--font-main);
     color: var(--color-text-main);
@@ -75,6 +81,12 @@ h6 {
 .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
 }
 
@@ -572,7 +584,9 @@ h6 {
 
 /* Responsive */
 @media (max-width: 992px) {
-    .grid-3 {
+
+    .grid-3,
+    .grid-2 {
         grid-template-columns: 1fr;
     }
 
@@ -605,6 +619,10 @@ h6 {
 }
 
 @media (max-width: 768px) {
+    .hero-title {
+        font-size: 46px;
+    }
+
     .main-nav {
         display: none;
     }
