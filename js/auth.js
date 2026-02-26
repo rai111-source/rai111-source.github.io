@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileName = document.getElementById('profile-name');
     const profileDob = document.getElementById('profile-dob');
     const profileAddress = document.getElementById('profile-address');
+    const profileAvatarInput = document.getElementById('profile-avatar-input');
     const profileAvatar = document.getElementById('profile-avatar');
     const profileAvatarImg = document.getElementById('profile-avatar-img');
     const profileAvatarIcon = document.getElementById('profile-avatar-icon');
@@ -109,6 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             await saveUserProfile();
+        });
+    }
+
+    if (profileAvatarInput) {
+        profileAvatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    updateAvatarUI(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
         });
     }
 
@@ -224,12 +238,46 @@ document.addEventListener('DOMContentLoaded', () => {
         showProfileStatus('Saving...', 'var(--color-text-muted)');
         toggleProfileEdit(false);
 
+        let avatarUrl = profileAvatar.value;
+
+        // --- Handle File Upload ---
+        if (profileAvatarInput && profileAvatarInput.files && profileAvatarInput.files[0]) {
+            try {
+                const file = profileAvatarInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `${currentUser.id}/${fileName}`;
+
+
+                showProfileStatus('Uploading image...', 'var(--color-text-muted)');
+
+                let { error: uploadError, data } = await supabaseClient.storage
+                    .from('avatars')
+                    .upload(filePath, file, { upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                // Get Public URL
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('avatars')
+                    .getPublicUrl(filePath);
+
+                avatarUrl = publicUrl;
+                profileAvatar.value = avatarUrl; // Update hidden input for consistency
+
+            } catch (error) {
+                showProfileStatus('Upload failed: ' + error.message, 'var(--color-accent)');
+                toggleProfileEdit(true);
+                return;
+            }
+        }
+
         const updates = {
             id: currentUser.id,
             name: profileName.value,
             dob: profileDob.value || null, // Handle empty date
             address: profileAddress.value,
-            avatar_url: profileAvatar.value,
+            avatar_url: avatarUrl,
             updated_at: new Date()
         };
 
@@ -306,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleProfileEdit(isEditing) {
-        const inputs = [profileName, profileDob, profileAddress, profileAvatar];
+        const inputs = [profileName, profileDob, profileAddress, profileAvatarInput];
 
         inputs.forEach(input => {
             if (input) input.disabled = !isEditing;

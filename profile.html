@@ -222,10 +222,14 @@
                         </div>
 
                         <div class="profile-form-group">
-                            <label for="profile-avatar">Avatar URL (Optional)</label>
-                            <input type="url" id="profile-avatar" class="profile-input" disabled
-                                placeholder="https://example.com/image.jpg">
+                            <label for="profile-avatar-input">Profile Picture</label>
+                            <input type="file" id="profile-avatar-input" class="profile-input" disabled accept="image/*"
+                                style="padding: 8px 15px;">
+                            <input type="hidden" id="profile-avatar" value="">
+                            <small style="display: block; margin-top: 5px; color: var(--color-text-muted);">Pick an
+                                image from your device (max 2MB).</small>
                         </div>
+
 
                         <div class="profile-actions">
                             <button type="button" id="edit-profile-btn" class="btn-outline">Edit Profile</button>
