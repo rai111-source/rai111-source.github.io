@@ -2,6 +2,8 @@
 const SUPABASE_URL = 'https://amzijtwogsibxganxsty.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_AU321-iXA66NaZ0d4FShPw_0h83Qy9J';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabaseClient = supabaseClient;
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // -- Elements --
