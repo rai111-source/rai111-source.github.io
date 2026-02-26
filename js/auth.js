@@ -1,7 +1,7 @@
 // Initialize Supabase client
 const SUPABASE_URL = 'https://amzijtwogsibxganxsty.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_AU321-iXA66NaZ0d4FShPw_0h83Qy9J';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
     // -- Elements --
@@ -51,6 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = 'login.html';
             }
         });
+    }
+
+    // -- Check URL Params for Sign Up Mode --
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('mode') === 'signup' && pageAuthToggleText) {
+        isSignUpMode = true;
+        updatePageAuthUI();
     }
 
     // -- Login Page Logic --
@@ -108,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --- Auth Functions --- */
 
     async function checkUserSession() {
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await supabaseClient.auth.getSession();
         if (data && data.session) {
             currentUser = data.session.user;
             updateHeaderUI();
@@ -124,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Listen for auth state changes
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
             if (session) {
                 currentUser = session.user;
             } else {
@@ -136,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleSignUp(email, password) {
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
             });
@@ -152,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleLogin(email, password) {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password,
             });
@@ -167,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleLogout() {
         try {
-            const { error } = await supabase.auth.signOut();
+            const { error } = await supabaseClient.auth.signOut();
             if (error) throw error;
 
             window.location.href = 'logout.html';
@@ -187,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchUserProfile(userId) {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
@@ -227,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('profiles')
                 .upsert(updates);
 
@@ -263,12 +270,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateHeaderUI() {
+        const authButtons = document.getElementById('auth-buttons');
+
         if (userBtn) {
             const icon = userBtn.querySelector('i');
             const textSpan = userBtn.querySelector('span#user-btn-text');
 
             if (currentUser) {
                 // Logged in state
+                if (authButtons) authButtons.style.display = 'none';
+
                 if (icon) {
                     icon.className = 'ph-fill ph-user';
                     icon.style.display = 'inline-block';
@@ -280,12 +291,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 userBtn.style.alignItems = "center";
             } else {
                 // Logged out state
-                if (icon) icon.style.display = 'none';
-                if (textSpan) textSpan.style.display = 'inline-block';
-                userBtn.title = 'Login';
-                // userBtn.style.padding = "5px 12px"; // Add some padding so the text stands out
-                userBtn.style.display = "flex";
-                userBtn.style.alignItems = "center";
+                if (authButtons) {
+                    authButtons.style.display = 'flex';
+                    userBtn.style.display = 'none';
+                } else {
+                    if (icon) icon.style.display = 'none';
+                    if (textSpan) textSpan.style.display = 'block';
+                    userBtn.title = 'Login';
+                    userBtn.style.display = "flex";
+                    userBtn.style.alignItems = "center";
+                }
             }
         }
     }
