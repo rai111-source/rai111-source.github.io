@@ -4,8 +4,8 @@
 //  from: https://supabase.com/dashboard → Project Settings → API
 // ============================================================
 
-const SUPABASE_URL  = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
+const SUPABASE_URL  = 'https://amzijtwogsibxganxsty.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_AU321-iXA66NaZ0d4FShPw_0h83Qy9J';
 
 // Supabase JS v2 loaded via CDN in each HTML file
 const { createClient } = supabase;
