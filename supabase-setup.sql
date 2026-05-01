@@ -66,25 +66,25 @@ ALTER TABLE orders   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 
--- ── PRODUCTS: public can read active, only auth can write ────
+-- ── PRODUCTS: public can read active, only admin can write ────
 CREATE POLICY "Public read active products"
   ON products FOR SELECT
   USING (active = TRUE);
 
-CREATE POLICY "Auth full access products"
+CREATE POLICY "Admin full access products"
   ON products FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
--- ── GALLERY: public can read active, only auth can write ─────
+-- ── GALLERY: public can read active, only admin can write ─────
 CREATE POLICY "Public read active gallery"
   ON gallery FOR SELECT
   USING (active = TRUE);
 
-CREATE POLICY "Auth full access gallery"
+CREATE POLICY "Admin full access gallery"
   ON gallery FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
--- ── ORDERS: public can insert + read own, auth can read all ──
+-- ── ORDERS: public can insert + read own, admin can read all ──
 CREATE POLICY "Public insert orders"
   ON orders FOR INSERT
   WITH CHECK (TRUE);
@@ -93,22 +93,22 @@ CREATE POLICY "Public read own order by ref"
   ON orders FOR SELECT
   USING (TRUE);   -- relies on app filtering by order_ref
 
-CREATE POLICY "Auth full access orders"
+CREATE POLICY "Admin full access orders"
   ON orders FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
--- ── MESSAGES: public can insert, only auth can read ──────────
+-- ── MESSAGES: public can insert, only admin can read/update ───
 CREATE POLICY "Public insert messages"
   ON messages FOR INSERT
   WITH CHECK (TRUE);
 
-CREATE POLICY "Auth read messages"
+CREATE POLICY "Admin read messages"
   ON messages FOR SELECT
-  USING (auth.role() = 'authenticated');
+  USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
-CREATE POLICY "Auth update messages"
+CREATE POLICY "Admin update messages"
   ON messages FOR UPDATE
-  USING (auth.role() = 'authenticated');
+  USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 
 -- ============================================================
@@ -161,13 +161,13 @@ CREATE POLICY "Public read gallery images"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'gallery-images');
 
-CREATE POLICY "Auth upload gallery images"
+CREATE POLICY "Admin upload gallery images"
   ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'gallery-images' AND auth.role() = 'authenticated');
+  WITH CHECK (bucket_id = 'gallery-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
-CREATE POLICY "Auth delete gallery images"
+CREATE POLICY "Admin delete gallery images"
   ON storage.objects FOR DELETE
-  USING (bucket_id = 'gallery-images' AND auth.role() = 'authenticated');
+  USING (bucket_id = 'gallery-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 
 -- ============================================================
