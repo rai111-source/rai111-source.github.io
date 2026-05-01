@@ -89,6 +89,17 @@
                     <button type="submit" id="page-auth-btn">Sign In</button>
                     <div id="page-auth-error" class="auth-error"></div>
                 </form>
+
+                <div class="auth-divider" style="margin: 20px 0; text-align: center; position: relative;">
+                    <span style="background: var(--color-bg); padding: 0 10px; color: var(--color-text-muted); font-size: 14px; position: relative; z-index: 1;">or</span>
+                    <hr style="position: absolute; top: 50%; left: 0; width: 100%; border: none; border-top: 1px solid var(--color-border); margin: 0; transform: translateY(-50%); z-index: 0;">
+                </div>
+
+                <button id="github-login-btn" style="width: 100%; padding: 12px 20px; background-color: #24292e; color: white; border: none; border-radius: 4px; font-family: inherit; font-size: 16px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; transition: background-color 0.3s ease;">
+                    <i class="ph ph-github-logo" style="font-size: 20px;"></i>
+                    Sign in with GitHub
+                </button>
+
                 <div class="auth-toggle">
                     <span id="page-auth-toggle-text">Don't have an account? <a href="#" id="toggle-auth-mode">Sign
                             up</a></span>

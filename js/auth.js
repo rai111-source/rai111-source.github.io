@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageAuthErrorMsg = document.getElementById('page-auth-error');
     const pageTitle = document.getElementById('page-title');
     const pageAuthBtn = document.getElementById('page-auth-btn');
+    const githubLoginBtn = document.getElementById('github-login-btn');
 
     // Profile Page Elements
     const profileForm = document.getElementById('profile-form');
@@ -86,6 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 await handleLogin(email, password);
             }
+        });
+    }
+
+    if (githubLoginBtn) {
+        githubLoginBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await handleGithubLogin();
         });
     }
 
@@ -185,6 +193,18 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'profile.html';
         } catch (error) {
             pageAuthErrorMsg.textContent = "Invalid login credentials";
+        }
+    }
+
+    async function handleGithubLogin() {
+        try {
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'github',
+            });
+            if (error) throw error;
+        } catch (error) {
+            if (pageAuthErrorMsg) pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
+            console.error('GitHub login error:', error.message);
         }
     }
 
