@@ -67,45 +67,55 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 
 -- ── PRODUCTS: public can read active, only admin can write ────
+DROP POLICY IF EXISTS "Public read active products" ON products;
 CREATE POLICY "Public read active products"
   ON products FOR SELECT
   USING (active = TRUE);
 
+DROP POLICY IF EXISTS "Admin full access products" ON products;
 CREATE POLICY "Admin full access products"
   ON products FOR ALL
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 -- ── GALLERY: public can read active, only admin can write ─────
+DROP POLICY IF EXISTS "Public read active gallery" ON gallery;
 CREATE POLICY "Public read active gallery"
   ON gallery FOR SELECT
   USING (active = TRUE);
 
+DROP POLICY IF EXISTS "Admin full access gallery" ON gallery;
 CREATE POLICY "Admin full access gallery"
   ON gallery FOR ALL
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 -- ── ORDERS: public can insert + read own, admin can read all ──
+DROP POLICY IF EXISTS "Public insert orders" ON orders;
 CREATE POLICY "Public insert orders"
   ON orders FOR INSERT
   WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS "Public read own order by ref" ON orders;
 CREATE POLICY "Public read own order by ref"
   ON orders FOR SELECT
   USING (TRUE);   -- relies on app filtering by order_ref
 
+DROP POLICY IF EXISTS "Admin full access orders" ON orders;
 CREATE POLICY "Admin full access orders"
   ON orders FOR ALL
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 -- ── MESSAGES: public can insert, only admin can read/update ───
+DROP POLICY IF EXISTS "Public insert messages" ON messages;
 CREATE POLICY "Public insert messages"
   ON messages FOR INSERT
   WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS "Admin read messages" ON messages;
 CREATE POLICY "Admin read messages"
   ON messages FOR SELECT
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
+DROP POLICY IF EXISTS "Admin update messages" ON messages;
 CREATE POLICY "Admin update messages"
   ON messages FOR UPDATE
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
@@ -122,10 +132,12 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS products_updated_at ON products;
 CREATE TRIGGER products_updated_at
   BEFORE UPDATE ON products
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS orders_updated_at ON orders;
 CREATE TRIGGER orders_updated_at
   BEFORE UPDATE ON orders
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -145,26 +157,32 @@ INSERT INTO storage.buckets (id, name, public)
   ON CONFLICT (id) DO NOTHING;
 
 -- Allow public to read images
+DROP POLICY IF EXISTS "Public read product images" ON storage.objects;
 CREATE POLICY "Public read product images"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'product-images');
 
+DROP POLICY IF EXISTS "Auth upload product images" ON storage.objects;
 CREATE POLICY "Auth upload product images"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'product-images' AND auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "Auth delete product images" ON storage.objects;
 CREATE POLICY "Auth delete product images"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'product-images' AND auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "Public read gallery images" ON storage.objects;
 CREATE POLICY "Public read gallery images"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'gallery-images');
 
+DROP POLICY IF EXISTS "Admin upload gallery images" ON storage.objects;
 CREATE POLICY "Admin upload gallery images"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'gallery-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
+DROP POLICY IF EXISTS "Admin delete gallery images" ON storage.objects;
 CREATE POLICY "Admin delete gallery images"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'gallery-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');

@@ -10,6 +10,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_AU321-iXA66NaZ0d4FShPw_0h83Qy9J';
 // Supabase JS v2 loaded via CDN in each HTML file
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supabaseClient = sb;
 
 // ── TABLE NAMES ──────────────────────────────────────────────
 const TABLES = {
