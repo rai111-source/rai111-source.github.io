@@ -9,14 +9,12 @@ Complete website for **LittleLayers.Co** hosted on **GitHub Pages** with **Supab
 ```
 littlelayers/
 ├── index.html            ← Public website (customers see this)
-├── admin.html            ← Admin dashboard (only you use this)
 ├── supabase-setup.sql    ← Run once in Supabase to create tables
 ├── css/
 │   └── style.css         ← Shared styles
 └── js/
     ├── supabase.js       ← Database config + helper functions
-    ├── main.js           ← Public site logic (cart, products, etc.)
-    └── admin.js          ← Admin panel logic (CRUD, uploads)
+    └── main.js           ← Public site logic (cart, products, etc.)
 ```
 
 ---
@@ -39,10 +37,7 @@ littlelayers/
    - **Project URL** (looks like `https://abcdefgh.supabase.co`)
    - **anon public** key (long string starting with `eyJ...`)
 
-### 1.4 Create Your Admin User
-1. Go to **Authentication → Users → Invite User**
-2. Enter your email — you'll get a link to set a password
-3. Use this email + password to log into `admin.html`
+
 
 ---
 
@@ -73,11 +68,9 @@ Option A — GitHub Web UI (easiest):
 1. Click **Add file → Upload files**
 2. Upload all files maintaining the folder structure:
    - `index.html` (root)
-   - `admin.html` (root)
    - `css/style.css`
    - `js/supabase.js`
    - `js/main.js`
-   - `js/admin.js`
 
 Option B — Git CLI:
 ```bash
@@ -113,58 +106,10 @@ CNAME   www     YOUR_USERNAME.github.io
 
 ---
 
-## 🛠️ Step 4 — Admin Panel Usage
-
-### Access
-Go to: `https://YOUR_USERNAME.github.io/littlelayers/admin.html`
-
-Sign in with the admin email/password you created in Supabase.
-
-### Adding Products
-1. Click **Products** in the sidebar
-2. Click **➕ Add Product**
-3. Fill in name, category, price, description
-4. Upload a product image (it uploads to Supabase Storage automatically)
-5. Toggle **Visible on site** on/off at any time
-6. Click **Save Product** — it appears on the live site instantly
-
-### Adding Gallery Images
-1. Click **Gallery** in the sidebar
-2. Click **📸 Add Image**
-3. Upload the image, add a title and caption
-4. Set **Sort Order** (0 = first, higher numbers = later)
-5. Toggle visibility on/off instantly
-
-### Managing Orders
-- Orders appear automatically when customers checkout via WhatsApp cart
-- Update status: `Pending → Confirmed → Printing → Dispatched → Delivered`
-- Customer sees their status on the **Track Order** section of the site
-
-### Viewing Messages
-- All contact form submissions appear here
-- Click **WhatsApp** or **Email** to reply directly
-
----
-
-## 🔄 How to Update Products Without Touching Code
-
-You **never need to edit any code** to:
-- ✅ Add or remove products
-- ✅ Change prices
-- ✅ Upload new gallery photos
-- ✅ Hide/show items instantly
-- ✅ Update order statuses
-
-Just go to `admin.html` and everything is point-and-click.
-
----
-
 ## 🔒 Security Notes
 
-- The `admin.html` page is protected by Supabase Authentication — only logged-in users can write data
 - The anon key in `supabase.js` is safe to be public — it only allows what the Row Level Security policies permit (public read, auth write)
 - Never share your Supabase **service_role** key (that one bypasses all security)
-- For extra security, you can password-protect `admin.html` via a `.htaccess` file or Cloudflare Access
 
 ---
 
@@ -192,7 +137,7 @@ Just go to `admin.html` and everything is point-and-click.
 
 ## 📞 Need Help?
 
-Contact form submissions go directly to your Supabase `messages` table and are visible in the admin panel.
+Contact form submissions go directly to your Supabase `messages` table.
 
 For Supabase questions: [supabase.com/docs](https://supabase.com/docs)
 For GitHub Pages questions: [docs.github.com/pages](https://docs.github.com/en/pages)
