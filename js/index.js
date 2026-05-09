@@ -13,8 +13,44 @@
 
     let cart = JSON.parse(localStorage.getItem('ll_cart') || '[]');
     let allP = [];
+    let currentUser = null;
 
-    document.addEventListener('DOMContentLoaded', () => { updateCart(); loadP('all'); initReveal(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCart(); loadP('all'); initReveal();
+      if (typeof sb !== 'undefined') {
+        sb.auth.getSession().then(({ data }) => {
+          if (data && data.session) currentUser = data.session.user;
+          updateAuthUI();
+        });
+        sb.auth.onAuthStateChange((event, session) => {
+          currentUser = session ? session.user : null;
+          updateAuthUI();
+        });
+      }
+    });
+
+    function updateAuthUI() {
+      const isLog = !!currentUser;
+      const navLoginBtn = document.getElementById('navLoginBtn');
+      const navSignupBtn = document.getElementById('navSignupBtn');
+      const navLogoutBtn = document.getElementById('navLogoutBtn');
+      const navProfileBtn = document.getElementById('navProfileBtn');
+
+      const mobLoginBtn = document.getElementById('mobLoginBtn');
+      const mobSignupBtn = document.getElementById('mobSignupBtn');
+      const mobLogoutBtn = document.getElementById('mobLogoutBtn');
+      const mobProfileBtn = document.getElementById('mobProfileBtn');
+
+      if (navLoginBtn) navLoginBtn.style.display = isLog ? 'none' : 'inline-block';
+      if (navSignupBtn) navSignupBtn.style.display = isLog ? 'none' : 'inline-block';
+      if (navLogoutBtn) navLogoutBtn.style.display = isLog ? 'inline-block' : 'none';
+      if (navProfileBtn) navProfileBtn.style.display = isLog ? 'inline-block' : 'none';
+
+      if (mobLoginBtn) mobLoginBtn.style.display = isLog ? 'none' : 'block';
+      if (mobSignupBtn) mobSignupBtn.style.display = isLog ? 'none' : 'block';
+      if (mobLogoutBtn) mobLogoutBtn.style.display = isLog ? 'block' : 'none';
+      if (mobProfileBtn) mobProfileBtn.style.display = isLog ? 'block' : 'none';
+    }
 
     async function loadP(cat) {
       const g = document.getElementById('productsGrid');
@@ -144,7 +180,51 @@
       document.getElementById('loginTab').classList.toggle('on', t === 'login');
       document.getElementById('signupTab').classList.toggle('on', t === 'signup');
     }
-    function handleAuth(m) { closeAuth(); showNotif(m === 'login' ? 'Logged in! 👋' : 'Welcome to LittleLayers 🎉'); }
+    async function handleAuth(m) {
+      const errEl = document.getElementById('authError');
+      errEl.style.display = 'none';
+      errEl.textContent = '';
+
+      try {
+        if (m === 'login') {
+          const email = document.getElementById('loginEmail').value;
+          const password = document.getElementById('loginPassword').value;
+          const { error } = await sb.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          closeAuth();
+          showNotif('Logged in! 👋');
+        } else {
+          const email = document.getElementById('signupEmail').value;
+          const password = document.getElementById('signupPassword').value;
+          const firstName = document.getElementById('signupFirstName').value;
+          const lastName = document.getElementById('signupLastName').value;
+          const phone = document.getElementById('signupPhone').value;
+
+          const { data, error } = await sb.auth.signUp({ email, password });
+          if (error) throw error;
+
+          if (data.user) {
+            await sb.from('profiles').upsert({
+              id: data.user.id,
+              name: `${firstName} ${lastName}`.trim(),
+              phone: phone
+            });
+          }
+          closeAuth();
+          showNotif('Welcome to LittleLayers 🎉');
+        }
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+      }
+    }
+
+    async function handleLogout() {
+      if (typeof sb !== 'undefined') {
+        await sb.auth.signOut();
+        showNotif('Logged out');
+      }
+    }
 
     function openLb(src, cap) { document.getElementById('lbImg').src = src; document.getElementById('lbCap').textContent = cap; document.getElementById('lbOv').classList.add('open'); document.getElementById('lb').classList.add('open'); }
     function closeLb() { document.getElementById('lbOv').classList.remove('open'); document.getElementById('lb').classList.remove('open'); }
