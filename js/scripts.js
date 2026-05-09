@@ -99,25 +99,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 2. Merge local cart into database (if local cart has items)
             if (cart.length > 0) {
-                for (const localItem of cart) {
+                const itemsToUpsert = cart.map(localItem => {
                     const dbItem = dbItems.find(i => i.product_id === localItem.id);
-                    if (dbItem) {
-                        // If exists in DB, take the higher quantity (or just replace if you prefer)
-                        const newQty = Math.max(dbItem.quantity, localItem.quantity);
-                        await updateDbItem(localItem.id, newQty);
-                    } else {
-                        // If not in DB, add it
-                        await addDbItem(localItem);
-                    }
-                }
+                    const quantity = dbItem ? Math.max(dbItem.quantity, localItem.quantity) : localItem.quantity;
+                    return {
+                        user_id: currentUser.id,
+                        product_id: localItem.id,
+                        product_name: localItem.name,
+                        product_price: localItem.price,
+                        product_image: localItem.image,
+                        quantity: quantity,
+                        updated_at: new Date()
+                    };
+                });
 
-                // Re-fetch to get correct state
-                const { data: updatedDbItems } = await supabase
+                // Batch upsert to avoid N+1 queries
+                const { data: upsertedItems, error: upsertError } = await supabase
                     .from('cart_items')
-                    .select('*')
-                    .eq('user_id', currentUser.id);
+                    .upsert(itemsToUpsert, { onConflict: 'user_id, product_id' })
+                    .select();
 
-                cart = updatedDbItems.map(mapDbToLocal);
+                if (upsertError) throw upsertError;
+
+                // Merge upserted items with DB items that weren't in local cart
+                const localItemIds = new Set(cart.map(i => i.id));
+                const otherDbItems = dbItems.filter(i => !localItemIds.has(i.product_id));
+
+                cart = [...upsertedItems, ...otherDbItems].map(mapDbToLocal);
             } else {
                 // If local cart is empty, just take DB items
                 cart = dbItems.map(mapDbToLocal);
