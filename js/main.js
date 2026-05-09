@@ -33,19 +33,19 @@ function renderProducts(products) {
   grid.innerHTML = products.map(p => `
     <div class="product-card" data-id="${p.id}">
       <div class="product-img-wrap">
-        <img src="${p.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=80'}"
-             alt="${p.name}" loading="lazy"
+        <img src="${escHtml(p.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=80')}"
+             alt="${escHtml(p.name)}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=80'">
-        ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+        ${p.badge ? `<div class="product-badge">${escHtml(p.badge)}</div>` : ''}
         <div class="product-actions">
           <button class="icon-btn" title="Wishlist" onclick="wishlist(${p.id}, event)">♡</button>
           <button class="icon-btn" title="Quick View" onclick="quickView(${p.id}, event)">👁</button>
         </div>
       </div>
       <div class="product-info">
-        <div class="product-cat">${p.category}</div>
-        <div class="product-name">${p.name}</div>
-        ${p.description ? `<div class="product-desc-short">${p.description.slice(0,60)}${p.description.length>60?'…':''}</div>` : ''}
+        <div class="product-cat">${escHtml(p.category)}</div>
+        <div class="product-name">${escHtml(p.name)}</div>
+        ${p.description ? `<div class="product-desc-short">${escHtml(p.description.slice(0,60))}${p.description.length>60?'…':''}</div>` : ''}
         <div class="product-footer">
           <div class="product-price">
             ₹${Number(p.price).toLocaleString('en-IN')}
@@ -106,7 +106,7 @@ function addToCart(id, e) {
   else cart.push({ id: product.id, name: product.name, price: product.price, image_url: product.image_url, qty: 1 });
   saveCart();
   updateCartUI();
-  showNotif(`${product.name} added to cart! 🛒`);
+  showNotif(`${escHtml(product.name)} added to cart! 🛒`);
 }
 
 function changeQty(id, delta) {
@@ -141,7 +141,7 @@ function updateCartUI() {
     if (footer) footer.style.display = 'block';
     itemsEl.innerHTML = cart.map(item => `
       <div class="cart-item">
-        <img src="${item.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100&q=70'}"
+        <img src="${escHtml(item.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100&q=70')}"
              alt="${escHtml(item.name)}"
              onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100&q=70'">
         <div class="cart-item-info">
@@ -313,7 +313,7 @@ function quickView(id, e) {
   if (e) e.stopPropagation();
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
-  showNotif(`Quick view: ${p.name} — ₹${Number(p.price).toLocaleString('en-IN')}`);
+  showNotif(`Quick view: ${escHtml(p.name)} — ₹${Number(p.price).toLocaleString('en-IN')}`);
 }
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────
