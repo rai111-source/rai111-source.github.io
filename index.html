@@ -36,8 +36,14 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-r">
-      <button class="btn-login" onclick="openAuth('login')">Login</button>
-      <button class="btn-signup" onclick="openAuth('signup')">Sign Up</button>
+      <div id="auth-buttons" style="display: flex; gap: 8px;">
+        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      </div>
+      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+          👤
+      </a>
       <div class="cart-pill" onclick="toggleCart()">🛒<div class="cbadge" id="cartCount">0</div>
       </div>
     </div>
@@ -611,43 +617,623 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL -->
-  <div class="mov" id="authOv" onclick="closeAuth()"></div>
-  <div class="mbox" id="authBox">
-    <div class="mhd">
-      <div class="mtabs">
-        <button class="mtab on" id="loginTab" onclick="switchTab('login')">Login</button>
-        <button class="mtab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
+d>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LittleLayers.Co | Custom 3D Printing — Dibrugarh, Assam</title>
+  <meta name="description"
+    content="Custom 3D printing from Assam — figurines, portraits, prototypes, gifts. Starting ₹60. Pan-India delivery in 5–7 days.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    🚚 Free delivery above ₹299 &nbsp;·&nbsp; 5–7 day pan-India shipping &nbsp;·&nbsp;
+    <a href="https://wa.me/916000061991" target="_blank">Order on WhatsApp ↗</a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#home" class="nav-logo">Little<em>Layers</em>.Co</a>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#shop">Shop</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#track">Track Order</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-r">
+      <div id="auth-buttons" style="display: flex; gap: 8px;">
+        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
       </div>
-      <button class="xbtn" onclick="closeAuth()">✕</button>
+      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+          👤
+      </a>
+      <div class="cart-pill" onclick="toggleCart()">🛒<div class="cbadge" id="cartCount">0</div>
+      </div>
     </div>
-    <div class="mbody">
-      <div id="loginForm">
-        <p class="msub">Welcome back — log in to track your orders.</p>
-        <div class="fg" style="margin-bottom:14px"><label>Email</label><input type="email"
-            placeholder="you@example.com"></div>
-        <div class="fg" style="margin-bottom:22px"><label>Password</label><input type="password" placeholder="••••••••">
-        </div>
-        <button class="btn btn-white" style="width:100%;justify-content:center;border-radius:11px"
-          onclick="handleAuth('login')">Login →</button>
+    <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="mobnav" id="mobnav">
+    <a href="#home" onclick="closeMob()">Home</a>
+    <a href="#how" onclick="closeMob()">How It Works</a>
+    <a href="#shop" onclick="closeMob()">Shop</a>
+    <a href="#gallery" onclick="closeMob()">Gallery</a>
+    <a href="#services" onclick="closeMob()">Services</a>
+    <a href="#track" onclick="closeMob()">Track Order</a>
+    <a href="#contact" onclick="closeMob()">Contact</a>
+  </div>
+
+  <!-- ══ HERO ══════════════════════════════════════════════ -->
+  <section id="home" class="hero">
+    <div class="hero-inner">
+      <div class="hero-eye">
+        <div class="dot"></div>
+        <span>3D Printing Studio · Dibrugarh, Assam</span>
       </div>
-      <div id="signupForm" style="display:none">
-        <p class="msub">Create an account to place and track orders.</p>
-        <div class="frow" style="margin-bottom:14px">
-          <div class="fg"><label>First Name</label><input type="text" placeholder="Rohit"></div>
-          <div class="fg"><label>Last Name</label><input type="text" placeholder="Kumar"></div>
-        </div>
-        <div class="fg" style="margin-bottom:14px"><label>Email</label><input type="email"
-            placeholder="you@example.com"></div>
-        <div class="fg" style="margin-bottom:14px"><label>Phone</label><input type="tel" placeholder="+91 98765 43210">
-        </div>
-        <div class="fg" style="margin-bottom:22px"><label>Password</label><input type="password"
-            placeholder="Min. 8 characters"></div>
-        <button class="btn btn-white" style="width:100%;justify-content:center;border-radius:11px"
-          onclick="handleAuth('signup')">Create Account →</button>
+      <h1 class="hero-h1">
+        Turning<br>
+        <span class="italic">Ideas</span><br>
+        Into Reality.
+      </h1>
+      <p class="hero-sub">Custom 3D printed creations from Assam — figurines, lithophane portraits, prototypes & unique
+        gifts. Delivered across India in 5–7 days.</p>
+      <div class="hero-ctas">
+        <a href="#shop" class="btn btn-white">Shop Now →</a>
+        <a href="#contact" class="btn btn-border">Start a Custom Project</a>
       </div>
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-v">200+</div>
+          <div class="hstat-l">Orders Delivered</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-v">5–7</div>
+          <div class="hstat-l">Day Delivery</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-v">₹60</div>
+          <div class="hstat-l">Starting Price</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-vis">
+      <div class="hvc"><img src="Images/Goku.jpeg" alt="3D Figurine" loading="lazy">
+        <div class="hvc-lbl">Custom Figurines</div>
+        <div class="hvc-price">From ₹499</div>
+      </div>
+      <div class="hvc"><img src="Images/Zubeen.jpeg" alt="Keychain" loading="lazy">
+        <div class="hvc-lbl">Keychains</div>
+        <div class="hvc-price">₹149</div>
+      </div>
+      <div class="hvc"><img src="Images/Room.jpeg" alt="Prototype" loading="lazy">
+        <div class="hvc-lbl">Prototypes</div>
+        <div class="hvc-price">Custom Quote</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-t">
+      <div class="ticker-i">FDM Printing <span class="sep">·</span></div>
+      <div class="ticker-i">SLA Resin <span class="sep">·</span></div>
+      <div class="ticker-i">Custom Figurines <span class="sep">·</span></div>
+      <div class="ticker-i">Lithophane Portraits <span class="sep">·</span></div>
+      <div class="ticker-i">Rapid Prototyping <span class="sep">·</span></div>
+      <div class="ticker-i">Room Décor <span class="sep">·</span></div>
+      <div class="ticker-i">Pan-India Delivery <span class="sep">·</span></div>
+      <div class="ticker-i">5–7 Day Turnaround <span class="sep">·</span></div>
+      <div class="ticker-i">FDM Printing <span class="sep">·</span></div>
+      <div class="ticker-i">SLA Resin <span class="sep">·</span></div>
+      <div class="ticker-i">Custom Figurines <span class="sep">·</span></div>
+      <div class="ticker-i">Lithophane Portraits <span class="sep">·</span></div>
+      <div class="ticker-i">Rapid Prototyping <span class="sep">·</span></div>
+      <div class="ticker-i">Room Décor <span class="sep">·</span></div>
+      <div class="ticker-i">Pan-India Delivery <span class="sep">·</span></div>
+      <div class="ticker-i">5–7 Day Turnaround <span class="sep">·</span></div>
     </div>
   </div>
+
+  <!-- ══ HOW IT WORKS ══════════════════════════════════════ -->
+  <section id="how" class="sec">
+    <div class="sec-h rev"><span class="label">Process</span>
+      <h2>How It Works</h2>
+      <p>From idea to your doorstep in 4 simple steps — no technical knowledge needed.</p>
+    </div>
+    <div class="steps rev">
+      <div class="step">
+        <div class="step-n">Step 01</div>
+        <div class="step-ico">💬</div>
+        <h3>Share Your Idea</h3>
+        <p>Send a design file, reference image, or just a description. We'll take it from there.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 02</div>
+        <div class="step-ico">🎨</div>
+        <h3>We Design & Quote</h3>
+        <p>Our team prepares your 3D model and sends a precise quote within 24 hours.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 03</div>
+        <div class="step-ico">🖨️</div>
+        <h3>We Print & Package</h3>
+        <p>Printed with FDM or SLA precision, then carefully packaged to protect every layer.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 04</div>
+        <div class="step-ico">📦</div>
+        <h3>Delivered to You</h3>
+        <p>Shipped pan-India in 5–7 days. Track your order on this page anytime.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SHOP ══════════════════════════════════════════════ -->
+  <section id="shop" class="sec sec-alt">
+    <div class="sec-hrow rev">
+      <div><span class="label" style="display:block;margin-bottom:10px">Shop</span>
+        <h2>Our Products</h2>
+      </div>
+      <a href="#contact" class="btn btn-border" style="font-size:13.5px;padding:11px 20px">Request Custom →</a>
+    </div>
+    <div class="filters rev">
+      <button class="flt on" onclick="filterP('all',this)">All</button>
+      <button class="flt" onclick="filterP('figurines',this)">Figurines</button>
+      <button class="flt" onclick="filterP('keychains',this)">Keychains</button>
+      <button class="flt" onclick="filterP('decor',this)">Décor</button>
+      <button class="flt" onclick="filterP('portraits',this)">Portraits</button>
+      <button class="flt" onclick="filterP('gifts',this)">Gifts</button>
+    </div>
+    <div class="pgrid" id="productsGrid">
+      <div class="loadbox">
+        <div class="spin"></div>
+        <p>Loading products…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ WHY US ════════════════════════════════════════════ -->
+  <section class="sec">
+    <div class="sec-h rev"><span class="label">Why LittleLayers</span>
+      <h2>Built Different.</h2>
+    </div>
+    <div class="fgrid">
+      <div class="fcard rev">
+        <div class="fico">⚡</div>
+        <h3>5–7 Day Delivery</h3>
+        <p>From print to your doorstep in under a week, anywhere in India. No vague timelines.</p>
+      </div>
+      <div class="fcard rev">
+        <div class="fico">🎯</div>
+        <h3>High Precision</h3>
+        <p>FDM and SLA printers ensuring exact dimensions and beautiful surface quality every time.</p>
+      </div>
+      <div class="fcard rev">
+        <div class="fico">🤝</div>
+        <h3>Personal Support</h3>
+        <p>We work with you directly — not a ticket number, a real conversation on WhatsApp.</p>
+      </div>
+      <div class="fcard rev">
+        <div class="fico">💰</div>
+        <h3>Starting ₹60</h3>
+        <p>Accessible pricing without compromising quality. Free delivery on orders above ₹299.</p>
+      </div>
+      <div class="fcard rev">
+        <div class="fico">🌿</div>
+        <h3>Eco Materials</h3>
+        <p>We use PLA — a plant-based biodegradable filament — wherever possible.</p>
+      </div>
+      <div class="fcard rev">
+        <div class="fico">📐</div>
+        <h3>Any File Format</h3>
+        <p>STL, OBJ, STEP, or just a sketch. We handle all the technical prep for you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SERVICES ══════════════════════════════════════════ -->
+  <section id="services" class="sec sec-alt">
+    <div class="sec-h rev"><span class="label">Services</span>
+      <h2>What We Offer</h2>
+      <p>From one-off gifts to bulk prototyping — we do it all.</p>
+    </div>
+    <div class="sgrid">
+      <a href="#contact" class="scard rev">
+        <div class="sico">🧩</div>
+        <div>
+          <div class="stit">Rapid Prototyping</div>
+          <div class="sdesc">Engineers and makers — fast, accurate physical models from CAD designs for testing fit,
+            form, and function.</div>
+          <div class="sfrom">Starting from ₹299 → Custom Quote</div>
+        </div>
+        <div class="sarr">→</div>
+      </a>
+      <a href="#contact" class="scard rev">
+        <div class="sico">🎁</div>
+        <div>
+          <div class="stit">Custom Gifts</div>
+          <div class="sdesc">Birthdays, anniversaries, graduations — personalized 3D printed gifts that are truly one of
+            a kind.</div>
+          <div class="sfrom">Starting from ₹149</div>
+        </div>
+        <div class="sarr">→</div>
+      </a>
+      <a href="#contact" class="scard rev">
+        <div class="sico">🖼️</div>
+        <div>
+          <div class="stit">Lithophane Portraits</div>
+          <div class="sdesc">Turn your cherished photos into glowing 3D art — magical when backlit. A gift people never
+            forget.</div>
+          <div class="sfrom">Starting from ₹149</div>
+        </div>
+        <div class="sarr">→</div>
+      </a>
+      <a href="#contact" class="scard rev">
+        <div class="sico">🏠</div>
+        <div>
+          <div class="stit">Room Décor</div>
+          <div class="sdesc">Custom nameplates, wall art, desk organisers, and decorative objects designed for your
+            space.</div>
+          <div class="sfrom">Starting from ₹60</div>
+        </div>
+        <div class="sarr">→</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══ ABOUT ══════════════════════════════════════════════ -->
+  <section id="about" class="sec">
+    <div class="about-g">
+      <div class="rev">
+        <span class="label" style="display:block;margin-bottom:12px">About</span>
+        <h2
+          style="font-family:var(--head);font-size:clamp(36px,4vw,58px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:20px;line-height:1.0">
+          Born in Assam.<br>Built for India.</h2>
+        <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">Founded in Dibrugarh with a
+          passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA printers.
+        </p>
+        <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:32px">Whether you're an engineer
+          needing a functional prototype or someone looking for a truly unique gift — we're here to make it real.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="#contact" class="btn btn-white">Get in Touch →</a>
+          <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="btn btn-border">💬 WhatsApp Us</a>
+        </div>
+      </div>
+      <div class="acards rev">
+        <div class="ac">
+          <div class="acv">FDM</div>
+          <div class="acl">Fused Deposition Modeling</div>
+          <div class="acs">Durable PLA, PETG, ABS parts</div>
+        </div>
+        <div class="ac">
+          <div class="acv">SLA</div>
+          <div class="acl">Stereolithography</div>
+          <div class="acs">Ultra-fine detail & figurines</div>
+        </div>
+        <div class="ac s2">
+          <div class="acv">200+</div>
+          <div class="acl">Happy Customers</div>
+          <div class="acs">From Dibrugarh to Mumbai, Delhi to Bangalore</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ GALLERY ════════════════════════════════════════════ -->
+  <section id="gallery" class="sec sec-alt">
+    <div class="sec-hrow rev">
+      <div><span class="label" style="display:block;margin-bottom:10px">Gallery</span>
+        <h2>Our Work</h2>
+      </div>
+      <a href="https://instagram.com/littlelayers.co" target="_blank" class="btn btn-border"
+        style="font-size:13.5px;padding:11px 20px">More on Instagram →</a>
+    </div>
+    <div class="ggrid rev">
+      <div class="gi tall"
+        onclick="openLb('https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=1200&q=90','Custom Goku Figurine — SLA Resin')">
+        <img src="Images/Goku.jpeg" alt="Figurine" loading="lazy">
+        <div class="gcap">Custom Figurine</div>
+      </div>
+      <div class="gi"
+        onclick="openLb('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=900','Lithophane Keychain — PLA')">
+        <img src="Images/Zubeen.jpeg" alt="Keychain" loading="lazy">
+        <div class="gcap">Lithophane Keychain</div>
+      </div>
+      <div class="gi"
+        onclick="openLb('https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=900','Prototype Part — PETG')">
+        <img src="Images/Kas.jpeg" alt="Prototype" loading="lazy">
+        <div class="gcap">Prototype Part</div>
+      </div>
+      <div class="gi"
+        onclick="openLb('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900','Room Décor — PLA Multi-Color')">
+        <img src="Images/Room.jpeg" alt="Decor" loading="lazy">
+        <div class="gcap">Room Décor</div>
+      </div>
+      <div class="gi wide"
+        onclick="openLb('https://images.unsplash.com/photo-1608889175638-9322300c369e?w=1200','Anime Figurine Set — SLA Resin')">
+        <img src="Images/Zubeen.jpeg" alt="Anime" loading="lazy">
+        <div class="gcap">Anime Figurines</div>
+      </div>
+      <div class="gi"
+        onclick="openLb('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900','Lithophane Portrait — Backlit')">
+        <img src="Images/Lit.jpeg" alt="Portrait" loading="lazy">
+        <div class="gcap">Lithophane Portrait</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIALS ══════════════════════════════════════
+  <section class="sec">
+    <div class="sec-h rev"><span class="label">Reviews</span>
+      <h2>What Customers Say</h2>
+    </div>
+    <div class="tgrid">
+      <div class="tcard rev">
+        <div class="tstr">★★★★★</div>
+        <div class="ttxt">"Ordered a lithophane portrait of my grandmother. The quality was stunning — it glows
+          beautifully. Will be ordering again."</div>
+        <div class="trev">
+          <div class="tav">P</div>
+          <div>
+            <div class="tname">Priya S.</div>
+            <div class="tloc">Guwahati, Assam</div>
+          </div>
+        </div>
+      </div>
+      <div class="tcard rev">
+        <div class="tstr">★★★★★</div>
+        <div class="ttxt">"Got a custom Goku figurine for my son's birthday. Perfect finish, arrived on time and
+          well-packaged. Impressed for the price!"</div>
+        <div class="trev">
+          <div class="tav">R</div>
+          <div>
+            <div class="tname">Rohit B.</div>
+            <div class="tloc">Dibrugarh, Assam</div>
+          </div>
+        </div>
+      </div>
+      <div class="tcard rev">
+        <div class="tstr">★★★★☆</div>
+        <div class="ttxt">"Ordered a prototype part for my startup. They guided me through the design and turned it
+          around in 5 days. Great team."</div>
+        <div class="trev">
+          <div class="tav">A</div>
+          <div>
+            <div class="tname">Arnav D.</div>
+            <div class="tloc">Bangalore</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+  <!-- ══ FAQ ════════════════════════════════════════════════ -->
+  <section class="sec sec-alt">
+    <div class="sec-h rev"><span class="label">FAQ</span>
+      <h2>Common Questions</h2>
+    </div>
+    <div class="fwrap">
+      <div class="flist">
+        <div class="fi rev"><button class="fq" onclick="toggleFaq(this)">What file formats do you accept?<span
+              class="fchev">▾</span></button>
+          <div class="fa">STL, OBJ, STEP, 3MF. No file? Just send a reference image or description and we'll design it.
+          </div>
+        </div>
+        <div class="fi rev"><button class="fq" onclick="toggleFaq(this)">How long does delivery take?<span
+              class="fchev">▾</span></button>
+          <div class="fa">5–7 business days across India. Assam-local orders often arrive sooner. We'll give you a firm
+            timeline with your quote.</div>
+        </div>
+        <div class="fi rev"><button class="fq" onclick="toggleFaq(this)">What materials are available?<span
+              class="fchev">▾</span></button>
+          <div class="fa">PLA (eco-friendly), PETG (flexible & durable), ABS (heat-resistant), and SLA resin (ultra-fine
+            detail for figurines).</div>
+        </div>
+        <div class="fi rev"><button class="fq" onclick="toggleFaq(this)">Is there a minimum order?<span
+              class="fchev">▾</span></button>
+          <div class="fa">No minimum! We welcome single-item orders. For bulk (10+ units), contact us for special
+            pricing.</div>
+        </div>
+        <div class="fi rev"><button class="fq" onclick="toggleFaq(this)">Do you ship outside India?<span
+              class="fchev">▾</span></button>
+          <div class="fa">Currently India only. International shipping coming soon — follow us on Instagram for updates.
+          </div>
+        </div>
+      </div>
+      <div class="fctab rev">
+        <h3>Still have questions?</h3>
+        <p>WhatsApp for the fastest response, or drop us a message and we'll reply within 24 hours.</p>
+        <div class="fctab-btns">
+          <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="btn btn-white" style="justify-content:center">💬
+            Chat on WhatsApp</a>
+          <a href="#contact" class="btn btn-border" style="justify-content:center">Send a Message</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TRACK ORDER ════════════════════════════════════════ -->
+  <section id="track" class="sec">
+    <div style="max-width:640px;margin:0 auto;text-align:center" class="rev">
+      <span class="label" style="display:block;margin-bottom:12px">Track</span>
+      <h2
+        style="font-family:var(--head);font-size:clamp(36px,4vw,56px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:14px">
+        Track Your Order</h2>
+      <p style="color:var(--gray3);margin-bottom:40px">Enter your Order ID (e.g. LL-1234567890) to see the real-time
+        status of your print.</p>
+      <div class="tbox">
+        <div class="trow">
+          <input type="text" class="tinp" id="trackInput" placeholder="e.g. LL-1234567890"
+            onkeydown="if(event.key==='Enter')trackOrder()">
+          <button class="btn btn-white" style="flex-shrink:0;border-radius:11px;padding:14px 24px"
+            onclick="trackOrder()">Track →</button>
+        </div>
+        <div id="trackResult" style="display:none">
+          <p id="trackMsg" style="margin-top:20px;font-size:14px;color:var(--gray3);text-align:left"></p>
+          <div id="trackTimeline" class="ttl" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ════════════════════════════════════════════ -->
+  <section id="contact" class="sec sec-alt">
+    <div class="sec-h rev"><span class="label">Contact</span>
+      <h2>Have an Idea?<br>Let's Build It.</h2>
+      <p>Share your details and we'll get back with a quote within 24 hours.</p>
+    </div>
+    <div class="cgrid">
+      <form class="cform rev" onsubmit="submitForm(event)">
+        <div class="frow">
+          <div class="fg"><label>Your Name *</label><input name="name" placeholder="Rohit Kumar" required></div>
+          <div class="fg"><label>Phone *</label><input name="phone" type="tel" placeholder="+91 98765 43210" required>
+          </div>
+        </div>
+        <div class="fg"><label>Email *</label><input name="email" type="email" placeholder="hello@example.com" required>
+        </div>
+        <div class="fg"><label>Service Type</label>
+          <select name="service">
+            <option value="">Select a service…</option>
+            <option>Custom Figurine</option>
+            <option>Lithophane Portrait</option>
+            <option>Keychain</option>
+            <option>Room Décor</option>
+            <option>Rapid Prototyping</option>
+            <option>Custom Gift</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label>About Your Project *</label><textarea name="message" rows="5"
+            placeholder="Describe what you want — size, color, references…" required></textarea></div>
+        <button type="submit" class="btn btn-white" style="font-size:15px;border-radius:11px">Send Message →</button>
+      </form>
+      <div class="cinfo rev">
+        <div class="ic">
+          <div class="icico">📍</div>
+          <div>
+            <div class="icl">Location</div>
+            <div class="icv">Dibrugarh, Assam, India</div>
+          </div>
+        </div>
+        <div class="ic">
+          <div class="icico">✉️</div>
+          <div>
+            <div class="icl">Email</div>
+            <div class="icv"><a href="mailto:hellolittlelayers@gmail.com">hellolittlelayers@gmail.com</a></div>
+          </div>
+        </div>
+        <div class="ic">
+          <div class="icico">💬</div>
+          <div>
+            <div class="icl">WhatsApp (Fastest)</div>
+            <div class="icv"><a href="https://wa.me/916000061991" target="_blank">Chat with us →</a></div>
+          </div>
+        </div>
+        <div class="ic">
+          <div class="icico">📸</div>
+          <div>
+            <div class="icl">Instagram</div>
+            <div class="icv"><a href="https://instagram.com/little_layers.co" target="_blank">@little_layers.co</a></div>
+          </div>
+        </div>
+        <div class="ic" style="background:var(--gray8);border-color:var(--line2)">
+          <div class="icico">⏱️</div>
+          <div>
+            <div class="icl">Response Time</div>
+            <div class="icv">2h on WhatsApp · 24h on email</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+  <footer>
+    <div class="ftgrid">
+      <div>
+        <div class="ftlogo">Little<em>Layers</em>.Co</div>
+        <div class="ftdesc">Custom 3D printing studio from Dibrugarh, Assam. Turning ideas into reality — one layer at a
+          time.</div>
+        <div class="socs">
+          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc">📸</a>
+          <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="soc">💬</a>
+          <a href="mailto:hellolittlelayers@gmail.com" class="soc">✉️</a>
+        </div>
+      </div>
+      <div class="ftcol">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#shop">Shop</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="ftcol">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="#shop">Figurines</a></li>
+          <li><a href="#shop">Keychains</a></li>
+          <li><a href="#shop">Portraits</a></li>
+          <li><a href="#shop">Décor</a></li>
+          <li><a href="#shop">Prototypes</a></li>
+        </ul>
+      </div>
+      <div class="ftcol ftnews">
+        <h4>Stay Updated</h4>
+        <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
+        <input type="email" placeholder="Your email address">
+        <button class="btn btn-white"
+          style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
+      </div>
+    </div>
+    <div class="ftbot">
+      <span>© 2025 LittleLayers.Co · Dibrugarh, Assam</span>
+      <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Shipping Policy</a></div>
+    </div>
+  </footer>
+
+  <!-- WHATSAPP -->
+  <a href="https://wa.me/916000061991" target="_blank" class="wafloat" title="Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" fill="white" width="28" height="28">
+      <path
+        d="M16 2C8.268 2 2 8.268 2 16c0 2.478.672 4.8 1.845 6.793L2 30l7.42-1.824A13.93 13.93 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.4c-2.24 0-4.33-.618-6.12-1.693l-.44-.26-4.4 1.083 1.11-4.29-.287-.46A11.38 11.38 0 014.6 16C4.6 9.71 9.71 4.6 16 4.6S27.4 9.71 27.4 16 22.29 27.4 16 27.4zm6.25-8.57c-.34-.17-2.02-1-2.34-1.11-.32-.11-.55-.17-.78.17-.23.34-.89 1.11-1.09 1.34-.2.23-.4.26-.74.09-2.05-1.02-3.4-1.82-4.75-4.13-.36-.62.36-.57 1.03-1.9.11-.23.06-.43-.03-.6-.09-.17-.78-1.88-1.07-2.58-.28-.68-.57-.58-.78-.59-.2-.01-.43-.01-.66-.01s-.6.09-.92.43c-.32.34-1.2 1.17-1.2 2.85s1.23 3.31 1.4 3.54c.17.23 2.42 3.7 5.87 5.19.82.35 1.46.56 1.96.72.82.26 1.57.22 2.16.13.66-.1 2.02-.82 2.31-1.62.29-.8.29-1.48.2-1.62-.09-.14-.32-.23-.66-.4z" />
+    </svg>
+  </a>
+
+  <!-- CART DRAWER -->
+  <div class="cart-ov" id="cartOv" onclick="toggleCart()"></div>
+  <div class="cart-dr" id="cartDr">
+    <div class="cart-hd">
+      <h3>Your Cart</h3><button class="xbtn" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-bd" id="cartItems">
+      <div class="c-empty">
+        <div class="ei">🛒</div>
+        <p>Your cart is empty.<br>Add something awesome!</p>
+      </div>
+    </div>
+    <div class="cart-ft" id="cartFt" style="display:none">
+      <div class="ct-row"><span class="ct-lbl">Total</span><span class="ct-val" id="cartTotal">₹0</span></div>
+      <button class="chkbtn" onclick="checkout()">Order via WhatsApp →</button>
+    </div>
+  </div>
+
+
 
   <!-- LIGHTBOX -->
   <div class="lbov" id="lbOv" onclick="closeLb()"></div>
@@ -660,7 +1246,11 @@
   <!-- NOTIFICATION -->
   <div class="notif" id="notif"></div>
 
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/env.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/index.js"></script>
 </body>
 
