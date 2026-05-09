@@ -149,15 +149,7 @@
       btn.disabled = false; btn.textContent = 'Send Message →';
     }
 
-    function openAuth(m) { document.getElementById('authOv').classList.add('open'); document.getElementById('authBox').classList.add('open'); switchTab(m); }
-    function closeAuth() { document.getElementById('authOv').classList.remove('open'); document.getElementById('authBox').classList.remove('open'); }
-    function switchTab(t) {
-      document.getElementById('loginForm').style.display = t === 'login' ? 'block' : 'none';
-      document.getElementById('signupForm').style.display = t === 'signup' ? 'block' : 'none';
-      document.getElementById('loginTab').classList.toggle('on', t === 'login');
-      document.getElementById('signupTab').classList.toggle('on', t === 'signup');
     }
-    function handleAuth(m) { closeAuth(); showNotif(m === 'login' ? 'Logged in! 👋' : 'Welcome to LittleLayers 🎉'); }
 
     function openLb(src, cap) { document.getElementById('lbImg').src = src; document.getElementById('lbCap').textContent = cap; document.getElementById('lbOv').classList.add('open'); document.getElementById('lb').classList.add('open'); }
     function closeLb() { document.getElementById('lbOv').classList.remove('open'); document.getElementById('lb').classList.remove('open'); }
