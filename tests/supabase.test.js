@@ -11,7 +11,7 @@ function loadSupabaseJS(mocks = {}) {
     supabase: {
       createClient: () => mocks.supabaseClient || {}
     },
-    window: {},
+    window: { ENV: { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_ANON_KEY: 'test-key' } },
     console: mocks.console || console,
     ...mocks.globals
   };
