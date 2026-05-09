@@ -26,7 +26,7 @@
           const { data, error } = await q;
           if (!error && data && data.length) { allP = data; renderP(data); return; }
         }
-      } catch (e) { }
+      } catch (e) { console.error(e); }
       allP = cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat);
       renderP(allP);
     }
@@ -108,7 +108,7 @@
       const total = cart.reduce((s, i) => s + Number(i.price) * i.qty, 0);
       const ref = 'LL-' + Date.now();
       const msg = `🛒 *New Order — ${ref}*\n\n` + cart.map(i => `• ${i.name} × ${i.qty} = ₹${(Number(i.price) * i.qty).toLocaleString('en-IN')}`).join('\n') + `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
-      try { if (typeof sb !== 'undefined') await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' }); } catch (e) { }
+      try { if (typeof sb !== 'undefined') await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' }); } catch (e) { console.error(e); }
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
       cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
     }
@@ -118,7 +118,7 @@
       if (!val) { showNotif('Please enter your Order ID'); return; }
       const res = document.getElementById('trackResult'), msg = document.getElementById('trackMsg'), tl = document.getElementById('trackTimeline');
       let order = null;
-      try { if (typeof sb !== 'undefined') { const { data } = await sb.from('orders').select('*').eq('order_ref', val).single(); order = data; } } catch (e) { }
+      try { if (typeof sb !== 'undefined') { const { data } = await sb.from('orders').select('*').eq('order_ref', val).single(); order = data; } } catch (e) { console.error(e); }
       if (!order) { msg.textContent = `Order "${val}" not found. Please check the ID or contact us.`; msg.style.color = 'var(--gray2)'; res.style.display = 'block'; tl.style.display = 'none'; return; }
       const ss = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'];
       const ll = { pending: { icon: '🕐', title: 'Order Placed', sub: 'We received your order' }, confirmed: { icon: '✓', title: 'Design Confirmed', sub: 'Sent to printer' }, printing: { icon: '🖨', title: 'Printing', sub: 'Est. 2 more days' }, dispatched: { icon: '📦', title: 'Dispatched', sub: 'Shipped via courier' }, delivered: { icon: '✓', title: 'Delivered', sub: 'Enjoy your print!' } };
@@ -131,7 +131,7 @@
       e.preventDefault(); const btn = e.target.querySelector('button[type=submit]');
       btn.disabled = true; btn.textContent = 'Sending…';
       const d = { name: e.target.name.value, phone: e.target.phone.value, email: e.target.email.value, service: e.target.service.value, message: e.target.message.value };
-      try { if (typeof sb !== 'undefined') await sb.from('messages').insert(d); } catch (ex) { }
+      try { if (typeof sb !== 'undefined') await sb.from('messages').insert(d); } catch (ex) { console.error(ex); }
       showNotif("Message sent! We'll reply within 24h ✉️"); e.target.reset();
       btn.disabled = false; btn.textContent = 'Send Message →';
     }
