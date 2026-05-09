@@ -2,6 +2,17 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // -- Utils --
+    function escapeHtml(str) {
+        if (!str && str !== 0) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     // -- State --
     let cart = JSON.parse(localStorage.getItem('littleLayersCart')) || [];
 
@@ -325,21 +336,27 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         cart.forEach(item => {
+            const escapedImage = escapeHtml(item.image);
+            const escapedName = escapeHtml(item.name);
+            const escapedId = escapeHtml(item.id);
+            const price = parseFloat(item.price) || 0;
+            const quantity = parseInt(item.quantity) || 0;
+
             html += `
                 <tr style="border-bottom: 1px solid var(--color-border);">
                     <td style="padding: 20px 0;">
                         <div style="display: flex; align-items: center; gap: 20px;">
-                            <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
-                            <span style="font-weight: 500; font-size: 15px;">${item.name}</span>
+                            <img src="${escapedImage}" alt="${escapedName}" class="cart-item-image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                            <span style="font-weight: 500; font-size: 15px;">${escapedName}</span>
                         </div>
                     </td>
-                    <td style="padding: 20px 0; font-size: 14px; color: var(--color-text-muted); text-align: center;">₹${item.price}</td>
+                    <td style="padding: 20px 0; font-size: 14px; color: var(--color-text-muted); text-align: center;">₹${price}</td>
                     <td style="padding: 20px 0; text-align: center;">
-                        <input type="number" class="cart-quantity-input" min="1" value="${item.quantity}" data-id="${item.id}" style="width: 60px; padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; text-align: center;">
+                        <input type="number" class="cart-quantity-input" min="1" value="${quantity}" data-id="${escapedId}" style="width: 60px; padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; text-align: center;">
                     </td>
-                    <td style="padding: 20px 0; font-weight: 500; text-align: center;">₹${item.price * item.quantity}</td>
+                    <td style="padding: 20px 0; font-weight: 500; text-align: center;">₹${price * quantity}</td>
                     <td style="padding: 20px 0; text-align: right;">
-                        <button class="btn-remove" data-id="${item.id}" style="color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">Remove</button>
+                        <button class="btn-remove" data-id="${escapedId}" style="color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">Remove</button>
                     </td>
                 </tr>
             `;
@@ -373,10 +390,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = '';
         cart.forEach(item => {
+            const escapedName = escapeHtml(item.name);
+            const price = parseFloat(item.price) || 0;
+            const quantity = parseInt(item.quantity) || 0;
+
             html += `
                 <div class="summary-item">
-                    <span>${item.name} x ${item.quantity}</span>
-                    <span>₹${item.price * item.quantity}</span>
+                    <span>${escapedName} x ${quantity}</span>
+                    <span>₹${price * quantity}</span>
                 </div>
             `;
         });
