@@ -297,9 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cartCountElements.forEach(el => el.textContent = totalItems);
     }
 
-    function getCartTotal() {
-        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
 
     function renderCart() {
         if (cart.length === 0) {
@@ -348,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `</tbody></table>`;
         cartItemsContainer.innerHTML = html;
         if (cartTotalPriceElement) {
-            cartTotalPriceElement.textContent = `₹${getCartTotal()}`;
+            cartTotalPriceElement.textContent = `₹${window.getCartTotal(cart)}`;
         }
 
         // Attach event listeners to new elements
@@ -383,8 +380,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         checkoutItemsContainer.innerHTML = html;
         if (checkoutTotalElement) {
-            checkoutTotalElement.textContent = `₹${getCartTotal()}`;
+            checkoutTotalElement.textContent = `₹${window.getCartTotal(cart)}`;
         }
     }
 
 });
+
+window.getCartTotal = function(cartArray) {
+    if (!cartArray || !Array.isArray(cartArray)) return 0;
+    return cartArray.reduce((total, item) => total + (item.price * item.quantity), 0);
+};
