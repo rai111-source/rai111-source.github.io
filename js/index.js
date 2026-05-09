@@ -123,7 +123,20 @@
       const ss = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'];
       const ll = { pending: { icon: '🕐', title: 'Order Placed', sub: 'We received your order' }, confirmed: { icon: '✓', title: 'Design Confirmed', sub: 'Sent to printer' }, printing: { icon: '🖨', title: 'Printing', sub: 'Est. 2 more days' }, dispatched: { icon: '📦', title: 'Dispatched', sub: 'Shipped via courier' }, delivered: { icon: '✓', title: 'Delivered', sub: 'Enjoy your print!' } };
       const ci = ss.indexOf(order.status); msg.textContent = ''; tl.style.display = 'flex';
-      tl.innerHTML = ss.map((s, i) => { const done = i < ci, active = i === ci, l = ll[s]; return `<div class="tstep${done ? ' done' : ''}${active ? ' active' : ''}"><div class="tdot">${done ? '✓' : l.icon}</div><div><div class="tsl">${l.title}</div><div class="tss">${l.sub}</div></div></div>`; }).join('');
+      tl.innerHTML = ss.map((s, i) => {
+        const done = i < ci;
+        const active = i === ci;
+        const l = ll[s];
+        return `
+          <div class="tstep${done ? ' done' : ''}${active ? ' active' : ''}">
+            <div class="tdot">${done ? '✓' : l.icon}</div>
+            <div>
+              <div class="tsl">${l.title}</div>
+              <div class="tss">${l.sub}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
       res.style.display = 'block';
     }
 
