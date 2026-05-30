@@ -33,19 +33,19 @@ function renderProducts(products) {
   grid.innerHTML = products.map(p => `
     <div class="product-card" data-id="${p.id}">
       <div class="product-img-wrap">
-        <img src="${escHtml(p.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=80')}"
-             alt="${escHtml(p.name)}" loading="lazy"
+        <img src="${window.escapeHtml(p.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=80')}"
+             alt="${window.escapeHtml(p.name)}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=80'">
-        ${p.badge ? `<div class="product-badge">${escHtml(p.badge)}</div>` : ''}
+        ${p.badge ? `<div class="product-badge">${window.escapeHtml(p.badge)}</div>` : ''}
         <div class="product-actions">
           <button class="icon-btn" title="Wishlist" onclick="wishlist(${p.id}, event)">♡</button>
           <button class="icon-btn" title="Quick View" onclick="quickView(${p.id}, event)">👁</button>
         </div>
       </div>
       <div class="product-info">
-        <div class="product-cat">${escHtml(p.category)}</div>
-        <div class="product-name">${escHtml(p.name)}</div>
-        ${p.description ? `<div class="product-desc-short">${escHtml(p.description.slice(0,60))}${p.description.length>60?'…':''}</div>` : ''}
+        <div class="product-cat">${window.escapeHtml(p.category)}</div>
+        <div class="product-name">${window.escapeHtml(p.name)}</div>
+        ${p.description ? `<div class="product-desc-short">${window.escapeHtml(p.description.slice(0,60))}${p.description.length>60?'…':''}</div>` : ''}
         <div class="product-footer">
           <div class="product-price">
             ₹${Number(p.price).toLocaleString('en-IN')}
@@ -89,9 +89,9 @@ async function loadGallery() {
   // Assign layout classes for first 6 items
   const layouts = ['gallery-tall', '', '', '', 'gallery-wide', ''];
   grid.innerHTML = items.slice(0, 6).map((item, i) => `
-    <div class="gallery-item ${layouts[i] || ''}" onclick="openLightbox('${item.image_url}','${escHtml(item.caption || item.title || '')}')">
-      <img src="${item.image_url}" alt="${escHtml(item.title || '')}" loading="lazy">
-      <div class="gallery-caption">${escHtml(item.title || '')}</div>
+    <div class="gallery-item ${layouts[i] || ''}" onclick="openLightbox('${item.image_url}','${window.escapeHtml(item.caption || item.title || '')}')">
+      <img src="${item.image_url}" alt="${window.escapeHtml(item.title || '')}" loading="lazy">
+      <div class="gallery-caption">${window.escapeHtml(item.title || '')}</div>
     </div>
   `).join('');
 }
@@ -106,7 +106,7 @@ function addToCart(id, e) {
   else cart.push({ id: product.id, name: product.name, price: product.price, image_url: product.image_url, qty: 1 });
   saveCart();
   updateCartUI();
-  showNotif(`${escHtml(product.name)} added to cart! 🛒`);
+  showNotif(`${window.escapeHtml(product.name)} added to cart! 🛒`);
 }
 
 function changeQty(id, delta) {
@@ -141,11 +141,11 @@ function updateCartUI() {
     if (footer) footer.style.display = 'block';
     itemsEl.innerHTML = cart.map(item => `
       <div class="cart-item">
-        <img src="${escHtml(item.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100&q=70')}"
-             alt="${escHtml(item.name)}"
+        <img src="${window.escapeHtml(item.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100&q=70')}"
+             alt="${window.escapeHtml(item.name)}"
              onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100&q=70'">
         <div class="cart-item-info">
-          <div class="cart-item-name">${escHtml(item.name)}</div>
+          <div class="cart-item-name">${window.escapeHtml(item.name)}</div>
           <div class="cart-item-price">₹${(Number(item.price) * item.qty).toLocaleString('en-IN')}</div>
         </div>
         <div class="qty-ctrl">
@@ -313,7 +313,7 @@ function quickView(id, e) {
   if (e) e.stopPropagation();
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
-  showNotif(`Quick view: ${escHtml(p.name)} — ₹${Number(p.price).toLocaleString('en-IN')}`);
+  showNotif(`Quick view: ${window.escapeHtml(p.name)} — ₹${Number(p.price).toLocaleString('en-IN')}`);
 }
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────
@@ -356,6 +356,3 @@ function toggleFaq(el) {
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
