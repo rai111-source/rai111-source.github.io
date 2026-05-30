@@ -2,17 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // -- Utils --
-    function escapeHtml(str) {
-        if (!str && str !== 0) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
     // -- State --
     let cart = JSON.parse(localStorage.getItem('littleLayersCart')) || [];
 
@@ -333,9 +322,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         cart.forEach(item => {
-            const escapedImage = escapeHtml(item.image);
-            const escapedName = escapeHtml(item.name);
-            const escapedId = escapeHtml(item.id);
+            const escapedImage = window.escapeHtml(item.image);
+            const escapedName = window.escapeHtml(item.name);
+            const escapedId = window.escapeHtml(item.id);
             const price = parseFloat(item.price) || 0;
             const quantity = parseInt(item.quantity) || 0;
 
@@ -387,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = '';
         cart.forEach(item => {
-            const escapedName = escapeHtml(item.name);
+            const escapedName = window.escapeHtml(item.name);
             const price = parseFloat(item.price) || 0;
             const quantity = parseInt(item.quantity) || 0;
 

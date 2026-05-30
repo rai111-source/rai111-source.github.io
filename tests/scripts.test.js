@@ -4,7 +4,16 @@ const fs = require('fs');
 const vm = require('vm');
 
 // Mock window object
-const windowMock = {};
+const windowMock = {
+    escapeHtml: function(str) {
+        if (!str && str !== 0) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+};
 const context = vm.createContext({
     window: windowMock,
     document: {

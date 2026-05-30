@@ -37,18 +37,18 @@
       g.innerHTML = list.map(p => `
     <div class="pcard">
       <div class="pimg">
-        <img src="${p.image_url || ''}" alt="${esc(p.name)}" loading="lazy"
+        <img src="${p.image_url || ''}" alt="${window.escapeHtml(p.name)}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=70'">
-        ${p.badge ? `<div class="pbadge">${esc(p.badge)}</div>` : ''}
+        ${p.badge ? `<div class="pbadge">${window.escapeHtml(p.badge)}</div>` : ''}
         <div class="pacts">
           <button class="icob" onclick="addToCart(${p.id},event)">🛒</button>
           <button class="icob" onclick="showNotif('Added to wishlist ❤️')">♡</button>
         </div>
       </div>
       <div class="pbody">
-        <div class="pcat">${esc(p.category)}</div>
-        <div class="pname">${esc(p.name)}</div>
-        ${p.description ? `<div class="pdesc">${esc(p.description.slice(0, 60))}…</div>` : ''}
+        <div class="pcat">${window.escapeHtml(p.category)}</div>
+        <div class="pname">${window.escapeHtml(p.name)}</div>
+        ${p.description ? `<div class="pdesc">${window.escapeHtml(p.description.slice(0, 60))}…</div>` : ''}
         <div class="pfoot">
           <div class="pprice">₹${Number(p.price).toLocaleString('en-IN')}${p.original_price ? `<span class="was">₹${Number(p.original_price).toLocaleString('en-IN')}</span>` : ''}</div>
           <button class="addbtn" onclick="addToCart(${p.id},event)">+</button>
@@ -92,8 +92,8 @@
         if (foot) foot.style.display = 'block';
         body.innerHTML = cart.map(item => `
       <div class="citem">
-        <img src="${item.image_url || ''}" alt="${esc(item.name)}" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
-        <div class="ci-info"><div class="ci-name">${esc(item.name)}</div><div class="ci-price">₹${(Number(item.price) * item.qty).toLocaleString('en-IN')}</div></div>
+        <img src="${item.image_url || ''}" alt="${window.escapeHtml(item.name)}" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
+        <div class="ci-info"><div class="ci-name">${window.escapeHtml(item.name)}</div><div class="ci-price">₹${(Number(item.price) * item.qty).toLocaleString('en-IN')}</div></div>
         <div class="qctl">
           <button class="qb" onclick="changeQty(${item.id},-1)">−</button>
           <span class="qn">${item.qty}</span>
@@ -169,4 +169,3 @@
     }
 
     function showNotif(msg) { const el = document.getElementById('notif'); el.textContent = msg; el.classList.add('show'); clearTimeout(window._nt); window._nt = setTimeout(() => el.classList.remove('show'), 3000); }
-    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
