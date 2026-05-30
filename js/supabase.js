@@ -4,7 +4,7 @@
 //  from: https://supabase.com/dashboard → Project Settings → API
 // ============================================================
 
-const SUPABASE_URL  = window.ENV?.SUPABASE_URL || 'YOUR_SUPABASE_URL';
+const SUPABASE_URL  = window.ENV?.SUPABASE_URL || 'https://lirmqwaxsqrnrlcvigfj.supabase.co';
 const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
 
 // Supabase JS v2 loaded via CDN in each HTML file
