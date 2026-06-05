@@ -2,249 +2,214 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products | LittleLayers.Co</title>
-    <meta name="description"
-        content="Explore our collection of custom 3D printed products, from unique gifts to functional items.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products | LittleLayers.Co</title>
+  <meta name="description" content="Explore our collection of custom 3D printed products, from unique gifts to functional items.">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/index.css">
+  <style>
+    /* Add to Cart button fix for standalone page without index.js */
+    .pacts button { pointer-events: none; }
+    .addbtn { pointer-events: none; }
+  </style>
 </head>
 
 <body>
 
-    <!-- Navigation Drawer -->
-    <div class="drawer-overlay" id="drawer-overlay"></div>
-    <div class="nav-drawer" id="nav-drawer">
-        <button class="drawer-close" id="drawer-close"><i class="ph ph-x"></i></button>
-        <div class="logo-top" style="margin-bottom: 40px;">
-            <a href="index.html">LittleLayers.Co</a>
-        </div>
-        <nav class="drawer-nav">
-            <a href="index.html#home">Home</a>
-            <a href="products.html" style="color: var(--color-text-muted);">Products</a>
-            <a href="index.html#services">Services</a>
-            <a href="index.html#about">About</a>
-            <a href="index.html#categories">Categories</a>
-            <a href="index.html#contact">Contact</a>
-        </nav>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    🚚 Free delivery above ₹299 &nbsp;·&nbsp; 5–7 day pan-India shipping &nbsp;·&nbsp;
+    <a href="https://wa.me/916000061991" target="_blank">Order on WhatsApp ↗</a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html#home" class="nav-logo">Little<em>Layers</em>.Co</a>
+    <ul class="nav-links">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#how">How It Works</a></li>
+      <li><a href="index.html#shop">Shop</a></li>
+      <li><a href="index.html#gallery">Gallery</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#track">Track Order</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav-r">
+      <div id="auth-buttons" style="display: flex; gap: 8px;">
+        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      </div>
+      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+          👤
+      </a>
+      <a href="cart.html" class="cart-pill" style="text-decoration: none;">🛒<div class="cbadge" id="cart-count">0</div></a>
     </div>
+    <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
+  </nav>
 
-    <!-- Topbar (Replacing Marquee) -->
-    <div class="topbar">
-        <div class="container topbar-inner">
-            <div class="topbar-left" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                <span>Free delivery on orders above ₹299 &nbsp;&bull;&nbsp; Site is under development, please DM on
-                    Instagram for orders</span>
+  <div class="mobnav" id="mobnav">
+    <a href="index.html#home" onclick="closeMob()">Home</a>
+    <a href="index.html#how" onclick="closeMob()">How It Works</a>
+    <a href="index.html#shop" onclick="closeMob()">Shop</a>
+    <a href="index.html#gallery" onclick="closeMob()">Gallery</a>
+    <a href="index.html#services" onclick="closeMob()">Services</a>
+    <a href="index.html#track" onclick="closeMob()">Track Order</a>
+    <a href="index.html#contact" onclick="closeMob()">Contact</a>
+  </div>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="sec" style="position: relative;">
+    <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;">
+      <div class="sec-h" style="text-align: center; margin-bottom: 40px;">
+        <span class="label">Collection</span>
+        <h2>Our Products</h2>
+        <p>Discover our range of 3D printed creations.</p>
+      </div>
+
+      <div class="pgrid" id="productsGrid">
+        <!-- Product 1 -->
+        <div class="pcard">
+          <div class="pimg">
+            <img src="Images/Goku.jpeg" alt="Goku Figurine" loading="lazy">
+            <div class="pacts">
+              <button class="icob add-to-cart" data-id="1" data-name="Goku Figurine" data-price="599" data-image="Images/Goku.jpeg" style="pointer-events: auto;">🛒</button>
             </div>
-            <div class="topbar-right socials">
-                <a href="https://www.instagram.com/little_layers.co/" target="_blank" title="Instagram"><i
-                        class="ph ph-instagram-logo"></i></a>
-                <a href="mailto:hellolittlelayers@gmail.com"><i class="ph ph-envelope"></i></a>
+          </div>
+          <div class="pbody">
+            <div class="pcat">figurines</div>
+            <div class="pname">Goku Figurine</div>
+            <div class="pdesc">High-detail 3D printed figurine, perfect for collectors.</div>
+            <div class="pfoot">
+              <div class="pprice">₹599</div>
+              <button class="addbtn add-to-cart" data-id="1" data-name="Goku Figurine" data-price="599" data-image="Images/Goku.jpeg" style="pointer-events: auto;">+</button>
             </div>
+          </div>
         </div>
+
+        <!-- Product 2 -->
+        <div class="pcard">
+          <div class="pimg">
+            <img src="Images/Kas.jpeg" alt="Lithophane Keychain" loading="lazy">
+            <div class="pacts">
+              <button class="icob add-to-cart" data-id="2" data-name="Lithophane Keychain" data-price="149" data-image="Images/Kas.jpeg" style="pointer-events: auto;">🛒</button>
+            </div>
+          </div>
+          <div class="pbody">
+            <div class="pcat">keychains</div>
+            <div class="pname">Lithophane Keychain</div>
+            <div class="pdesc">Personalized lithophane keychain that reveals image when backlit.</div>
+            <div class="pfoot">
+              <div class="pprice">₹149</div>
+              <button class="addbtn add-to-cart" data-id="2" data-name="Lithophane Keychain" data-price="149" data-image="Images/Kas.jpeg" style="pointer-events: auto;">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="pcard">
+          <div class="pimg">
+            <img src="Images/Room.jpeg" alt="Custom Room Decor" loading="lazy">
+            <div class="pacts">
+              <button class="icob add-to-cart" data-id="3" data-name="Custom Room Decor" data-price="60" data-image="Images/Room.jpeg" style="pointer-events: auto;">🛒</button>
+            </div>
+          </div>
+          <div class="pbody">
+            <div class="pcat">decor</div>
+            <div class="pname">Custom Room Decor</div>
+            <div class="pdesc">Unique 3D printed decor items to enhance your living space.</div>
+            <div class="pfoot">
+              <div class="pprice">₹60</div>
+              <button class="addbtn add-to-cart" data-id="3" data-name="Custom Room Decor" data-price="60" data-image="Images/Room.jpeg" style="pointer-events: auto;">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="pcard">
+          <div class="pimg">
+            <img src="Images/Zubeen.jpeg" alt="Custom Portrait" loading="lazy">
+            <div class="pacts">
+              <button class="icob add-to-cart" data-id="4" data-name="Custom Portrait" data-price="149" data-image="Images/Zubeen.jpeg" style="pointer-events: auto;">🛒</button>
+            </div>
+          </div>
+          <div class="pbody">
+            <div class="pcat">portraits</div>
+            <div class="pname">Custom Portrait</div>
+            <div class="pdesc">Turn your favorite photos into 3D printed lithophane portraits.</div>
+            <div class="pfoot">
+              <div class="pprice">₹149</div>
+              <button class="addbtn add-to-cart" data-id="4" data-name="Custom Portrait" data-price="149" data-image="Images/Zubeen.jpeg" style="pointer-events: auto;">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Main Navigation -->
-    <header class="header">
-        <div class="container header-inner">
-            <div class="header-left">
-                <button class="menu-btn"><i class="ph ph-list"></i></button>
-            </div>
-            <div class="logo-top">
-                <a href="index.html">LittleLayers.Co</a>
-            </div>
-            <div class="header-right actions">
-                <button class="action-btn"><i class="ph ph-magnifying-glass"></i></button>
-                <div id="auth-buttons" style="display: flex; align-items: center; gap: 15px; margin: 0 10px;">
-                    <a href="login.html" style="font-size: 13px; font-weight: 600; text-transform: uppercase;">Login</a>
-                    <a href="login.html?mode=signup" class="btn-solid"
-                        style="padding: 8px 16px; font-size: 12px; border-radius: 4px;">Sign Up</a>
-                </div>
-                <button class="action-btn" id="user-btn" style="display: none;">
-                    <span id="user-btn-text"
-                        style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-                    <i class="ph ph-user"></i>
-                </button>
-                <a href="cart.html" class="action-btn cart-btn">
-                    <i class="ph ph-shopping-bag"></i>
-                    <span class="cart-badge" id="cart-count">0</span>
-                </a>
-            </div>
+  <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+  <footer>
+    <div class="ftgrid">
+      <div>
+        <div class="ftlogo">Little<em>Layers</em>.Co</div>
+        <div class="ftdesc">Custom 3D printing studio from Dibrugarh, Assam. Turning ideas into reality — one layer at a time.</div>
+        <div class="socs">
+          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc">📸</a>
+          <a href="https://wa.me/916000061991" target="_blank" class="soc">💬</a>
+          <a href="mailto:hellolittlelayers@gmail.com" class="soc">✉️</a>
         </div>
-    </header>
+      </div>
+      <div class="ftcol">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="index.html#home">Home</a></li>
+          <li><a href="index.html#shop">Shop</a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="ftcol">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="index.html#shop">Figurines</a></li>
+          <li><a href="index.html#shop">Keychains</a></li>
+          <li><a href="index.html#shop">Portraits</a></li>
+          <li><a href="index.html#shop">Décor</a></li>
+          <li><a href="index.html#shop">Prototypes</a></li>
+        </ul>
+      </div>
+      <div class="ftcol ftnews">
+        <h4>Stay Updated</h4>
+        <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
+        <input type="email" placeholder="Your email address">
+        <button class="btn btn-white" style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
+      </div>
+    </div>
+    <div class="ftbot">
+      <span>© 2025 LittleLayers.Co · Dibrugarh, Assam</span>
+      <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Shipping Policy</a></div>
+    </div>
+  </footer>
 
-    <!-- Page Header -->
-    <section class="section-header" style="margin-top: 80px;">
-        <div class="container">
-            <h2>Our Products</h2>
-            <p style="color: var(--color-text-muted);">Discover our range of 3D printed creations.</p>
-        </div>
-    </section>
+  <!-- NOTIFICATION -->
+  <div class="notif" id="notif"></div>
 
-    <!-- Products Section -->
-    <section class="shop-categories" style="padding-top: 40px;">
-        <div class="container">
-            <div class="products-grid">
-                <!-- Product 1 -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="Images/Goku.jpeg" alt="Goku Figurine" class="product-image"
-                            style="mix-blend-mode: normal; object-fit: cover;">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Goku Figurine</h3>
-                        <div class="product-price">
-                            <span class="current-price">₹599</span>
-                        </div>
-                        <p class="product-desc"
-                            style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">High-detail 3D
-                            printed figurine, perfect for collectors.</p>
-                        <button class="btn-outline add-to-cart" data-id="1" data-name="Goku Figurine" data-price="599"
-                            data-image="Images/Goku.jpeg">Add To Cart</button>
-                    </div>
-                </div>
-
-                <!-- Product 2 -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="Images/Kas.jpeg" alt="Lithophane Keychain" class="product-image"
-                            style="mix-blend-mode: normal; object-fit: cover;">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Lithophane Keychain</h3>
-                        <div class="product-price">
-                            <span class="current-price">₹149</span>
-                        </div>
-                        <p class="product-desc"
-                            style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">Personalized
-                            lithophane keychain that reveals image when backlit.</p>
-                        <button class="btn-outline add-to-cart" data-id="2" data-name="Lithophane Keychain"
-                            data-price="149" data-image="Images/Kas.jpeg">Add To Cart</button>
-                    </div>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="Images/Room.jpeg" alt="Custom Room Decor" class="product-image"
-                            style="mix-blend-mode: normal; object-fit: cover;">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Custom Room Decor</h3>
-                        <div class="product-price">
-                            <span class="current-price">₹60</span>
-                        </div>
-                        <p class="product-desc"
-                            style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">Unique 3D
-                            printed decor items to enhance your living space.</p>
-                        <button class="btn-outline add-to-cart" data-id="3" data-name="Custom Room Decor"
-                            data-price="60" data-image="Images/Room.jpeg">Add To Cart</button>
-                    </div>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="Images/Zubeen.jpeg" alt="Custom Portrait" class="product-image"
-                            style="mix-blend-mode: normal; object-fit: cover;">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Custom Portrait</h3>
-                        <div class="product-price">
-                            <span class="current-price">₹149</span>
-                        </div>
-                        <p class="product-desc"
-                            style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">Turn your
-                            favorite photos into 3D printed lithophane portraits.</p>
-                        <button class="btn-outline add-to-cart" data-id="4" data-name="Custom Portrait" data-price="149"
-                            data-image="Images/Zubeen.jpeg">Add To Cart</button>
-                    </div>
-                </div>
-
-                <!-- Product 5 (Placeholder) -->
-                <div class="product-card">
-                    <div class="product-image-wrapper" style="background-color: var(--color-bg-alt);">
-                        <span
-                            style="color: var(--color-text-muted); font-size: 14px; text-transform: uppercase; font-weight: 500; letter-spacing: 1px;">Coming
-                            Soon</span>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">New Arrival</h3>
-                        <div class="product-price">
-                            <span class="current-price">--</span>
-                        </div>
-                        <p class="product-desc"
-                            style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">More exciting
-                            products are on their way!</p>
-                        <button class="btn-outline"
-                            style="border-color: var(--color-border); color: var(--color-text-muted); pointer-events: none;">Coming
-                            Soon</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact" class="footer" style="margin-top: 40px;">
-        <div class="container">
-            <div class="footer-grid">
-
-                <!-- Contact Form -->
-                <div class="footer-col" style="grid-column: span 2;">
-                    <h4 class="footer-title">Have an idea? Let's build it.</h4>
-                    <p class="subscribe-text">Send us your details and we'll get back to you with a quote.</p>
-                    <form class="contact-form-modern">
-                        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                            <input type="text" placeholder="Your Name" required>
-                            <input type="email" placeholder="Your Email" required>
-                        </div>
-                        <textarea rows="4" placeholder="Project Details" required
-                            style="width: 100%; margin-bottom: 20px;"></textarea>
-                        <button type="submit" class="btn-solid">SEND MESSAGE</button>
-                    </form>
-                </div>
-
-                <!-- Contact Info -->
-                <div class="footer-col">
-                    <h4 class="footer-title">Contact Information</h4>
-                    <ul class="contact-list" style="margin-bottom: 30px;">
-                        <li><i class="ph ph-map-pin"></i> Dibrugarh, Assam, India</li>
-                        <li><i class="ph ph-envelope"></i> hellolittlelayers@gmail.com</li>
-                    </ul>
-
-                    <h4 class="footer-title">Follow Us</h4>
-                    <div class="socials" style="font-size: 24px; color: var(--color-text-main);">
-                        <a href="https://www.instagram.com/little_layers.co/" target="_blank"><i
-                                class="ph ph-instagram-logo"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <div class="copyright">
-                    &copy; 2026 LittleLayers.Co. All Rights Reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/env.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/scripts.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/scripts.js"></script>
 </body>
-
 </html>

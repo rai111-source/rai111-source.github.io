@@ -2,124 +2,135 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logged Out | LittleLayers.Co</title>
-    <meta name="description" content="You have successfully logged out of your LittleLayers.Co account.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logged Out | LittleLayers.Co</title>
+  <meta name="description" content="You have successfully logged out of your LittleLayers.Co account.">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body>
 
-    <!-- Navigation Drawer -->
-    <div class="drawer-overlay" id="drawer-overlay"></div>
-    <div class="nav-drawer" id="nav-drawer">
-        <button class="drawer-close" id="drawer-close"><i class="ph ph-x"></i></button>
-        <div class="logo-top" style="margin-bottom: 40px;">
-            <a href="index.html">LittleLayers.Co</a>
-        </div>
-        <nav class="drawer-nav">
-            <a href="index.html#home">Home</a>
-            <a href="products.html">Products</a>
-            <a href="index.html#services">Services</a>
-            <a href="index.html#about">About</a>
-            <a href="index.html#categories">Categories</a>
-            <a href="index.html#contact">Contact</a>
-        </nav>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    🚚 Free delivery above ₹299 &nbsp;·&nbsp; 5–7 day pan-India shipping &nbsp;·&nbsp;
+    <a href="https://wa.me/916000061991" target="_blank">Order on WhatsApp ↗</a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html#home" class="nav-logo">Little<em>Layers</em>.Co</a>
+    <ul class="nav-links">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#how">How It Works</a></li>
+      <li><a href="index.html#shop">Shop</a></li>
+      <li><a href="index.html#gallery">Gallery</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#track">Track Order</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav-r">
+      <div id="auth-buttons" style="display: flex; gap: 8px;">
+        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      </div>
+      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+          👤
+      </a>
+      <a href="cart.html" class="cart-pill" style="text-decoration: none;">🛒<div class="cbadge" id="cart-count">0</div></a>
     </div>
+    <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
+  </nav>
 
-    <!-- Topbar -->
-    <div class="topbar">
-        <div class="container topbar-inner">
-            <div class="topbar-left" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                <span>Free delivery on orders above ₹299 &nbsp;&bull;&nbsp; Site is under development, please DM on
-                    Instagram for orders</span>
-            </div>
-            <div class="topbar-right socials">
-                <a href="https://www.instagram.com/little_layers.co/" target="_blank" title="Instagram"><i
-                        class="ph ph-instagram-logo"></i></a>
-                <a href="mailto:hellolittlelayers@gmail.com"><i class="ph ph-envelope"></i></a>
-            </div>
-        </div>
+  <div class="mobnav" id="mobnav">
+    <a href="index.html#home" onclick="closeMob()">Home</a>
+    <a href="index.html#how" onclick="closeMob()">How It Works</a>
+    <a href="index.html#shop" onclick="closeMob()">Shop</a>
+    <a href="index.html#gallery" onclick="closeMob()">Gallery</a>
+    <a href="index.html#services" onclick="closeMob()">Services</a>
+    <a href="index.html#track" onclick="closeMob()">Track Order</a>
+    <a href="index.html#contact" onclick="closeMob()">Contact</a>
+  </div>
+
+  <!-- LOGOUT SECTION -->
+  <section class="sec" style="min-height: 75vh; display: flex; align-items: center; justify-content: center; position: relative;">
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, .01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .01) 1px, transparent 1px); background-size: 64px 64px; pointer-events: none; opacity: 0.5;"></div>
+    
+    <div class="tbox" style="width: 100%; max-width: 500px; text-align: center; position: relative; z-index: 1;">
+      <i class="ph-fill ph-check-circle" style="font-size: 64px; color: #10B981; margin-bottom: 24px; display: inline-block;"></i>
+      <h2 style="font-family: var(--head); font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 16px;">Successfully Logged Out</h2>
+      <p style="color: var(--gray3); line-height: 1.6; margin-bottom: 32px; font-size: 15px;">
+        You have been securely logged out of your account. Thank you for visiting LittleLayers.Co!
+      </p>
+      
+      <div class="frow" style="justify-content: center;">
+        <a href="login.html" class="btn btn-white" style="text-decoration: none; flex: 1; justify-content: center;">Log Back In</a>
+        <a href="index.html" class="btn btn-border" style="text-decoration: none; flex: 1; justify-content: center;">Go to Homepage</a>
+      </div>
     </div>
+  </section>
 
-    <!-- Main Navigation -->
-    <header class="header">
-        <div class="container header-inner">
-            <div class="header-left">
-                <button class="menu-btn"><i class="ph ph-list"></i></button>
-            </div>
-            <div class="logo-top">
-                <a href="index.html">LittleLayers.Co</a>
-            </div>
-            <div class="header-right actions">
-                <button class="action-btn"><i class="ph ph-magnifying-glass"></i></button>
-                <div id="auth-buttons" style="display: flex; align-items: center; gap: 15px; margin: 0 10px;">
-                    <a href="login.html" style="font-size: 13px; font-weight: 600; text-transform: uppercase;">Login</a>
-                    <a href="login.html?mode=signup" class="btn-solid"
-                        style="padding: 8px 16px; font-size: 12px; border-radius: 4px;">Sign Up</a>
-                </div>
-                <button class="action-btn" id="user-btn" style="display: none;">
-                    <span id="user-btn-text"
-                        style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-                    <i class="ph ph-user"></i>
-                </button>
-                <a href="cart.html" class="action-btn cart-btn">
-                    <i class="ph ph-shopping-bag"></i>
-                    <span class="cart-badge" id="cart-count">0</span>
-                </a>
-            </div>
+  <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+  <footer>
+    <div class="ftgrid">
+      <div>
+        <div class="ftlogo">Little<em>Layers</em>.Co</div>
+        <div class="ftdesc">Custom 3D printing studio from Dibrugarh, Assam. Turning ideas into reality — one layer at a time.</div>
+        <div class="socs">
+          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc">📸</a>
+          <a href="https://wa.me/916000061991" target="_blank" class="soc">💬</a>
+          <a href="mailto:hellolittlelayers@gmail.com" class="soc">✉️</a>
         </div>
-    </header>
+      </div>
+      <div class="ftcol">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="index.html#home">Home</a></li>
+          <li><a href="index.html#shop">Shop</a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="ftcol">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="index.html#shop">Figurines</a></li>
+          <li><a href="index.html#shop">Keychains</a></li>
+          <li><a href="index.html#shop">Portraits</a></li>
+          <li><a href="index.html#shop">Décor</a></li>
+          <li><a href="index.html#shop">Prototypes</a></li>
+        </ul>
+      </div>
+      <div class="ftcol ftnews">
+        <h4>Stay Updated</h4>
+        <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
+        <input type="email" placeholder="Your email address">
+        <button class="btn btn-white" style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
+      </div>
+    </div>
+    <div class="ftbot">
+      <span>© 2025 LittleLayers.Co · Dibrugarh, Assam</span>
+      <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Shipping Policy</a></div>
+    </div>
+  </footer>
 
-    <!-- Logout Section -->
-    <section class="logout-section"
-        style="padding: 80px 0; min-height: 60vh; display: flex; align-items: center; justify-content: center;">
-        <div class="container" style="max-width: 500px; text-align: center;">
-            <div class="auth-card"
-                style="background: var(--color-bg); padding: 50px 40px; border: 1px solid var(--color-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                <i class="ph-fill ph-check-circle" style="font-size: 64px; color: #10B981; margin-bottom: 20px;"></i>
-                <h2
-                    style="font-family: var(--font-main); font-weight: 500; font-size: 28px; margin-bottom: 15px; color: var(--color-text-main);">
-                    Successfully Logged Out</h2>
-                <p style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 30px;">
-                    You have been securely logged out of your account. Thank you for visiting LittleLayers.Co!
-                </p>
-                <div style="display: flex; gap: 15px; justify-content: center;">
-                    <a href="login.html" class="btn-solid" style="text-decoration: none;">Log Back In</a>
-                    <a href="index.html" class="btn-outline" style="text-decoration: none;">Go to Homepage</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact" class="footer" style="padding: 40px 0 30px;">
-        <div class="container">
-            <div class="footer-bottom" style="border-top: none; padding-top: 0;">
-                <div class="copyright">
-                    &copy; 2026 LittleLayers.Co. All Rights Reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/env.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/scripts.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/scripts.js"></script>
 </body>
-
 </html>

@@ -2,191 +2,234 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | LittleLayers.Co</title>
-    <meta name="description" content="Complete your purchase.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | LittleLayers.Co</title>
+  <meta name="description" content="Complete your purchase.">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/index.css">
+
+  <style>
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .order-summary {
+      position: sticky;
+      top: 100px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--gray3);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--line2);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--white);
+    }
+
+    @media (max-width: 768px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+      .order-summary {
+        position: static;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Navigation Drawer -->
-    <div class="drawer-overlay" id="drawer-overlay"></div>
-    <div class="nav-drawer" id="nav-drawer">
-        <button class="drawer-close" id="drawer-close"><i class="ph ph-x"></i></button>
-        <div class="logo-top" style="margin-bottom: 40px;">
-            <a href="index.html">LittleLayers.Co</a>
-        </div>
-        <nav class="drawer-nav">
-            <a href="index.html#home">Home</a>
-            <a href="products.html">Products</a>
-            <a href="index.html#services">Services</a>
-            <a href="index.html#about">About</a>
-            <a href="index.html#categories">Categories</a>
-            <a href="index.html#contact">Contact</a>
-        </nav>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    🚚 Free delivery above ₹299 &nbsp;·&nbsp; 5–7 day pan-India shipping &nbsp;·&nbsp;
+    <a href="https://wa.me/916000061991" target="_blank">Order on WhatsApp ↗</a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html#home" class="nav-logo">Little<em>Layers</em>.Co</a>
+    <ul class="nav-links">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#how">How It Works</a></li>
+      <li><a href="index.html#shop">Shop</a></li>
+      <li><a href="index.html#gallery">Gallery</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#track">Track Order</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav-r">
+      <div id="auth-buttons" style="display: flex; gap: 8px;">
+        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      </div>
+      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+          👤
+      </a>
+      <a href="cart.html" class="cart-pill" style="text-decoration: none;">🛒<div class="cbadge" id="cart-count">0</div></a>
     </div>
+    <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
+  </nav>
 
-    <!-- Topbar (Replacing Marquee) -->
-    <div class="topbar">
-        <div class="container topbar-inner">
-            <div class="topbar-left" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                <span>Free delivery on orders above ₹299 &nbsp;&bull;&nbsp; Site is under development, please DM on
-                    Instagram for orders</span>
+  <div class="mobnav" id="mobnav">
+    <a href="index.html#home" onclick="closeMob()">Home</a>
+    <a href="index.html#how" onclick="closeMob()">How It Works</a>
+    <a href="index.html#shop" onclick="closeMob()">Shop</a>
+    <a href="index.html#gallery" onclick="closeMob()">Gallery</a>
+    <a href="index.html#services" onclick="closeMob()">Services</a>
+    <a href="index.html#track" onclick="closeMob()">Track Order</a>
+    <a href="index.html#contact" onclick="closeMob()">Contact</a>
+  </div>
+
+  <!-- CHECKOUT SECTION -->
+  <section class="sec" style="min-height: 75vh; position: relative;">
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, .01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .01) 1px, transparent 1px); background-size: 64px 64px; pointer-events: none; opacity: 0.5;"></div>
+    
+    <div style="max-width: 1000px; margin: 0 auto; position: relative; z-index: 1;">
+      <div class="sec-h">
+        <span class="label">Secure</span>
+        <h2>Checkout</h2>
+        <p>Enter your details to place the order.</p>
+      </div>
+
+      <div class="checkout-grid">
+        <!-- Form -->
+        <div class="checkout-form-container tbox" style="max-width: 100%; margin: 0;">
+          <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--white); border-bottom: 1px solid var(--line); padding-bottom: 12px;">Shipping Details</h3>
+          <form id="checkout-form" class="cform">
+            <div class="fg">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" placeholder="Full Name" required>
             </div>
-            <div class="topbar-right socials">
-                <a href="https://www.instagram.com/little_layers.co/" target="_blank" title="Instagram"><i
-                        class="ph ph-instagram-logo"></i></a>
-                <a href="mailto:hellolittlelayers@gmail.com"><i class="ph ph-envelope"></i></a>
+            
+            <div class="fg" style="margin-top: 14px;">
+              <label for="address">Address</label>
+              <input type="text" id="address" placeholder="Address" required>
             </div>
+
+            <div class="frow" style="margin-top: 14px;">
+              <div class="fg" style="flex: 1;">
+                <label for="city">City</label>
+                <input type="text" id="city" placeholder="City" required>
+              </div>
+              <div class="fg" style="flex: 1;">
+                <label for="zip">Zip Code</label>
+                <input type="text" id="zip" placeholder="Zip Code" required>
+              </div>
+            </div>
+
+            <div class="fg" style="margin-top: 14px;">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="Email" required>
+            </div>
+
+            <h3 style="font-size: 18px; margin-top: 32px; margin-bottom: 24px; color: var(--white); border-bottom: 1px solid var(--line); padding-bottom: 12px;">Payment Details</h3>
+            <div class="fg" style="margin-bottom: 24px;">
+              <label for="card">Card Number</label>
+              <input type="text" id="card" placeholder="0000 0000 0000 0000" required>
+            </div>
+
+            <button type="submit" class="btn btn-white" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px;">PLACE ORDER</button>
+          </form>
         </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary tbox" style="max-width: 100%; margin: 0; padding: 32px;">
+          <h3 style="font-size: 18px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--line); color: var(--white);">Order Summary</h3>
+          <div id="checkout-items" style="margin-bottom: 24px; max-height: 400px; overflow-y: auto; padding-right: 8px;">
+              <!-- Items injected via JS -->
+          </div>
+          <div class="summary-total">
+              <span>Total:</span>
+              <span id="checkout-total">₹0</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Main Navigation -->
-    <header class="header">
-        <div class="container header-inner">
-            <div class="header-left">
-                <button class="menu-btn"><i class="ph ph-list"></i></button>
-            </div>
-            <div class="logo-top">
-                <a href="index.html">LittleLayers.Co</a>
-            </div>
-            <div class="header-right actions">
-                <button class="action-btn"><i class="ph ph-magnifying-glass"></i></button>
-                <button class="action-btn" id="user-btn">
-                    <span id="user-btn-text"
-                        style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-                    <i class="ph ph-user"></i>
-                </button>
-                <a href="cart.html" class="action-btn cart-btn">
-                    <i class="ph ph-shopping-bag"></i>
-                    <span class="cart-badge" id="cart-count">0</span>
-                </a>
-            </div>
+  <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+  <footer>
+    <div class="ftgrid">
+      <div>
+        <div class="ftlogo">Little<em>Layers</em>.Co</div>
+        <div class="ftdesc">Custom 3D printing studio from Dibrugarh, Assam. Turning ideas into reality — one layer at a time.</div>
+        <div class="socs">
+          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc">📸</a>
+          <a href="https://wa.me/916000061991" target="_blank" class="soc">💬</a>
+          <a href="mailto:hellolittlelayers@gmail.com" class="soc">✉️</a>
         </div>
-    </header>
+      </div>
+      <div class="ftcol">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="index.html#home">Home</a></li>
+          <li><a href="index.html#shop">Shop</a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="ftcol">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="index.html#shop">Figurines</a></li>
+          <li><a href="index.html#shop">Keychains</a></li>
+          <li><a href="index.html#shop">Portraits</a></li>
+          <li><a href="index.html#shop">Décor</a></li>
+          <li><a href="index.html#shop">Prototypes</a></li>
+        </ul>
+      </div>
+      <div class="ftcol ftnews">
+        <h4>Stay Updated</h4>
+        <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
+        <input type="email" placeholder="Your email address">
+        <button class="btn btn-white" style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
+      </div>
+    </div>
+    <div class="ftbot">
+      <span>© 2025 LittleLayers.Co · Dibrugarh, Assam</span>
+      <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Shipping Policy</a></div>
+    </div>
+  </footer>
 
-    <!-- Page Header -->
-    <section class="section-header" style="margin-top: 80px;">
-        <div class="container">
-            <h2>Checkout</h2>
-            <p style="color: var(--color-text-muted);">Enter your details to place the order.</p>
-        </div>
-    </section>
+  <!-- NOTIFICATION -->
+  <div class="notif" id="notif"></div>
 
-    <!-- Checkout Section -->
-    <section class="checkout-section" style="padding-top: 40px; background-color: var(--color-bg);">
-        <div class="container">
-            <div class="checkout-grid" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;">
-                <!-- Form -->
-                <div class="checkout-form-container">
-                    <h2 style="font-size: 18px; margin-bottom: 20px;">Shipping Details</h2>
-                    <form id="checkout-form" class="checkout-form contact-form-modern">
-                        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                            <input type="text" id="name" placeholder="Full Name" required style="width: 100%;">
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <input type="text" id="address" placeholder="Address" required style="width: 100%;">
-                        </div>
-                        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                            <input type="text" id="city" placeholder="City" required style="width: 100%;">
-                            <input type="text" id="zip" placeholder="Zip Code" required style="width: 100%;">
-                        </div>
-                        <div style="margin-bottom: 40px;">
-                            <input type="email" id="email" placeholder="Email" required style="width: 100%;">
-                        </div>
-
-                        <h2 style="font-size: 18px; margin-bottom: 20px;">Payment Details</h2>
-                        <div style="margin-bottom: 30px;">
-                            <input type="text" id="card" placeholder="Card Number (Mock - 0000 0000 0000 0000)" required
-                                style="width: 100%;">
-                        </div>
-
-                        <button type="submit" class="btn-solid"
-                            style="width: 100%; text-align: center; border-radius: 4px; padding: 15px;">PLACE
-                            ORDER</button>
-                    </form>
-                </div>
-
-                <!-- Order Summary -->
-                <div class="order-summary"
-                    style="background-color: var(--color-bg-alt); padding: 30px; border-radius: 4px;">
-                    <h2
-                        style="font-size: 18px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--color-border);">
-                        Order Summary</h2>
-                    <div id="checkout-items" style="margin-bottom: 20px;">
-                        <!-- Items injected via JS -->
-                    </div>
-                    <div class="summary-total"
-                        style="padding-top: 15px; border-top: 1px solid var(--color-border); text-align: right;">
-                        <h3 style="font-weight: 500; font-size: 20px;">Total: <span id="checkout-total"> ₹0</span></h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact" class="footer" style="margin-top: 80px;">
-        <div class="container">
-            <div class="footer-grid">
-
-                <!-- Contact Form -->
-                <div class="footer-col" style="grid-column: span 2;">
-                    <h4 class="footer-title">Have an idea? Let's build it.</h4>
-                    <p class="subscribe-text">Send us your details and we'll get back to you with a quote.</p>
-                    <form class="contact-form-modern">
-                        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                            <input type="text" placeholder="Your Name" required>
-                            <input type="email" placeholder="Your Email" required>
-                        </div>
-                        <textarea rows="4" placeholder="Project Details" required
-                            style="width: 100%; margin-bottom: 20px;"></textarea>
-                        <button type="submit" class="btn-solid">SEND MESSAGE</button>
-                    </form>
-                </div>
-
-                <!-- Contact Info -->
-                <div class="footer-col">
-                    <h4 class="footer-title">Contact Information</h4>
-                    <ul class="contact-list" style="margin-bottom: 30px;">
-                        <li><i class="ph ph-map-pin"></i> Dibrugarh, Assam, India</li>
-                        <li><i class="ph ph-envelope"></i> hellolittlelayers@gmail.com</li>
-                    </ul>
-
-                    <h4 class="footer-title">Follow Us</h4>
-                    <div class="socials" style="font-size: 24px; color: var(--color-text-main);">
-                        <a href="https://www.instagram.com/little_layers.co/" target="_blank"><i
-                                class="ph ph-instagram-logo"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <div class="copyright">
-                    &copy; 2026 LittleLayers.Co. All Rights Reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/env.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/scripts.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/scripts.js"></script>
 </body>
-
 </html>
