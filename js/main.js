@@ -182,7 +182,7 @@ async function checkout() {
   } catch(e) { console.warn('Order save failed:', e); }
 
   // Redirect to WhatsApp
-  const waNum = document.body.dataset.waNumber || '91XXXXXXXXXX';
+  const waNum = document.body.dataset.waNumber || '916000061991';
   window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
   cart = [];
   saveCart();

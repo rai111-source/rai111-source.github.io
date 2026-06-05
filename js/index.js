@@ -1,4 +1,4 @@
-    const WA = '91XXXXXXXXXX';
+    const WA = '916000061991';
 
     const SAMPLES = [
       { id: 1, name: 'Goku Figurine', category: 'figurines', price: 599, original_price: 799, description: 'Custom SLA resin, 15cm tall.', badge: 'Popular', image_url: 'Images/Goku.jpeg' },
