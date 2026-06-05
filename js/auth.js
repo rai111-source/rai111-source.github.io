@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileAvatarImg = document.getElementById('profile-avatar-img');
     const profileAvatarIcon = document.getElementById('profile-avatar-icon');
 
-    let isSignUpMode = false;
+    let authMode = 'login'; // 'login', 'signup', 'forgot', 'reset'
     let currentUser = null;
 
     // Recheck Supabase client variable in case it was loaded asynchronously
@@ -72,11 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // -- Check URL Params for Sign Up Mode --
+    // -- Check URL Params/Hash for Auth Mode --
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('mode') === 'signup' && pageAuthToggleText) {
-        isSignUpMode = true;
-        updatePageAuthUI();
+    const modeParam = urlParams.get('mode');
+    if (modeParam === 'signup') {
+        authMode = 'signup';
+    } else if (modeParam === 'reset') {
+        authMode = 'reset';
     }
 
     // -- Login Page Logic --
@@ -84,23 +86,47 @@ document.addEventListener('DOMContentLoaded', () => {
         pageAuthToggleText.addEventListener('click', (e) => {
             if (e.target.tagName === 'A') {
                 e.preventDefault();
-                isSignUpMode = !isSignUpMode;
+                const targetId = e.target.id;
+                if (targetId === 'toggle-auth-mode') {
+                    authMode = (authMode === 'login') ? 'signup' : 'login';
+                } else if (targetId === 'back-to-login-link') {
+                    authMode = 'login';
+                }
                 updatePageAuthUI();
             }
         });
     }
 
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authMode = 'forgot';
+            updatePageAuthUI();
+        });
+    }
+
+    updatePageAuthUI();
+
     if (pageLoginForm) {
         pageLoginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            pageAuthErrorMsg.textContent = ''; // clear previous errors
-            const email = pageAuthEmailInput.value;
-            const password = pageAuthPasswordInput.value;
-
-            if (isSignUpMode) {
+            if (pageAuthErrorMsg) pageAuthErrorMsg.textContent = ''; // clear previous errors
+            
+            if (authMode === 'signup') {
+                const email = pageAuthEmailInput.value;
+                const password = pageAuthPasswordInput.value;
                 await handleSignUp(email, password);
-            } else {
+            } else if (authMode === 'login') {
+                const email = pageAuthEmailInput.value;
+                const password = pageAuthPasswordInput.value;
                 await handleLogin(email, password);
+            } else if (authMode === 'forgot') {
+                const email = pageAuthEmailInput.value;
+                await handleForgotPassword(email);
+            } else if (authMode === 'reset') {
+                const password = pageAuthPasswordInput.value;
+                await handleResetPassword(password);
             }
         });
     }
@@ -190,6 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (session) {
                 currentUser = session.user;
+                if (event === 'PASSWORD_RECOVERY') {
+                    authMode = 'reset';
+                    updatePageAuthUI();
+                }
             } else {
                 currentUser = null;
             }
@@ -207,16 +237,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) throw error;
 
             if (data.session) {
-                alert('Signup successful! Redirecting to your profile...');
-                window.location.href = 'profile.html';
-            } else {
-                alert('Signup successful! Please check your email for the verification link to complete registration.');
-                isSignUpMode = false;
-                updatePageAuthUI();
                 if (pageAuthErrorMsg) {
-                    pageAuthErrorMsg.style.color = "#10B981"; // Green color for success
-                    pageAuthErrorMsg.textContent = "Signup successful! Check your email for verification.";
+                    pageAuthErrorMsg.style.color = "#10B981";
+                    pageAuthErrorMsg.textContent = "Signup successful! Redirecting to profile...";
                 }
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1000);
+            } else {
+                // If data.session is null, email confirmation is still enabled in Supabase Auth settings
+                if (pageAuthErrorMsg) {
+                    pageAuthErrorMsg.style.color = "#ffb020";
+                    pageAuthErrorMsg.textContent = "Account created, but email verification is required. Please check your inbox or disable 'Confirm email' in your Supabase settings.";
+                }
+                alert('Account created, but email verification is required. Please check your inbox or disable "Confirm email" in your Supabase Auth settings to bypass verification.');
             }
         } catch (error) {
             if (pageAuthErrorMsg) {
@@ -235,6 +269,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) throw error;
 
+            window.location.href = 'profile.html';
+        } catch (error) {
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = error.message;
+            }
+        }
+    }
+
+    async function handleForgotPassword(email) {
+        try {
+            const redirectUrl = window.location.origin + window.location.pathname + '?mode=reset';
+            const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: redirectUrl,
+            });
+
+            if (error) throw error;
+
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#10B981";
+                pageAuthErrorMsg.textContent = "Password reset link sent to your email!";
+            }
+            alert('Password reset link sent! Please check your email inbox.');
+        } catch (error) {
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = error.message;
+            }
+        }
+    }
+
+    async function handleResetPassword(password) {
+        try {
+            const { data, error } = await supabaseClient.auth.updateUser({
+                password: password,
+            });
+
+            if (error) throw error;
+
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#10B981";
+                pageAuthErrorMsg.textContent = "Password updated successfully! Redirecting...";
+            }
+            alert('Password updated successfully! Redirecting to your profile...');
             window.location.href = 'profile.html';
         } catch (error) {
             if (pageAuthErrorMsg) {
@@ -402,14 +480,55 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePageAuthUI() {
         if (!pageTitle || !pageAuthBtn || !pageAuthToggleText) return;
 
-        if (isSignUpMode) {
+        const emailGroup = document.getElementById('email-group');
+        const passwordGroup = document.getElementById('password-group');
+        const passwordLabel = document.getElementById('password-label');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const authDivider = document.querySelector('.auth-divider');
+        const googleBtn = document.getElementById('google-login-btn');
+        const githubBtn = document.getElementById('github-login-btn');
+
+        // Reset visibility of elements
+        if (emailGroup) emailGroup.style.display = 'flex';
+        if (passwordGroup) passwordGroup.style.display = 'flex';
+        if (passwordLabel) passwordLabel.textContent = 'Password';
+        if (forgotPasswordLink) forgotPasswordLink.style.display = 'inline';
+        if (authDivider) authDivider.style.display = 'block';
+        if (googleBtn) googleBtn.style.display = 'flex';
+        if (githubBtn) githubBtn.style.display = 'flex';
+
+        // Toggle required attributes to prevent browser blockages on hidden inputs
+        if (pageAuthEmailInput) pageAuthEmailInput.required = (authMode !== 'reset');
+        if (pageAuthPasswordInput) pageAuthPasswordInput.required = (authMode !== 'forgot');
+
+        if (pageAuthErrorMsg) pageAuthErrorMsg.textContent = ''; // Clear prior message
+
+        if (authMode === 'signup') {
             pageTitle.textContent = 'Create Account';
             pageAuthBtn.textContent = 'Sign Up';
             pageAuthToggleText.innerHTML = 'Already have an account? <a href="#" id="toggle-auth-mode" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Login</a>';
-        } else {
+        } else if (authMode === 'login') {
             pageTitle.textContent = 'Login';
             pageAuthBtn.textContent = 'Sign In';
             pageAuthToggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-auth-mode" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Sign up</a>';
+        } else if (authMode === 'forgot') {
+            pageTitle.textContent = 'Reset Password';
+            pageAuthBtn.textContent = 'Send Reset Link';
+            if (passwordGroup) passwordGroup.style.display = 'none';
+            if (authDivider) authDivider.style.display = 'none';
+            if (googleBtn) googleBtn.style.display = 'none';
+            if (githubBtn) githubBtn.style.display = 'none';
+            pageAuthToggleText.innerHTML = 'Remembered your password? <a href="#" id="back-to-login-link" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Login</a>';
+        } else if (authMode === 'reset') {
+            pageTitle.textContent = 'Update Password';
+            pageAuthBtn.textContent = 'Update Password';
+            if (emailGroup) emailGroup.style.display = 'none';
+            if (passwordLabel) passwordLabel.textContent = 'New Password';
+            if (forgotPasswordLink) forgotPasswordLink.style.display = 'none';
+            if (authDivider) authDivider.style.display = 'none';
+            if (googleBtn) googleBtn.style.display = 'none';
+            if (githubBtn) githubBtn.style.display = 'none';
+            pageAuthToggleText.innerHTML = 'Go to <a href="#" id="back-to-login-link" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Login</a>';
         }
     }
 

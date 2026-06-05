@@ -95,12 +95,15 @@
       <h2 id="page-title" style="font-family: var(--head); font-size: 32px; font-weight: 800; color: var(--white); text-align: center; margin-bottom: 24px; letter-spacing: -.02em;">Login</h2>
       
       <form id="page-login-form" class="cform">
-        <div class="fg">
+        <div class="fg" id="email-group">
           <label for="page-auth-email">Email Address</label>
           <input type="email" id="page-auth-email" placeholder="hello@example.com" required>
         </div>
-        <div class="fg" style="margin-top: 14px;">
-          <label for="page-auth-password">Password</label>
+        <div class="fg" id="password-group" style="margin-top: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="page-auth-password" id="password-label">Password</label>
+            <a href="#" id="forgot-password-link" style="font-size: 12.5px; color: var(--gray4); text-decoration: underline; cursor: pointer;">Forgot password?</a>
+          </div>
           <input type="password" id="page-auth-password" placeholder="••••••••" required>
         </div>
         <button type="submit" id="page-auth-btn" class="btn btn-white" style="width: 100%; justify-content: center; margin-top: 24px;">Sign In</button>
