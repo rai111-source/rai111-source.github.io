@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageTitle = document.getElementById('page-title');
     const pageAuthBtn = document.getElementById('page-auth-btn');
     const googleLoginBtn = document.getElementById('google-login-btn');
+    const githubLoginBtn = document.getElementById('github-login-btn');
 
     // Profile Page Elements
     const profileForm = document.getElementById('profile-form');
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (pageAuthBtn) pageAuthBtn.disabled = true;
         if (googleLoginBtn) googleLoginBtn.disabled = true;
+        if (githubLoginBtn) githubLoginBtn.disabled = true;
         return;
     }
 
@@ -107,6 +109,13 @@ document.addEventListener('DOMContentLoaded', () => {
         googleLoginBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             await handleGoogleLogin();
+        });
+    }
+
+    if (githubLoginBtn) {
+        githubLoginBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await handleGithubLogin();
         });
     }
 
@@ -241,6 +250,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 pageAuthErrorMsg.textContent = "Google login error: " + error.message;
             }
             console.error('Google login error:', error.message);
+        }
+    }
+
+    async function handleGithubLogin() {
+        try {
+            const redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    redirectTo: redirectUrl
+                }
+            });
+            if (error) throw error;
+        } catch (error) {
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
+            }
+            console.error('GitHub login error:', error.message);
         }
     }
 
