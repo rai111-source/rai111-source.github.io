@@ -1,5 +1,5 @@
 // Supabase client is initialized globally in js/supabase.js
-const supabaseClient = window.supabaseClient;
+let supabaseClient = window.supabaseClient;
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,6 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isSignUpMode = false;
     let currentUser = null;
+
+    // Recheck Supabase client variable in case it was loaded asynchronously
+    if (!supabaseClient) {
+        supabaseClient = window.supabaseClient;
+    }
+
+    // Guard against unconfigured database client
+    if (!supabaseClient) {
+        console.error("Supabase client is not initialized. Please configure YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY in js/supabase.js.");
+        if (pageAuthErrorMsg) {
+            pageAuthErrorMsg.textContent = "Authentication is currently unavailable. Please verify database configuration.";
+        }
+        if (pageAuthBtn) pageAuthBtn.disabled = true;
+        if (githubLoginBtn) githubLoginBtn.disabled = true;
+        return;
+    }
 
     // -- Check Session on Load --
     checkUserSession();
@@ -171,10 +187,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) throw error;
 
-            alert('Signup successful! Please check your email for verification. Or you may be logged in automatically.');
-            window.location.href = 'profile.html';
+            if (data.session) {
+                alert('Signup successful! Redirecting to your profile...');
+                window.location.href = 'profile.html';
+            } else {
+                alert('Signup successful! Please check your email for the verification link to complete registration.');
+                isSignUpMode = false;
+                updatePageAuthUI();
+                if (pageAuthErrorMsg) {
+                    pageAuthErrorMsg.style.color = "#10B981"; // Green color for success
+                    pageAuthErrorMsg.textContent = "Signup successful! Check your email for verification.";
+                }
+            }
         } catch (error) {
-            pageAuthErrorMsg.textContent = error.message;
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = error.message;
+            }
         }
     }
 
@@ -189,18 +218,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.location.href = 'profile.html';
         } catch (error) {
-            pageAuthErrorMsg.textContent = "Invalid login credentials";
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = error.message;
+            }
         }
     }
 
     async function handleGithubLogin() {
         try {
+            const redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'github',
+                options: {
+                    redirectTo: redirectUrl
+                }
             });
             if (error) throw error;
         } catch (error) {
-            if (pageAuthErrorMsg) pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
+            }
             console.error('GitHub login error:', error.message);
         }
     }

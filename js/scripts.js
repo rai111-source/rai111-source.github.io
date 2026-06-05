@@ -409,3 +409,13 @@ window.getCartTotal = function(cartArray) {
     if (!cartArray || !Array.isArray(cartArray)) return 0;
     return cartArray.reduce((total, item) => total + (item.price * item.quantity), 0);
 };
+
+window.toggleMob = function() {
+    const mobnav = document.getElementById('mobnav');
+    if (mobnav) mobnav.classList.toggle('open');
+};
+
+window.closeMob = function() {
+    const mobnav = document.getElementById('mobnav');
+    if (mobnav) mobnav.classList.remove('open');
+};
