@@ -28,12 +28,14 @@
   <style>
     .profile-grid {
       display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 40px;
+      grid-template-columns: 1fr;
+      gap: 30px;
     }
 
     .profile-sidebar {
       text-align: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 30px;
     }
 
     .profile-avatar-wrapper {
@@ -74,18 +76,25 @@
 
     .profile-actions {
       display: flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 10px;
       margin-top: 24px;
     }
 
-    @media (max-width: 768px) {
+    @media (min-width: 769px) {
       .profile-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 280px 1fr;
+        gap: 40px;
       }
       .profile-sidebar {
-        border-right: none;
-        border-bottom: 1px solid var(--line);
-        padding-bottom: 30px;
+        border-right: 1px solid var(--line);
+        border-bottom: none;
+        padding-bottom: 0;
+        padding-right: 40px;
+      }
+      .profile-actions {
+        flex-direction: row;
+        gap: 12px;
       }
     }
   </style>
