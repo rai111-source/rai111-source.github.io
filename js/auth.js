@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageAuthErrorMsg = document.getElementById('page-auth-error');
     const pageTitle = document.getElementById('page-title');
     const pageAuthBtn = document.getElementById('page-auth-btn');
-    const githubLoginBtn = document.getElementById('github-login-btn');
+    const googleLoginBtn = document.getElementById('google-login-btn');
 
     // Profile Page Elements
     const profileForm = document.getElementById('profile-form');
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pageAuthErrorMsg.textContent = "Authentication is currently unavailable. Please verify database configuration.";
         }
         if (pageAuthBtn) pageAuthBtn.disabled = true;
-        if (githubLoginBtn) githubLoginBtn.disabled = true;
+        if (googleLoginBtn) googleLoginBtn.disabled = true;
         return;
     }
 
@@ -103,10 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (githubLoginBtn) {
-        githubLoginBtn.addEventListener('click', async (e) => {
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            await handleGithubLogin();
+            await handleGoogleLogin();
         });
     }
 
@@ -225,11 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function handleGithubLogin() {
+    async function handleGoogleLogin() {
         try {
             const redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'github',
+                provider: 'google',
                 options: {
                     redirectTo: redirectUrl
                 }
@@ -238,9 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             if (pageAuthErrorMsg) {
                 pageAuthErrorMsg.style.color = "#ff6b6b";
-                pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
+                pageAuthErrorMsg.textContent = "Google login error: " + error.message;
             }
-            console.error('GitHub login error:', error.message);
+            console.error('Google login error:', error.message);
         }
     }
 
@@ -367,11 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSignUpMode) {
             pageTitle.textContent = 'Create Account';
             pageAuthBtn.textContent = 'Sign Up';
-            pageAuthToggleText.innerHTML = 'Already have an account? <a href="#" id="toggle-auth-mode">Login</a>';
+            pageAuthToggleText.innerHTML = 'Already have an account? <a href="#" id="toggle-auth-mode" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Login</a>';
         } else {
             pageTitle.textContent = 'Login';
             pageAuthBtn.textContent = 'Sign In';
-            pageAuthToggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-auth-mode">Sign up</a>';
+            pageAuthToggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-auth-mode" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Sign up</a>';
         }
     }
 
