@@ -17,6 +17,28 @@
       --rb: 20px;
       --head: 'Playfair Display', Georgia, serif;
       --body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+      /* New theme tokens */
+      --nav-bg: rgba(8, 8, 8, 0.93);
+      --mobnav-bg: rgba(8, 8, 8, 0.97);
+    }
+
+    :root.light-theme {
+      --black: #faf9f6;       /* soft warm off-white (premium aesthetic) */
+      --gray9: #ffffff;       /* pure white for cards and section boxes */
+      --gray8: #f1f3f5;       /* soft gray for nested areas */
+      --gray7: #e9ecef;       /* medium light gray for borders/hover states */
+      --gray6: #dee2e6;       /* borders and lines */
+      --gray4: #868e96;       /* subtitles / muted text */
+      --gray3: #495057;       /* body text */
+      --gray2: #212529;       /* secondary headings */
+      --gray1: #0f1115;       /* main headings / dark text */
+      --white: #0f1115;       /* inverse white */
+      --pure: #000000;
+      --line: rgba(15, 17, 21, 0.06);
+      --line2: rgba(15, 17, 21, 0.12);
+      --nav-bg: rgba(250, 249, 246, 0.93);
+      --mobnav-bg: rgba(250, 249, 246, 0.97);
     }
 
     /* ── RESET ─────────────────────────────────────────────── */
@@ -137,7 +159,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      background: rgba(8, 8, 8, .93);
+      background: var(--nav-bg);
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
       border-bottom: 1px solid var(--line);
@@ -235,6 +257,27 @@
       border-color: var(--gray4)
     }
 
+    .theme-toggle {
+      background: var(--gray8);
+      border: 1px solid var(--line);
+      color: var(--gray1);
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      transition: all .2s;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--gray4);
+      background: var(--gray7);
+    }
+
     .cbadge {
       position: absolute;
       top: -5px;
@@ -274,7 +317,7 @@
       top: 64px;
       left: 0;
       right: 0;
-      background: rgba(8, 8, 8, .97);
+      background: var(--mobnav-bg);
       backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--line);
       padding: 14px 20px;
@@ -1552,8 +1595,12 @@
       font-size: 15px;
       padding: 13px 16px;
       outline: none;
-      transition: border-color .2s;
+      transition: border-color .2s, background-color 0.2s, color 0.2s;
       resize: none;
+      width: 100%;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
 
     .fg input:focus,
@@ -1561,9 +1608,59 @@
     .fg textarea:focus {
       border-color: rgba(255, 255, 255, .35)
     }
+    
+    .light-theme .fg input:focus,
+    .light-theme .fg select:focus,
+    .light-theme .fg textarea:focus {
+      border-color: rgba(15, 17, 21, .35)
+    }
 
     .fg select option {
       background: var(--gray9)
+    }
+
+    /* Input Placeholders */
+    .fg input::placeholder,
+    .fg textarea::placeholder {
+      color: var(--gray4);
+      opacity: 0.8;
+    }
+
+    /* Fix for iOS Safari native disabled input styling and weird borders */
+    .fg input:disabled,
+    .fg textarea:disabled,
+    .fg select:disabled {
+      opacity: 1 !important;
+      -webkit-text-fill-color: var(--gray3) !important;
+      color: var(--gray3) !important;
+      background: var(--gray8) !important;
+      border-color: var(--gray7) !important;
+      cursor: not-allowed;
+    }
+
+    /* Style Choose File button beautifully */
+    .fg input[type="file"] {
+      padding: 10px 14px;
+    }
+    .fg input[type="file"]::file-selector-button {
+      background: var(--gray8);
+      border: 1px solid var(--line2);
+      color: var(--white);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--body);
+      font-size: 13px;
+      margin-right: 12px;
+      transition: all 0.2s;
+    }
+    .fg input[type="file"]::file-selector-button:hover {
+      background: var(--gray7);
+      border-color: var(--gray4);
+    }
+    .fg input[type="file"]:disabled::file-selector-button {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .cinfo {
@@ -2510,4 +2607,14 @@
       .trow button {
         width: 100%
       }
+    }
+
+    /* Smooth theme transitions */
+    body,
+    nav,
+    .mobnav,
+    footer,
+    .tbox,
+    .theme-toggle {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
     }

@@ -17,6 +17,13 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/index.css">
+  <script>
+    (function() {
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.add('light-theme');
+      }
+    })();
+  </script>
 
   <style>
     .checkout-grid {
@@ -95,6 +102,9 @@
           <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
           👤
       </a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" style="margin-right: 8px;">
+        <i class="ph ph-sun" id="theme-icon"></i>
+      </button>
       <a href="cart.html" class="cart-pill" style="text-decoration: none;">🛒<div class="cbadge" id="cart-count">0</div></a>
     </div>
     <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>

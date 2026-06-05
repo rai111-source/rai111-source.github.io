@@ -14,7 +14,35 @@
     let cart = JSON.parse(localStorage.getItem('ll_cart') || '[]');
     let allP = [];
 
-    document.addEventListener('DOMContentLoaded', () => { updateCart(); loadP('all'); initReveal(); });
+    document.addEventListener('DOMContentLoaded', () => { 
+      updateCart(); 
+      loadP('all'); 
+      initReveal(); 
+      initThemeToggle();
+    });
+
+    function initThemeToggle() {
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      if (themeToggle && themeIcon) {
+          const updateIcon = (isLight) => {
+              if (isLight) {
+                  themeIcon.className = 'ph ph-moon';
+              } else {
+                  themeIcon.className = 'ph ph-sun';
+              }
+          };
+
+          // Set initial icon
+          updateIcon(document.documentElement.classList.contains('light-theme'));
+
+          themeToggle.addEventListener('click', () => {
+              const isLight = document.documentElement.classList.toggle('light-theme');
+              localStorage.setItem('theme', isLight ? 'light' : 'dark');
+              updateIcon(isLight);
+          });
+      }
+    }
 
     async function loadP(cat) {
       const g = document.getElementById('productsGrid');

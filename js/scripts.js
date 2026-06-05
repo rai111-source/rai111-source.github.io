@@ -30,6 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawerOverlay = document.getElementById('drawer-overlay');
     const drawerClose = document.getElementById('drawer-close');
 
+    // -- Theme Toggle --
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    if (themeToggle && themeIcon) {
+        const updateIcon = (isLight) => {
+            if (isLight) {
+                themeIcon.className = 'ph ph-moon';
+            } else {
+                themeIcon.className = 'ph ph-sun';
+            }
+        };
+
+        // Set initial icon
+        updateIcon(document.documentElement.classList.contains('light-theme'));
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = document.documentElement.classList.toggle('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            updateIcon(isLight);
+        });
+    }
+
     // -- Supabase Integration --
     const supabase = window.supabaseClient;
     let currentUser = null;
