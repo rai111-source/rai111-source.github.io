@@ -2213,11 +2213,20 @@
       .hero {
         grid-template-columns: 1fr;
         padding: 44px 24px 60px;
-        min-height: auto
+        min-height: auto;
+        gap: 40px
       }
 
       .hero-vis {
-        display: none
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 1fr;
+        gap: 12px;
+        height: 220px
+      }
+
+      .hvc:first-child {
+        grid-row: span 1
       }
 
       .sec {
@@ -2233,8 +2242,9 @@
       }
 
       .nav-links,
-      .btn-login {
-        display: none
+      .btn-login,
+      #auth-buttons {
+        display: none !important
       }
 
       .ham {
@@ -2249,6 +2259,10 @@
       .cgrid,
       .fwrap {
         grid-template-columns: 1fr
+      }
+
+      .cgrid {
+        gap: 32px
       }
 
       .ggrid {
@@ -2278,11 +2292,96 @@
         flex-direction: column;
         align-items: flex-start
       }
+
+      .mobnav-divider {
+        border: none;
+        border-top: 1px solid var(--line);
+        margin: 8px 16px
+      }
+    }
+
+    @media(max-width:768px) {
+      #cart-items-container {
+        min-width: 0 !important
+      }
+
+      .cart-table, 
+      .cart-table tbody, 
+      .cart-table tr, 
+      .cart-table td {
+        display: block;
+        width: 100%
+      }
+
+      .cart-table thead {
+        display: none
+      }
+
+      .cart-table tr {
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+        position: relative
+      }
+
+      .cart-table tr:last-child {
+        border-bottom: none
+      }
+
+      .cart-table td {
+        padding: 6px 0 !important;
+        text-align: left !important;
+        border-bottom: none !important
+      }
+
+      .cart-table td:first-child {
+        padding-top: 0 !important
+      }
+
+      .cart-table td:nth-child(2)::before {
+        content: "Price: ";
+        color: var(--gray4);
+        font-size: 13px
+      }
+
+      .cart-table td:nth-child(3) {
+        display: flex;
+        align-items: center;
+        gap: 12px
+      }
+
+      .cart-table td:nth-child(3)::before {
+        content: "Quantity: ";
+        color: var(--gray4);
+        font-size: 13px
+      }
+
+      .cart-table td:nth-child(4)::before {
+        content: "Total: ";
+        color: var(--gray4);
+        font-size: 13px
+      }
+
+      .cart-table td:last-child {
+        position: absolute;
+        top: 16px;
+        right: 0;
+        padding: 0 !important
+      }
+
+      .profile-actions {
+        flex-direction: column;
+        gap: 10px
+      }
     }
 
     @media(max-width:600px) {
+      .topbar {
+        font-size: 11px;
+        padding: 6px 12px
+      }
+
       .hero-h1 {
-        font-size: clamp(48px, 13vw, 72px)
+        font-size: clamp(42px, 12vw, 68px)
       }
 
       .hero-ctas,
@@ -2291,12 +2390,89 @@
         gap: 16px
       }
 
+      .hero-vis {
+        height: 160px;
+        gap: 8px
+      }
+
+      .hvc-lbl {
+        font-size: 10px;
+        padding: 3px 8px;
+        bottom: 8px;
+        left: 8px
+      }
+
+      .hvc-price {
+        font-size: 9px;
+        padding: 2px 6px;
+        top: 8px;
+        right: 8px
+      }
+
       .hstat {
         padding: 0
       }
 
-      .pgrid {
+      .hstat + .hstat {
+        border-left: none;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+        padding-left: 0
+      }
+
+      .acards {
         grid-template-columns: 1fr
+      }
+
+      .ac {
+        padding: 20px
+      }
+
+      .ac.s2 {
+        grid-column: span 1
+      }
+
+      .pgrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px
+      }
+
+      .pcard .pdesc {
+        display: none
+      }
+
+      .pbody {
+        padding: 12px 14px
+      }
+
+      .pname {
+        font-size: 14px
+      }
+
+      .pprice {
+        font-size: 15px
+      }
+
+      .addbtn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px
+      }
+
+      .pbadge {
+        font-size: 9px;
+        padding: 3px 8px
+      }
+
+      .tbox {
+        padding: 20px;
+        border-radius: 14px
+      }
+
+      .xbtn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px
       }
 
       .ggrid {
@@ -2313,5 +2489,25 @@
 
       .ftlinks {
         gap: 12px
+      }
+
+      .ftbot {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px
+      }
+
+      .ftlinks {
+        justify-content: center
+      }
+    }
+
+    @media(max-width:500px) {
+      .trow {
+        flex-direction: column
+      }
+
+      .trow button {
+        width: 100%
       }
     }

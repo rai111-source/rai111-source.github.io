@@ -124,6 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutBtn.addEventListener('click', handleLogout);
     }
 
+    const mobLogoutBtn = document.getElementById('mobnav-logout');
+    if (mobLogoutBtn) {
+        mobLogoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const mobnav = document.getElementById('mobnav');
+            if (mobnav) mobnav.classList.remove('open');
+            handleLogout();
+        });
+    }
+
     if (editProfileBtn) {
         editProfileBtn.addEventListener('click', () => {
             toggleProfileEdit(true);
@@ -405,6 +415,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateHeaderUI() {
         const authButtons = document.getElementById('auth-buttons');
+
+        // Toggle mobile nav auth links depending on session state
+        const mobGuests = document.querySelectorAll('.mobnav-guest');
+        const mobUsers = document.querySelectorAll('.mobnav-user');
+        const mobDividers = document.querySelectorAll('.mobnav-divider');
+
+        if (currentUser) {
+            mobGuests.forEach(el => el.style.display = 'none');
+            mobUsers.forEach(el => el.style.display = 'block');
+            mobDividers.forEach(el => el.style.display = 'block');
+        } else {
+            mobGuests.forEach(el => el.style.display = 'block');
+            mobUsers.forEach(el => el.style.display = 'none');
+            mobDividers.forEach(el => el.style.display = 'none');
+        }
 
         if (userBtn) {
             const icon = userBtn.querySelector('i');

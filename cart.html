@@ -121,6 +121,11 @@
     <a href="index.html#services" onclick="closeMob()">Services</a>
     <a href="index.html#track" onclick="closeMob()">Track Order</a>
     <a href="index.html#contact" onclick="closeMob()">Contact</a>
+    <hr class="mobnav-divider">
+    <a href="login.html" onclick="closeMob()" class="mobnav-guest">Login</a>
+    <a href="login.html?mode=signup" onclick="closeMob()" class="mobnav-guest">Sign Up</a>
+    <a href="profile.html" onclick="closeMob()" class="mobnav-user">My Profile</a>
+    <a href="#" id="mobnav-logout" class="mobnav-user">Sign Out</a>
   </div>
 
   <!-- CART SECTION -->
@@ -135,7 +140,7 @@
       </div>
 
       <div class="tbox" style="max-width: 100%; margin: 0; padding: 32px; overflow-x: auto;">
-        <div id="cart-items-container" style="min-width: 600px;">
+        <div id="cart-items-container">
           <p>Your cart is empty.</p>
         </div>
 
