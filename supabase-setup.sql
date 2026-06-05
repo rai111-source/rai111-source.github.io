@@ -55,15 +55,29 @@ CREATE TABLE IF NOT EXISTS messages (
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ── 5. CART ITEMS ────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS cart_items (
+  id            BIGSERIAL PRIMARY KEY,
+  user_id       UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  product_id    BIGINT REFERENCES products(id) ON DELETE CASCADE NOT NULL,
+  product_name  TEXT NOT NULL,
+  product_price NUMERIC(10,2) NOT NULL,
+  product_image TEXT,
+  quantity      INTEGER DEFAULT 1,
+  updated_at    TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
+);
+
 
 -- ============================================================
 --  ROW LEVEL SECURITY (RLS)
 -- ============================================================
 
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE gallery  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE orders   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE gallery    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
 
 
 -- ── PRODUCTS: public can read active, only admin can write ────
@@ -120,6 +134,27 @@ CREATE POLICY "Admin update messages"
   ON messages FOR UPDATE
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
+-- ── CART ITEMS: users can manage their own cart items ─────────
+DROP POLICY IF EXISTS "Users can read own cart items" ON cart_items;
+CREATE POLICY "Users can read own cart items"
+  ON cart_items FOR SELECT
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own cart items" ON cart_items;
+CREATE POLICY "Users can insert own cart items"
+  ON cart_items FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own cart items" ON cart_items;
+CREATE POLICY "Users can update own cart items"
+  ON cart_items FOR UPDATE
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own cart items" ON cart_items;
+CREATE POLICY "Users can delete own cart items"
+  ON cart_items FOR DELETE
+  USING (auth.uid() = user_id);
+
 
 -- ============================================================
 --  AUTO-UPDATE updated_at
@@ -140,6 +175,11 @@ CREATE TRIGGER products_updated_at
 DROP TRIGGER IF EXISTS orders_updated_at ON orders;
 CREATE TRIGGER orders_updated_at
   BEFORE UPDATE ON orders
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS cart_items_updated_at ON cart_items;
+CREATE TRIGGER cart_items_updated_at
+  BEFORE UPDATE ON cart_items
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 

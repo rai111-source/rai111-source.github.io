@@ -149,8 +149,6 @@
       btn.disabled = false; btn.textContent = 'Send Message →';
     }
 
-    }
-
     function openLb(src, cap) { document.getElementById('lbImg').src = src; document.getElementById('lbCap').textContent = cap; document.getElementById('lbOv').classList.add('open'); document.getElementById('lb').classList.add('open'); }
     function closeLb() { document.getElementById('lbOv').classList.remove('open'); document.getElementById('lb').classList.remove('open'); }
 

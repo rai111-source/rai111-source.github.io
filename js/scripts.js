@@ -199,8 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* --- Event Listeners --- */
-    // (Existing smooth scrolling and mobile menu listeners remain the same)
-    // ... code truncated for readability in replace_file_content ...
 
     // Smooth Scrolling
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
