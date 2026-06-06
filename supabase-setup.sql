@@ -273,3 +273,94 @@ INSERT INTO gallery (title, caption, image_url, sort_order, active) VALUES
   ('Room Décor Piece',       'PLA Multi-Color — Interior Design',   'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80', 4, TRUE),
   ('Anime Figurine Set',     'SLA Resin — Collector Edition',       'https://images.unsplash.com/photo-1608889175638-9322300c369e?w=800&q=80', 5, TRUE),
   ('Lithophane Portrait',    'Backlit PLA — Birthday Gift',         'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80', 6, TRUE);
+-- ── 6. SITE CONTENT (CMS) ────────────────────────────────────
+CREATE TABLE IF NOT EXISTS site_content (
+  key        TEXT PRIMARY KEY,
+  content    JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE site_content ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read site_content" ON site_content;
+CREATE POLICY "Public read site_content"
+  ON site_content FOR SELECT
+  USING (TRUE);
+
+DROP POLICY IF EXISTS "Admin full access site_content" ON site_content;
+CREATE POLICY "Admin full access site_content"
+  ON site_content FOR ALL
+  USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
+
+DROP TRIGGER IF EXISTS site_content_updated_at ON site_content;
+CREATE TRIGGER site_content_updated_at
+  BEFORE UPDATE ON site_content
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ── 7. SITE CONTENT STORAGE BUCKET ───────────────────────────
+INSERT INTO storage.buckets (id, name, public)
+  VALUES ('site-images', 'site-images', TRUE)
+  ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public read site-images" ON storage.objects;
+CREATE POLICY "Public read site-images"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'site-images');
+
+DROP POLICY IF EXISTS "Admin upload site-images" ON storage.objects;
+CREATE POLICY "Admin upload site-images"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'site-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
+
+DROP POLICY IF EXISTS "Admin delete site-images" ON storage.objects;
+CREATE POLICY "Admin delete site-images"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'site-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
+
+-- ── 8. INITIAL SITE CONTENT DATA ──────────────────────────────
+INSERT INTO site_content (key, content) VALUES (
+  'hero',
+  '{
+    "title": "Turning\\nIdeas\\nInto Reality.",
+    "sub": "Custom 3D printed creations from Assam — figurines, lithophane portraits, prototypes & unique gifts. Delivered across India in 5–7 days.",
+    "stats": [
+      {"value": "200+", "label": "Orders Delivered"},
+      {"value": "5–7", "label": "Day Delivery"},
+      {"value": "₹60", "label": "Starting Price"}
+    ],
+    "visuals": [
+      {"image_url": "Images/Goku.jpeg", "label": "Custom Figurines", "price": "From ₹499"},
+      {"image_url": "Images/Zubeen.jpeg", "label": "Keychains", "price": "₹149"},
+      {"image_url": "Images/Room.jpeg", "label": "Prototypes", "price": "Custom Quote"}
+    ]
+  }'::jsonb
+) ON CONFLICT (key) DO NOTHING;
+
+INSERT INTO site_content (key, content) VALUES (
+  'process',
+  '{
+    "sub": "From idea to your doorstep in 4 simple steps — no technical knowledge needed.",
+    "steps": [
+      {"step": "Step 01", "icon": "💬", "title": "Share Your Idea", "description": "Send a design file, reference image, or just a description. We''ll take it from there."},
+      {"step": "Step 02", "icon": "🎨", "title": "We Design & Quote", "description": "Our team prepares your 3D model and sends a precise quote within 24 hours."},
+      {"step": "Step 03", "icon": "🖨️", "title": "We Print & Package", "description": "Printed with FDM or SLA precision, then carefully packaged to protect every layer."},
+      {"step": "Step 04", "icon": "📦", "title": "Delivered to You", "description": "Shipped pan-India in 5–7 days. Track your order on this page anytime."}
+    ]
+  }'::jsonb
+) ON CONFLICT (key) DO NOTHING;
+
+INSERT INTO site_content (key, content) VALUES (
+  'about',
+  '{
+    "title": "Born in Assam.\\nBuilt for India.",
+    "paragraphs": [
+      "Founded in Dibrugarh with a passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA printers.",
+      "Whether you''re an engineer needing a functional prototype or someone looking for a truly unique gift — we''re here to make it real."
+    ],
+    "cards": [
+      {"value": "FDM", "label": "Fused Deposition Modeling", "description": "Durable PLA, PETG, ABS parts"},
+      {"value": "SLA", "label": "Stereolithography", "description": "Ultra-fine detail & figurines"},
+      {"value": "200+", "label": "Happy Customers", "description": "From Dibrugarh to Mumbai, Delhi to Bangalore"}
+    ]
+  }'::jsonb
+) ON CONFLICT (key) DO NOTHING;

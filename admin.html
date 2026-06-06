@@ -80,6 +80,7 @@
     <div class="admin-tabs">
       <div class="admin-tab active" onclick="switchTab('products')">Products</div>
       <div class="admin-tab" onclick="switchTab('gallery')">Gallery</div>
+      <div class="admin-tab" onclick="switchTab('content')">Site Content</div>
     </div>
 
     <!-- PRODUCTS SECTION -->
@@ -228,6 +229,285 @@
           </div>
           
           <div class="status-msg" id="gallery-form-status"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- SITE CONTENT SECTION -->
+    <div id="section-content" class="admin-section">
+      <div class="admin-header">
+        <h2>Site Content CMS</h2>
+      </div>
+
+      <!-- HERO SECTION EDITING -->
+      <div class="admin-form-panel active" style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 10px;">Hero Section</h3>
+        <form id="hero-content-form">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Hero Title (use \n or line breaks for newlines)</label>
+              <textarea id="hero-title" rows="3" required></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Hero Subtitle / Tagline</label>
+              <textarea id="hero-sub" rows="2" required></textarea>
+            </div>
+            
+            <!-- Stats -->
+            <div class="form-group full">
+              <h4 style="color: var(--white); margin: 10px 0 0 0;">Stats Counter</h4>
+            </div>
+            <div class="form-group">
+              <label>Stat 1 Value</label>
+              <input type="text" id="hero-stat-1-val" required>
+            </div>
+            <div class="form-group">
+              <label>Stat 1 Label</label>
+              <input type="text" id="hero-stat-1-lbl" required>
+            </div>
+            <div class="form-group">
+              <label>Stat 2 Value</label>
+              <input type="text" id="hero-stat-2-val" required>
+            </div>
+            <div class="form-group">
+              <label>Stat 2 Label</label>
+              <input type="text" id="hero-stat-2-lbl" required>
+            </div>
+            <div class="form-group">
+              <label>Stat 3 Value</label>
+              <input type="text" id="hero-stat-3-val" required>
+            </div>
+            <div class="form-group">
+              <label>Stat 3 Label</label>
+              <input type="text" id="hero-stat-3-lbl" required>
+            </div>
+
+            <!-- Visuals -->
+            <div class="form-group full">
+              <h4 style="color: var(--white); margin: 20px 0 0 0; border-top: 1px solid var(--line); padding-top: 20px;">Hero Visual Cards</h4>
+            </div>
+            
+            <!-- Vis Card 1 -->
+            <div class="form-group">
+              <label>Card 1 Label</label>
+              <input type="text" id="hero-vis-1-lbl" required>
+              <label style="margin-top: 10px;">Card 1 Price</label>
+              <input type="text" id="hero-vis-1-price" required>
+            </div>
+            <div class="form-group">
+              <label>Card 1 Image</label>
+              <input type="file" id="hero-vis-1-file" accept="image/*">
+              <input type="hidden" id="hero-vis-1-img-url">
+              <div id="hero-vis-1-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
+              </div>
+            </div>
+
+            <!-- Vis Card 2 -->
+            <div class="form-group">
+              <label>Card 2 Label</label>
+              <input type="text" id="hero-vis-2-lbl" required>
+              <label style="margin-top: 10px;">Card 2 Price</label>
+              <input type="text" id="hero-vis-2-price" required>
+            </div>
+            <div class="form-group">
+              <label>Card 2 Image</label>
+              <input type="file" id="hero-vis-2-file" accept="image/*">
+              <input type="hidden" id="hero-vis-2-img-url">
+              <div id="hero-vis-2-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
+              </div>
+            </div>
+
+            <!-- Vis Card 3 -->
+            <div class="form-group">
+              <label>Card 3 Label</label>
+              <input type="text" id="hero-vis-3-lbl" required>
+              <label style="margin-top: 10px;">Card 3 Price</label>
+              <input type="text" id="hero-vis-3-price" required>
+            </div>
+            <div class="form-group">
+              <label>Card 3 Image</label>
+              <input type="file" id="hero-vis-3-file" accept="image/*">
+              <input type="hidden" id="hero-vis-3-img-url">
+              <div id="hero-vis-3-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 24px;">
+            <button type="submit" class="btn btn-white" id="save-hero-btn">Save Hero Section</button>
+          </div>
+          <div class="status-msg" id="hero-form-status"></div>
+        </form>
+      </div>
+
+      <!-- PROCESS SECTION EDITING -->
+      <div class="admin-form-panel active" style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 10px;">Process (How It Works)</h3>
+        <form id="process-content-form">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Process Subtitle</label>
+              <textarea id="process-sub" rows="2" required></textarea>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="form-group full"><h4 style="color:var(--white); margin:10px 0 0 0;">Step 1</h4></div>
+            <div class="form-group">
+              <label>Icon / Emoji / Image URL</label>
+              <input type="text" id="process-step-1-ico" required placeholder="e.g. 💬 or https://...">
+            </div>
+            <div class="form-group">
+              <label>Or Upload Image Icon</label>
+              <input type="file" id="process-step-1-file" accept="image/*">
+              <div id="process-step-1-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line);">
+              </div>
+            </div>
+            <div class="form-group full">
+              <label>Title</label>
+              <input type="text" id="process-step-1-title" required>
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="process-step-1-desc" rows="2" required></textarea>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="form-group full"><h4 style="color:var(--white); margin:10px 0 0 0;">Step 2</h4></div>
+            <div class="form-group">
+              <label>Icon / Emoji / Image URL</label>
+              <input type="text" id="process-step-2-ico" required placeholder="e.g. 🎨 or https://...">
+            </div>
+            <div class="form-group">
+              <label>Or Upload Image Icon</label>
+              <input type="file" id="process-step-2-file" accept="image/*">
+              <div id="process-step-2-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line);">
+              </div>
+            </div>
+            <div class="form-group full">
+              <label>Title</label>
+              <input type="text" id="process-step-2-title" required>
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="process-step-2-desc" rows="2" required></textarea>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="form-group full"><h4 style="color:var(--white); margin:10px 0 0 0;">Step 3</h4></div>
+            <div class="form-group">
+              <label>Icon / Emoji / Image URL</label>
+              <input type="text" id="process-step-3-ico" required placeholder="e.g. 🖨️ or https://...">
+            </div>
+            <div class="form-group">
+              <label>Or Upload Image Icon</label>
+              <input type="file" id="process-step-3-file" accept="image/*">
+              <div id="process-step-3-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line);">
+              </div>
+            </div>
+            <div class="form-group full">
+              <label>Title</label>
+              <input type="text" id="process-step-3-title" required>
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="process-step-3-desc" rows="2" required></textarea>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="form-group full"><h4 style="color:var(--white); margin:10px 0 0 0;">Step 4</h4></div>
+            <div class="form-group">
+              <label>Icon / Emoji / Image URL</label>
+              <input type="text" id="process-step-4-ico" required placeholder="e.g. 📦 or https://...">
+            </div>
+            <div class="form-group">
+              <label>Or Upload Image Icon</label>
+              <input type="file" id="process-step-4-file" accept="image/*">
+              <div id="process-step-4-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line);">
+              </div>
+            </div>
+            <div class="form-group full">
+              <label>Title</label>
+              <input type="text" id="process-step-4-title" required>
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="process-step-4-desc" rows="2" required></textarea>
+            </div>
+          </div>
+          <div style="margin-top: 24px;">
+            <button type="submit" class="btn btn-white" id="save-process-btn">Save Process Section</button>
+          </div>
+          <div class="status-msg" id="process-form-status"></div>
+        </form>
+      </div>
+
+      <!-- ABOUT SECTION EDITING -->
+      <div class="admin-form-panel active" style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 10px;">About Section</h3>
+        <form id="about-content-form">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>About Title (use \n or line breaks for newlines)</label>
+              <textarea id="about-title" rows="2" required></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Description Paragraph 1</label>
+              <textarea id="about-p1" rows="3" required></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Description Paragraph 2</label>
+              <textarea id="about-p2" rows="3" required></textarea>
+            </div>
+
+            <!-- Cards -->
+            <div class="form-group full"><h4 style="color:var(--white); margin:10px 0 0 0;">About Stats Cards</h4></div>
+            
+            <!-- Card 1 -->
+            <div class="form-group">
+              <label>Card 1 Value</label>
+              <input type="text" id="about-card-1-val" required>
+              <label style="margin-top:10px;">Card 1 Label</label>
+              <input type="text" id="about-card-1-lbl" required>
+            </div>
+            <div class="form-group">
+              <label>Card 1 Description</label>
+              <textarea id="about-card-1-desc" rows="3" required></textarea>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="form-group">
+              <label>Card 2 Value</label>
+              <input type="text" id="about-card-2-val" required>
+              <label style="margin-top:10px;">Card 2 Label</label>
+              <input type="text" id="about-card-2-lbl" required>
+            </div>
+            <div class="form-group">
+              <label>Card 2 Description</label>
+              <textarea id="about-card-2-desc" rows="3" required></textarea>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="form-group">
+              <label>Card 3 Value</label>
+              <input type="text" id="about-card-3-val" required>
+              <label style="margin-top:10px;">Card 3 Label</label>
+              <input type="text" id="about-card-3-lbl" required>
+            </div>
+            <div class="form-group">
+              <label>Card 3 Description</label>
+              <textarea id="about-card-3-desc" rows="3" required></textarea>
+            </div>
+          </div>
+          <div style="margin-top: 24px;">
+            <button type="submit" class="btn btn-white" id="save-about-btn">Save About Section</button>
+          </div>
+          <div class="status-msg" id="about-form-status"></div>
         </form>
       </div>
     </div>

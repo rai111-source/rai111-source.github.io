@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load initial data
     loadProducts();
     loadGallery();
+    loadSiteContentCMS();
 
     // -- Event Listeners --
     
@@ -518,6 +519,340 @@ document.addEventListener('DOMContentLoaded', async () => {
             saveGalleryBtn.textContent = 'Save Photo';
         }
     }
+
+    let currentSiteContent = {};
+
+    async function loadSiteContentCMS() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('site_content')
+                .select('*');
+
+            if (error) throw error;
+            
+            data.forEach(item => {
+                currentSiteContent[item.key] = item.content;
+                if (item.key === 'hero') populateHeroForm(item.content);
+                if (item.key === 'process') populateProcessForm(item.content);
+                if (item.key === 'about') populateAboutForm(item.content);
+            });
+        } catch (error) {
+            console.error('Error loading site content:', error);
+        }
+    }
+
+    function populateHeroForm(content) {
+        document.getElementById('hero-title').value = content.title || '';
+        document.getElementById('hero-sub').value = content.sub || '';
+        
+        if (content.stats && content.stats.length >= 3) {
+            document.getElementById('hero-stat-1-val').value = content.stats[0].value || '';
+            document.getElementById('hero-stat-1-lbl').value = content.stats[0].label || '';
+            document.getElementById('hero-stat-2-val').value = content.stats[1].value || '';
+            document.getElementById('hero-stat-2-lbl').value = content.stats[1].label || '';
+            document.getElementById('hero-stat-3-val').value = content.stats[2].value || '';
+            document.getElementById('hero-stat-3-lbl').value = content.stats[2].label || '';
+        }
+        
+        if (content.visuals && content.visuals.length >= 3) {
+            for (let i = 1; i <= 3; i++) {
+                const vis = content.visuals[i - 1];
+                document.getElementById(`hero-vis-${i}-lbl`).value = vis.label || '';
+                document.getElementById(`hero-vis-${i}-price`).value = vis.price || '';
+                document.getElementById(`hero-vis-${i}-img-url`).value = vis.image_url || '';
+                
+                const previewImg = document.querySelector(`#hero-vis-${i}-preview img`);
+                const previewDiv = document.getElementById(`hero-vis-${i}-preview`);
+                if (vis.image_url) {
+                    previewImg.src = vis.image_url;
+                    previewDiv.style.display = 'block';
+                } else {
+                    previewDiv.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function populateProcessForm(content) {
+        document.getElementById('process-sub').value = content.sub || '';
+        if (content.steps && content.steps.length >= 4) {
+            for (let i = 1; i <= 4; i++) {
+                const step = content.steps[i - 1];
+                document.getElementById(`process-step-${i}-ico`).value = step.icon || '';
+                document.getElementById(`process-step-${i}-title`).value = step.title || '';
+                document.getElementById(`process-step-${i}-desc`).value = step.description || '';
+                
+                const previewImg = document.querySelector(`#process-step-${i}-preview img`);
+                const previewDiv = document.getElementById(`process-step-${i}-preview`);
+                const isUrl = /^(https?:\/\/|\/|data:image\/)/.test(step.icon || '') || /\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i.test(step.icon || '');
+                if (isUrl && step.icon) {
+                    previewImg.src = step.icon;
+                    previewDiv.style.display = 'block';
+                } else {
+                    previewDiv.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function populateAboutForm(content) {
+        document.getElementById('about-title').value = content.title || '';
+        if (content.paragraphs && content.paragraphs.length >= 2) {
+            document.getElementById('about-p1').value = content.paragraphs[0] || '';
+            document.getElementById('about-p2').value = content.paragraphs[1] || '';
+        }
+        if (content.cards && content.cards.length >= 3) {
+            for (let i = 1; i <= 3; i++) {
+                const card = content.cards[i - 1];
+                document.getElementById(`about-card-${i}-val`).value = card.value || '';
+                document.getElementById(`about-card-${i}-lbl`).value = card.label || '';
+                document.getElementById(`about-card-${i}-desc`).value = card.description || '';
+            }
+        }
+    }
+
+    // Setup file preview listeners
+    for (let i = 1; i <= 3; i++) {
+        const fileInput = document.getElementById(`hero-vis-${i}-file`);
+        const previewDiv = document.getElementById(`hero-vis-${i}-preview`);
+        const previewImg = previewDiv.querySelector('img');
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                    previewDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Setup file preview listeners for process step icons
+    for (let i = 1; i <= 4; i++) {
+        const fileInput = document.getElementById(`process-step-${i}-file`);
+        const previewDiv = document.getElementById(`process-step-${i}-preview`);
+        const previewImg = previewDiv.querySelector('img');
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                    previewDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+
+    document.getElementById('hero-content-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-hero-btn');
+        const statusEl = document.getElementById('hero-form-status');
+        
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        statusEl.className = 'status-msg success';
+        statusEl.textContent = 'Saving hero section...';
+        statusEl.style.display = 'block';
+        
+        try {
+            const visuals = [];
+            
+            for (let i = 1; i <= 3; i++) {
+                const fileInput = document.getElementById(`hero-vis-${i}-file`);
+                let imageUrl = document.getElementById(`hero-vis-${i}-img-url`).value;
+                
+                if (fileInput.files && fileInput.files[0]) {
+                    statusEl.textContent = `Uploading card ${i} image...`;
+                    const file = fileInput.files[0];
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+                    const filePath = `hero/${fileName}`;
+                    
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from('site-images')
+                        .upload(filePath, file);
+                        
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: { publicUrl } } = supabaseClient.storage
+                        .from('site-images')
+                        .getPublicUrl(filePath);
+                        
+                    imageUrl = publicUrl;
+                    document.getElementById(`hero-vis-${i}-img-url`).value = imageUrl;
+                }
+                
+                visuals.push({
+                    label: document.getElementById(`hero-vis-${i}-lbl`).value,
+                    price: document.getElementById(`hero-vis-${i}-price`).value,
+                    image_url: imageUrl
+                });
+            }
+            
+            const heroData = {
+                title: document.getElementById('hero-title').value,
+                sub: document.getElementById('hero-sub').value,
+                stats: [
+                    {
+                        value: document.getElementById('hero-stat-1-val').value,
+                        label: document.getElementById('hero-stat-1-lbl').value
+                    },
+                    {
+                        value: document.getElementById('hero-stat-2-val').value,
+                        label: document.getElementById('hero-stat-2-lbl').value
+                    },
+                    {
+                        value: document.getElementById('hero-stat-3-val').value,
+                        label: document.getElementById('hero-stat-3-lbl').value
+                    }
+                ],
+                visuals: visuals
+            };
+            
+            statusEl.textContent = 'Updating database...';
+            
+            const { error } = await supabaseClient
+                .from('site_content')
+                .upsert({ key: 'hero', content: heroData });
+                
+            if (error) throw error;
+            
+            statusEl.textContent = 'Hero section saved successfully!';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
+        } catch (error) {
+            console.error('Error saving hero section:', error);
+            statusEl.className = 'status-msg error';
+            statusEl.textContent = 'Error: ' + error.message;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save Hero Section';
+        }
+    });
+
+    document.getElementById('process-content-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-process-btn');
+        const statusEl = document.getElementById('process-form-status');
+        
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        statusEl.className = 'status-msg success';
+        statusEl.textContent = 'Saving process section...';
+        statusEl.style.display = 'block';
+        
+        try {
+            const steps = [];
+            for (let i = 1; i <= 4; i++) {
+                const fileInput = document.getElementById(`process-step-${i}-file`);
+                let iconVal = document.getElementById(`process-step-${i}-ico`).value;
+                
+                if (fileInput.files && fileInput.files[0]) {
+                    statusEl.textContent = `Uploading step ${i} image icon...`;
+                    const file = fileInput.files[0];
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+                    const filePath = `process/${fileName}`;
+                    
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from('site-images')
+                        .upload(filePath, file);
+                        
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: { publicUrl } } = supabaseClient.storage
+                        .from('site-images')
+                        .getPublicUrl(filePath);
+                        
+                    iconVal = publicUrl;
+                    document.getElementById(`process-step-${i}-ico`).value = iconVal;
+                }
+                
+                steps.push({
+                    step: `Step 0${i}`,
+                    icon: iconVal,
+                    title: document.getElementById(`process-step-${i}-title`).value,
+                    description: document.getElementById(`process-step-${i}-desc`).value
+                });
+            }
+            
+            const processData = {
+                sub: document.getElementById('process-sub').value,
+                steps: steps
+            };
+            
+            statusEl.textContent = 'Updating database...';
+            const { error } = await supabaseClient
+                .from('site_content')
+                .upsert({ key: 'process', content: processData });
+                
+            if (error) throw error;
+            
+            statusEl.textContent = 'Process section saved successfully!';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
+        } catch (error) {
+            console.error('Error saving process section:', error);
+            statusEl.className = 'status-msg error';
+            statusEl.textContent = 'Error: ' + error.message;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save Process Section';
+        }
+    });
+
+    document.getElementById('about-content-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-about-btn');
+        const statusEl = document.getElementById('about-form-status');
+        
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        statusEl.className = 'status-msg success';
+        statusEl.textContent = 'Saving about section...';
+        statusEl.style.display = 'block';
+        
+        try {
+            const cards = [];
+            for (let i = 1; i <= 3; i++) {
+                cards.push({
+                    value: document.getElementById(`about-card-${i}-val`).value,
+                    label: document.getElementById(`about-card-${i}-lbl`).value,
+                    description: document.getElementById(`about-card-${i}-desc`).value
+                });
+            }
+            
+            const aboutData = {
+                title: document.getElementById('about-title').value,
+                paragraphs: [
+                    document.getElementById('about-p1').value,
+                    document.getElementById('about-p2').value
+                ],
+                cards: cards
+            };
+            
+            const { error } = await supabaseClient
+                .from('site_content')
+                .upsert({ key: 'about', content: aboutData });
+                
+            if (error) throw error;
+            
+            statusEl.textContent = 'About section saved successfully!';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
+        } catch (error) {
+            console.error('Error saving about section:', error);
+            statusEl.className = 'status-msg error';
+            statusEl.textContent = 'Error: ' + error.message;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save About Section';
+        }
+    });
 
     function escapeHtml(str) {
         if (!str && str !== 0) return '';

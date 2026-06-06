@@ -18,6 +18,7 @@
       updateCart(); 
       loadP('all'); 
       loadGallery();
+      loadSiteContent();
       initReveal(); 
       initThemeToggle();
     });
@@ -228,3 +229,102 @@
 
     function showNotif(msg) { const el = document.getElementById('notif'); el.textContent = msg; el.classList.add('show'); clearTimeout(window._nt); window._nt = setTimeout(() => el.classList.remove('show'), 3000); }
     function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+    async function loadSiteContent() {
+      try {
+        if (typeof sb !== 'undefined') {
+          const { data, error } = await sb.from('site_content').select('*');
+          if (!error && data && data.length) {
+            data.forEach(item => {
+              if (item.key === 'hero') renderHero(item.content);
+              if (item.key === 'process') renderProcess(item.content);
+              if (item.key === 'about') renderAbout(item.content);
+            });
+            initReveal();
+          }
+        }
+      } catch (e) { console.error('Error loading site content:', e); }
+    }
+
+    function renderHero(content) {
+      const titleEl = document.getElementById('hero-title-el');
+      const subEl = document.getElementById('hero-sub-el');
+      const statsEl = document.getElementById('hero-stats-el');
+      const visEl = document.getElementById('hero-vis-el');
+
+      if (titleEl && content.title) {
+        titleEl.innerHTML = content.title.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
+      }
+      if (subEl && content.sub) {
+        subEl.textContent = content.sub;
+      }
+      if (statsEl && content.stats) {
+        statsEl.innerHTML = content.stats.map(s => `
+          <div class="hstat">
+            <div class="hstat-v">${esc(s.value)}</div>
+            <div class="hstat-l">${esc(s.label)}</div>
+          </div>
+        `).join('');
+      }
+      if (visEl && content.visuals) {
+        visEl.innerHTML = content.visuals.map(v => `
+          <div class="hvc">
+            <img src="${v.image_url || ''}" alt="${esc(v.label)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
+            <div class="hvc-lbl">${esc(v.label)}</div>
+            <div class="hvc-price">${esc(v.price)}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderProcess(content) {
+      const subEl = document.getElementById('process-sub-el');
+      const stepsEl = document.getElementById('process-steps-el');
+
+      if (subEl && content.sub) {
+        subEl.textContent = content.sub;
+      }
+      if (stepsEl && content.steps) {
+        stepsEl.innerHTML = content.steps.map(s => {
+          const isUrl = /^(https?:\/\/|\/|data:image\/)/.test(s.icon) || /\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i.test(s.icon);
+          const iconHtml = isUrl ? `<img src="${s.icon}" alt="${esc(s.title)}" onerror="this.style.display='none'">` : esc(s.icon);
+          return `
+            <div class="step">
+              <div class="step-n">${esc(s.step)}</div>
+              <div class="step-ico">${iconHtml}</div>
+              <h3>${esc(s.title)}</h3>
+              <p>${esc(s.description)}</p>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderAbout(content) {
+      const titleEl = document.getElementById('about-title-el');
+      const textEl = document.getElementById('about-text-el');
+      const cardsEl = document.getElementById('about-cards-el');
+
+      if (titleEl && content.title) {
+        titleEl.innerHTML = content.title.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
+      }
+      if (textEl && content.paragraphs) {
+        textEl.innerHTML = content.paragraphs.map(p => `
+          <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">${esc(p)}</p>
+        `).join('');
+      }
+      if (cardsEl && content.cards) {
+        cardsEl.innerHTML = content.cards.map((c, i) => {
+          let extraClass = '';
+          if (i === 2) extraClass = ' s2';
+          return `
+            <div class="ac${extraClass}">
+              <div class="acv">${esc(c.value)}</div>
+              <div class="acl">${esc(c.label)}</div>
+              <div class="acs">${esc(c.description)}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
