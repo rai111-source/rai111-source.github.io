@@ -227,6 +227,30 @@ CREATE POLICY "Admin delete gallery images"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'gallery-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
+INSERT INTO storage.buckets (id, name, public)
+  VALUES ('avatars', 'avatars', TRUE)
+  ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public read avatars" ON storage.objects;
+CREATE POLICY "Public read avatars"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'avatars');
+
+DROP POLICY IF EXISTS "Auth upload avatars" ON storage.objects;
+CREATE POLICY "Auth upload avatars"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Auth update avatars" ON storage.objects;
+CREATE POLICY "Auth update avatars"
+  ON storage.objects FOR UPDATE
+  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Auth delete avatars" ON storage.objects;
+CREATE POLICY "Auth delete avatars"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+
 
 -- ============================================================
 --  SAMPLE DATA (optional — delete after testing)
