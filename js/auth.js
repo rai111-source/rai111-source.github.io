@@ -63,8 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
         userBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentUser) {
-                // Currently logged in, go to profile
-                window.location.href = 'profile.html';
+                // Currently logged in, go to profile or admin
+                if (currentUser.email === 'raj@littlelayers.in') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'profile.html';
+                }
             } else {
                 // Go to login page
                 window.location.href = 'login.html';
@@ -144,6 +148,17 @@ document.addEventListener('DOMContentLoaded', () => {
             await handleGithubLogin();
         });
     }
+
+    // Intercept clicks on login links to save the return URL
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('a');
+        if (a && a.href && a.href.includes('login.html')) {
+            // Only save if we are not already on the login page
+            if (!window.location.href.includes('login.html') && !window.location.href.includes('logout.html')) {
+                sessionStorage.setItem('redirectAfterAuth', window.location.href);
+            }
+        }
+    });
 
     // -- Profile Page Logic --
     if (logoutBtn) {
@@ -239,10 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.session) {
                 if (pageAuthErrorMsg) {
                     pageAuthErrorMsg.style.color = "#10B981";
-                    pageAuthErrorMsg.textContent = "Signup successful! Redirecting to profile...";
+                    pageAuthErrorMsg.textContent = "Signup successful! Redirecting...";
                 }
                 setTimeout(() => {
-                    window.location.href = 'profile.html';
+                    const returnUrl = sessionStorage.getItem('redirectAfterAuth');
+                    if (returnUrl) {
+                        sessionStorage.removeItem('redirectAfterAuth');
+                        window.location.href = returnUrl;
+                    } else {
+                        window.location.href = 'profile.html';
+                    }
                 }, 1000);
             } else {
                 // If data.session is null, email confirmation is still enabled in Supabase Auth settings
@@ -269,7 +290,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) throw error;
 
-            window.location.href = 'profile.html';
+            if (email === 'raj@littlelayers.in') {
+                sessionStorage.removeItem('redirectAfterAuth'); // Admin always goes to admin panel
+                window.location.href = 'admin.html';
+            } else {
+                const returnUrl = sessionStorage.getItem('redirectAfterAuth');
+                if (returnUrl) {
+                    sessionStorage.removeItem('redirectAfterAuth');
+                    window.location.href = returnUrl;
+                } else {
+                    window.location.href = 'profile.html';
+                }
+            }
         } catch (error) {
             if (pageAuthErrorMsg) {
                 pageAuthErrorMsg.style.color = "#ff6b6b";
@@ -324,7 +356,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleGoogleLogin() {
         try {
-            const redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            let redirectUrl = sessionStorage.getItem('redirectAfterAuth');
+            if (!redirectUrl) {
+                redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            } else {
+                // We leave it in sessionStorage so when OAuth redirects back to the site, 
+                // the session is verified and we are on the requested page. 
+                // Actually, OAuth redirects directly to redirectUrl.
+                sessionStorage.removeItem('redirectAfterAuth');
+            }
+            
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
@@ -343,7 +384,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleGithubLogin() {
         try {
-            const redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            let redirectUrl = sessionStorage.getItem('redirectAfterAuth');
+            if (!redirectUrl) {
+                redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            } else {
+                sessionStorage.removeItem('redirectAfterAuth');
+            }
+
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'github',
                 options: {
