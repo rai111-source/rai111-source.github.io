@@ -17,6 +17,7 @@
     document.addEventListener('DOMContentLoaded', () => { 
       updateCart(); 
       loadP('all'); 
+      loadGallery();
       initReveal(); 
       initThemeToggle();
     });
@@ -57,6 +58,37 @@
       } catch (e) { console.error(e); }
       allP = cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat);
       renderP(allP);
+    }
+
+    async function loadGallery() {
+      const g = document.getElementById('galleryGrid');
+      if (!g) return;
+      g.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading gallery…</p></div>';
+      try {
+        if (typeof sb !== 'undefined') {
+          const { data, error } = await sb.from('gallery').select('*').eq('active', true).order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+          if (!error && data && data.length) { renderGallery(data); return; }
+        }
+      } catch (e) { console.error(e); }
+      g.innerHTML = '<div class="loadbox">Gallery coming soon.</div>';
+    }
+
+    function renderGallery(list) {
+      const g = document.getElementById('galleryGrid');
+      if (!g) return;
+      if (!list.length) { g.innerHTML = '<div class="loadbox">Gallery coming soon.</div>'; return; }
+      g.innerHTML = list.map((item, i) => {
+        let classes = 'gi';
+        // Add tall/wide classes arbitrarily for masonry effect if there are many items, or just standard
+        if (i % 6 === 0) classes += ' tall';
+        if (i % 5 === 4) classes += ' wide';
+        return `
+        <div class="${classes}"
+          onclick="openLb('${item.image_url || ''}','${esc(item.title)}${item.caption ? ' — ' + esc(item.caption) : ''}')">
+          <img src="${item.image_url || ''}" alt="${esc(item.title)}" loading="lazy">
+          <div class="gcap">${esc(item.title)}</div>
+        </div>`;
+      }).join('');
     }
 
     function renderP(list) {

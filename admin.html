@@ -45,8 +45,15 @@
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
     
     .status-msg { display: none; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 14px; }
-    .status-msg.success { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
     .status-msg.error { background: rgba(255, 107, 107, 0.1); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.2); }
+    
+    /* Tabs */
+    .admin-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--line); margin-bottom: 30px; }
+    .admin-tab { padding: 12px 0; color: var(--gray4); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; font-size: 15px; }
+    .admin-tab.active { color: var(--white); border-bottom-color: var(--white); }
+    
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
   </style>
 </head>
 
@@ -69,87 +76,172 @@
   </div>
 
   <div class="admin-container" id="admin-content" style="display: none;">
-    <div class="admin-header">
-      <h2>Products CMS</h2>
-      <button class="btn btn-white" id="add-new-btn">+ Add New Product</button>
+    
+    <div class="admin-tabs">
+      <div class="admin-tab active" onclick="switchTab('products')">Products</div>
+      <div class="admin-tab" onclick="switchTab('gallery')">Gallery</div>
     </div>
 
-    <div class="admin-table-wrapper">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="admin-products-list">
-          <!-- Populated by JS -->
-        </tbody>
-      </table>
-    </div>
+    <!-- PRODUCTS SECTION -->
+    <div id="section-products" class="admin-section active">
+      <div class="admin-header">
+        <h2>Products CMS</h2>
+        <button class="btn btn-white" id="add-new-btn">+ Add New Product</button>
+      </div>
 
-    <div class="admin-form-panel" id="product-form-panel">
-      <h3 style="margin-bottom: 24px;" id="form-title">Add New Product</h3>
-      <form id="product-form">
-        <input type="hidden" id="product-id">
-        <input type="hidden" id="product-image-url">
-        
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="product-name" required placeholder="e.g. Goku Figurine">
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select id="product-category" required>
-              <option value="figurines">Figurines</option>
-              <option value="keychains">Keychains</option>
-              <option value="decor">Décor</option>
-              <option value="portraits">Portraits</option>
-              <option value="gifts">Gifts</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Price (₹)</label>
-            <input type="number" id="product-price" required min="0" placeholder="e.g. 599">
-          </div>
-          <div class="form-group">
-            <label>Original Price (₹) [Optional]</label>
-            <input type="number" id="product-original-price" min="0" placeholder="e.g. 799">
-          </div>
-          <div class="form-group full">
-            <label>Description</label>
-            <textarea id="product-description" rows="3" placeholder="Short description of the product..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>Badge [Optional]</label>
-            <input type="text" id="product-badge" placeholder="e.g. Bestseller, New">
-          </div>
-          <div class="form-group">
-            <label>Product Image</label>
-            <input type="file" id="product-image-upload" accept="image/*">
-            <div id="image-preview" style="margin-top: 10px; display: none;">
-              <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-products-list">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-form-panel" id="product-form-panel">
+        <h3 style="margin-bottom: 24px;" id="form-title">Add New Product</h3>
+        <form id="product-form">
+          <input type="hidden" id="product-id">
+          <input type="hidden" id="product-image-url">
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="product-name" required placeholder="e.g. Goku Figurine">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="product-category" required>
+                <option value="figurines">Figurines</option>
+                <option value="keychains">Keychains</option>
+                <option value="decor">Décor</option>
+                <option value="portraits">Portraits</option>
+                <option value="gifts">Gifts</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Price (₹)</label>
+              <input type="number" id="product-price" required min="0" placeholder="e.g. 599">
+            </div>
+            <div class="form-group">
+              <label>Original Price (₹) [Optional]</label>
+              <input type="number" id="product-original-price" min="0" placeholder="e.g. 799">
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="product-description" rows="3" placeholder="Short description of the product..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Badge [Optional]</label>
+              <input type="text" id="product-badge" placeholder="e.g. Bestseller, New">
+            </div>
+            <div class="form-group">
+              <label>Product Image</label>
+              <input type="file" id="product-image-upload" accept="image/*">
+              <div id="image-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
+              </div>
+            </div>
+            <div class="form-group" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 24px;">
+              <input type="checkbox" id="product-active" checked style="width: 18px; height: 18px;">
+              <label style="margin: 0;">Active (Visible on site)</label>
             </div>
           </div>
-          <div class="form-group" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 24px;">
-            <input type="checkbox" id="product-active" checked style="width: 18px; height: 18px;">
-            <label style="margin: 0;">Active (Visible on site)</label>
-          </div>
-        </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button type="submit" class="btn btn-white" id="save-product-btn">Save Product</button>
-          <button type="button" class="btn btn-border" id="cancel-edit-btn">Cancel</button>
-        </div>
-        
-        <div class="status-msg" id="form-status"></div>
-      </form>
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button type="submit" class="btn btn-white" id="save-product-btn">Save Product</button>
+            <button type="button" class="btn btn-border" id="cancel-edit-btn">Cancel</button>
+          </div>
+          
+          <div class="status-msg" id="form-status"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- GALLERY SECTION -->
+    <div id="section-gallery" class="admin-section">
+      <div class="admin-header">
+        <h2>Gallery CMS</h2>
+        <button class="btn btn-white" id="add-new-gallery-btn">+ Add New Photo</button>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Caption</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-gallery-list">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-form-panel" id="gallery-form-panel">
+        <h3 style="margin-bottom: 24px;" id="gallery-form-title">Add New Photo</h3>
+        <form id="gallery-form">
+          <input type="hidden" id="gallery-id">
+          <input type="hidden" id="gallery-image-url">
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="gallery-title" required placeholder="e.g. Custom Goku Figurine">
+            </div>
+            <div class="form-group">
+              <label>Caption [Optional]</label>
+              <input type="text" id="gallery-caption" placeholder="e.g. SLA Resin Print">
+            </div>
+            <div class="form-group">
+              <label>Sort Order (Lower = First)</label>
+              <input type="number" id="gallery-sort" value="0">
+            </div>
+            <div class="form-group">
+              <label>Photo</label>
+              <input type="file" id="gallery-image-upload" accept="image/*">
+              <div id="gallery-image-preview" style="margin-top: 10px; display: none;">
+                <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
+              </div>
+            </div>
+            <div class="form-group" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 24px;">
+              <input type="checkbox" id="gallery-active" checked style="width: 18px; height: 18px;">
+              <label style="margin: 0;">Active (Visible on site)</label>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button type="submit" class="btn btn-white" id="save-gallery-btn">Save Photo</button>
+            <button type="button" class="btn btn-border" id="cancel-gallery-edit-btn">Cancel</button>
+          </div>
+          
+          <div class="status-msg" id="gallery-form-status"></div>
+        </form>
+      </div>
     </div>
   </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById('section-' + tabId).classList.add('active');
+    }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/env.js"></script>

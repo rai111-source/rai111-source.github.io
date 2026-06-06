@@ -4,6 +4,7 @@ let supabaseClient = window.supabaseClient;
 let currentUser = null;
 const ADMIN_EMAIL = 'raj@littlelayers.in';
 let currentProducts = [];
+let currentGallery = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!supabaseClient) {
@@ -28,6 +29,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const imageUpload = document.getElementById('product-image-upload');
     const imagePreviewContainer = document.getElementById('image-preview');
     const imagePreviewImg = imagePreviewContainer.querySelector('img');
+
+    // Gallery Elements
+    const galleryList = document.getElementById('admin-gallery-list');
+    const galleryFormPanel = document.getElementById('gallery-form-panel');
+    const galleryForm = document.getElementById('gallery-form');
+    const addNewGalleryBtn = document.getElementById('add-new-gallery-btn');
+    const cancelGalleryEditBtn = document.getElementById('cancel-gallery-edit-btn');
+    const galleryFormTitle = document.getElementById('gallery-form-title');
+    const saveGalleryBtn = document.getElementById('save-gallery-btn');
+    const galleryFormStatus = document.getElementById('gallery-form-status');
+    const galleryImageUpload = document.getElementById('gallery-image-upload');
+    const galleryImagePreviewContainer = document.getElementById('gallery-image-preview');
+    const galleryImagePreviewImg = galleryImagePreviewContainer.querySelector('img');
 
     // -- Authentication Check --
     const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -56,6 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load initial data
     loadProducts();
+    loadGallery();
 
     // -- Event Listeners --
     
@@ -91,6 +106,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         await saveProduct();
+    });
+
+    // -- Gallery Event Listeners --
+    addNewGalleryBtn.addEventListener('click', () => {
+        openGalleryForm();
+    });
+
+    cancelGalleryEditBtn.addEventListener('click', () => {
+        closeGalleryForm();
+    });
+
+    galleryImageUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                galleryImagePreviewImg.src = event.target.result;
+                galleryImagePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            if (!document.getElementById('gallery-image-url').value) {
+                galleryImagePreviewContainer.style.display = 'none';
+            }
+        }
+    });
+
+    galleryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await saveGallery();
     });
 
     // -- Functions --
@@ -288,6 +333,190 @@ document.addEventListener('DOMContentLoaded', async () => {
         } finally {
             saveProductBtn.disabled = false;
             saveProductBtn.textContent = 'Save Product';
+        }
+    }
+
+    // --- GALLERY CRUD FUNCTIONS ---
+
+    async function loadGallery() {
+        galleryList.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading gallery...</td></tr>';
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('gallery')
+                .select('*')
+                .order('sort_order', { ascending: true })
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            currentGallery = data || [];
+            renderGallery(currentGallery);
+        } catch (error) {
+            console.error('Error loading gallery:', error);
+            galleryList.innerHTML = `<tr><td colspan="5" style="text-align:center; color: #ff6b6b;">Error: ${error.message}</td></tr>`;
+        }
+    }
+
+    function renderGallery(items) {
+        if (!items.length) {
+            galleryList.innerHTML = '<tr><td colspan="5" style="text-align:center;">No photos found.</td></tr>';
+            return;
+        }
+
+        galleryList.innerHTML = items.map(p => `
+            <tr>
+                <td>
+                    <img src="${p.image_url || 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                </td>
+                <td style="font-weight: 500;">${escapeHtml(p.title)}</td>
+                <td style="color: var(--gray4); font-size: 13px;">${escapeHtml(p.caption || '-')}</td>
+                <td>
+                    ${p.active !== false 
+                        ? '<span style="color: #10B981; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>' 
+                        : '<span style="color: var(--gray4); background: var(--gray7); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Hidden</span>'}
+                </td>
+                <td>
+                    <div class="action-links">
+                        <a onclick="window.editGallery(${p.id})">Edit</a>
+                        <a onclick="window.deleteGallery(${p.id})" class="delete">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    window.editGallery = function(id) {
+        const p = currentGallery.find(x => x.id === id);
+        if (!p) return;
+        
+        openGalleryForm(p);
+        window.scrollTo({ top: galleryFormPanel.offsetTop - 100, behavior: 'smooth' });
+    };
+
+    window.deleteGallery = async function(id) {
+        if (!confirm('Are you sure you want to delete this photo?')) return;
+        
+        try {
+            const { error } = await supabaseClient
+                .from('gallery')
+                .delete()
+                .eq('id', id);
+                
+            if (error) throw error;
+            
+            loadGallery();
+        } catch (error) {
+            alert('Error deleting photo: ' + error.message);
+        }
+    };
+
+    function openGalleryForm(item = null) {
+        galleryFormPanel.classList.add('active');
+        galleryFormStatus.style.display = 'none';
+        
+        if (item) {
+            galleryFormTitle.textContent = 'Edit Photo';
+            document.getElementById('gallery-id').value = item.id;
+            document.getElementById('gallery-title').value = item.title;
+            document.getElementById('gallery-caption').value = item.caption || '';
+            document.getElementById('gallery-sort').value = item.sort_order || 0;
+            document.getElementById('gallery-active').checked = item.active !== false;
+            
+            document.getElementById('gallery-image-url').value = item.image_url || '';
+            if (item.image_url) {
+                galleryImagePreviewImg.src = item.image_url;
+                galleryImagePreviewContainer.style.display = 'block';
+            } else {
+                galleryImagePreviewContainer.style.display = 'none';
+            }
+        } else {
+            galleryFormTitle.textContent = 'Add New Photo';
+            galleryForm.reset();
+            document.getElementById('gallery-id').value = '';
+            document.getElementById('gallery-image-url').value = '';
+            document.getElementById('gallery-sort').value = 0;
+            document.getElementById('gallery-active').checked = true;
+            galleryImagePreviewContainer.style.display = 'none';
+        }
+    }
+
+    function closeGalleryForm() {
+        galleryFormPanel.classList.remove('active');
+        galleryForm.reset();
+    }
+
+    function showGalleryStatus(msg, type) {
+        galleryFormStatus.textContent = msg;
+        galleryFormStatus.className = 'status-msg ' + type;
+        galleryFormStatus.style.display = 'block';
+    }
+
+    async function saveGallery() {
+        saveGalleryBtn.disabled = true;
+        saveGalleryBtn.textContent = 'Saving...';
+        showGalleryStatus('Saving photo...', 'success');
+        
+        try {
+            const id = document.getElementById('gallery-id').value;
+            let imageUrl = document.getElementById('gallery-image-url').value;
+            
+            if (galleryImageUpload.files && galleryImageUpload.files[0]) {
+                showGalleryStatus('Uploading image...', 'success');
+                const file = galleryImageUpload.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `gallery/${fileName}`;
+                
+                const { error: uploadError } = await supabaseClient.storage
+                    .from('gallery-images')
+                    .upload(filePath, file);
+                    
+                if (uploadError) throw uploadError;
+                
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('gallery-images')
+                    .getPublicUrl(filePath);
+                    
+                imageUrl = publicUrl;
+            }
+            
+            const galleryData = {
+                title: document.getElementById('gallery-title').value,
+                caption: document.getElementById('gallery-caption').value || null,
+                sort_order: parseInt(document.getElementById('gallery-sort').value) || 0,
+                image_url: imageUrl,
+                active: document.getElementById('gallery-active').checked,
+                updated_at: new Date()
+            };
+            
+            showGalleryStatus('Updating database...', 'success');
+            
+            if (id) {
+                const { error } = await supabaseClient
+                    .from('gallery')
+                    .update(galleryData)
+                    .eq('id', id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabaseClient
+                    .from('gallery')
+                    .insert([galleryData]);
+                if (error) throw error;
+            }
+            
+            showGalleryStatus('Photo saved successfully!', 'success');
+            loadGallery();
+            
+            setTimeout(() => {
+                closeGalleryForm();
+            }, 1500);
+            
+        } catch (error) {
+            console.error('Save error:', error);
+            showGalleryStatus('Error: ' + error.message, 'error');
+        } finally {
+            saveGalleryBtn.disabled = false;
+            saveGalleryBtn.textContent = 'Save Photo';
         }
     }
 
