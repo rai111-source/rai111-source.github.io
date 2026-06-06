@@ -25,9 +25,6 @@
     })();
   </script>
   <style>
-    /* Add to Cart button fix for standalone page without index.js */
-    .pacts button { pointer-events: none; }
-    .addbtn { pointer-events: none; }
   </style>
 </head>
 
@@ -92,81 +89,19 @@
         <p>Discover our range of 3D printed creations.</p>
       </div>
 
+      <div class="filters rev">
+        <button class="flt on" onclick="filterP('all',this)">All</button>
+        <button class="flt" onclick="filterP('figurines',this)">Figurines</button>
+        <button class="flt" onclick="filterP('keychains',this)">Keychains</button>
+        <button class="flt" onclick="filterP('decor',this)">Décor</button>
+        <button class="flt" onclick="filterP('portraits',this)">Portraits</button>
+        <button class="flt" onclick="filterP('gifts',this)">Gifts</button>
+      </div>
+
       <div class="pgrid" id="productsGrid">
-        <!-- Product 1 -->
-        <div class="pcard">
-          <div class="pimg">
-            <img src="Images/Goku.jpeg" alt="Goku Figurine" loading="lazy">
-            <div class="pacts">
-              <button class="icob add-to-cart" data-id="1" data-name="Goku Figurine" data-price="599" data-image="Images/Goku.jpeg" style="pointer-events: auto;">🛒</button>
-            </div>
-          </div>
-          <div class="pbody">
-            <div class="pcat">figurines</div>
-            <div class="pname">Goku Figurine</div>
-            <div class="pdesc">High-detail 3D printed figurine, perfect for collectors.</div>
-            <div class="pfoot">
-              <div class="pprice">₹599</div>
-              <button class="addbtn add-to-cart" data-id="1" data-name="Goku Figurine" data-price="599" data-image="Images/Goku.jpeg" style="pointer-events: auto;">+</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 2 -->
-        <div class="pcard">
-          <div class="pimg">
-            <img src="Images/Kas.jpeg" alt="Lithophane Keychain" loading="lazy">
-            <div class="pacts">
-              <button class="icob add-to-cart" data-id="2" data-name="Lithophane Keychain" data-price="149" data-image="Images/Kas.jpeg" style="pointer-events: auto;">🛒</button>
-            </div>
-          </div>
-          <div class="pbody">
-            <div class="pcat">keychains</div>
-            <div class="pname">Lithophane Keychain</div>
-            <div class="pdesc">Personalized lithophane keychain that reveals image when backlit.</div>
-            <div class="pfoot">
-              <div class="pprice">₹149</div>
-              <button class="addbtn add-to-cart" data-id="2" data-name="Lithophane Keychain" data-price="149" data-image="Images/Kas.jpeg" style="pointer-events: auto;">+</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 3 -->
-        <div class="pcard">
-          <div class="pimg">
-            <img src="Images/Room.jpeg" alt="Custom Room Decor" loading="lazy">
-            <div class="pacts">
-              <button class="icob add-to-cart" data-id="3" data-name="Custom Room Decor" data-price="60" data-image="Images/Room.jpeg" style="pointer-events: auto;">🛒</button>
-            </div>
-          </div>
-          <div class="pbody">
-            <div class="pcat">decor</div>
-            <div class="pname">Custom Room Decor</div>
-            <div class="pdesc">Unique 3D printed decor items to enhance your living space.</div>
-            <div class="pfoot">
-              <div class="pprice">₹60</div>
-              <button class="addbtn add-to-cart" data-id="3" data-name="Custom Room Decor" data-price="60" data-image="Images/Room.jpeg" style="pointer-events: auto;">+</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 4 -->
-        <div class="pcard">
-          <div class="pimg">
-            <img src="Images/Zubeen.jpeg" alt="Custom Portrait" loading="lazy">
-            <div class="pacts">
-              <button class="icob add-to-cart" data-id="4" data-name="Custom Portrait" data-price="149" data-image="Images/Zubeen.jpeg" style="pointer-events: auto;">🛒</button>
-            </div>
-          </div>
-          <div class="pbody">
-            <div class="pcat">portraits</div>
-            <div class="pname">Custom Portrait</div>
-            <div class="pdesc">Turn your favorite photos into 3D printed lithophane portraits.</div>
-            <div class="pfoot">
-              <div class="pprice">₹149</div>
-              <button class="addbtn add-to-cart" data-id="4" data-name="Custom Portrait" data-price="149" data-image="Images/Zubeen.jpeg" style="pointer-events: auto;">+</button>
-            </div>
-          </div>
+        <div class="loadbox">
+          <div class="spin"></div>
+          <p>Loading products…</p>
         </div>
       </div>
     </div>

@@ -60,6 +60,86 @@ document.addEventListener('DOMContentLoaded', () => {
     initCartSync();
     initNavDrawer();
 
+    const productsGrid = document.getElementById('productsGrid');
+    let allProducts = [];
+
+    if (productsGrid) {
+        loadProducts('all');
+    }
+
+    async function loadProducts(category) {
+        productsGrid.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading products…</p></div>';
+        try {
+            if (supabase) {
+                let q = supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
+                if (category && category !== 'all') q = q.eq('category', category);
+                const { data, error } = await q;
+                if (!error && data && data.length) {
+                    allProducts = data;
+                    renderProducts(data);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        productsGrid.innerHTML = '<div class="loadbox">No products found.</div>';
+    }
+
+    function renderProducts(list) {
+        if (!list.length) {
+            productsGrid.innerHTML = '<div class="loadbox">No products in this category yet.</div>';
+            return;
+        }
+        productsGrid.innerHTML = list.map(p => `
+        <div class="pcard">
+          <div class="pimg">
+            <img src="${p.image_url || ''}" alt="${escapeHtml(p.name)}" loading="lazy"
+                 onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=70'">
+            ${p.badge ? `<div class="pbadge">${escapeHtml(p.badge)}</div>` : ''}
+            <div class="pacts">
+              <button class="icob dyn-add-to-cart" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-image="${p.image_url || ''}">🛒</button>
+            </div>
+          </div>
+          <div class="pbody">
+            <div class="pcat">${escapeHtml(p.category)}</div>
+            <div class="pname">${escapeHtml(p.name)}</div>
+            ${p.description ? `<div class="pdesc">${escapeHtml(p.description.slice(0, 60))}…</div>` : ''}
+            <div class="pfoot">
+              <div class="pprice">₹${Number(p.price).toLocaleString('en-IN')}${p.original_price ? `<span class="was">₹${Number(p.original_price).toLocaleString('en-IN')}</span>` : ''}</div>
+              <button class="addbtn dyn-add-to-cart" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-image="${p.image_url || ''}">+</button>
+            </div>
+          </div>
+        </div>`).join('');
+        
+        productsGrid.querySelectorAll('.pcard').forEach((el, i) => {
+            el.style.cssText = 'opacity:0;transform:translateY(18px);transition:opacity .4s ease,transform .4s ease,border-color .3s,box-shadow .35s';
+            setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)' }, i * 55 + 60);
+        });
+
+        // Attach event listeners to new buttons
+        document.querySelectorAll('.dyn-add-to-cart').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const product = {
+                    id: button.dataset.id,
+                    name: button.dataset.name,
+                    price: parseFloat(button.dataset.price),
+                    image: button.dataset.image,
+                    quantity: 1
+                };
+                await addToCart(product);
+                alert(`${product.name} added to cart!`);
+            });
+        });
+    }
+
+    window.filterP = function(category, btn) {
+        document.querySelectorAll('.flt').forEach(b => b.classList.remove('on'));
+        if (btn) btn.classList.add('on');
+        loadProducts(category);
+    };
+
     function initNavDrawer() {
         if (!menuBtn || !navDrawer || !drawerOverlay) return;
 
