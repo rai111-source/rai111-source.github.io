@@ -485,8 +485,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 caption: document.getElementById('gallery-caption').value || null,
                 sort_order: parseInt(document.getElementById('gallery-sort').value) || 0,
                 image_url: imageUrl,
-                active: document.getElementById('gallery-active').checked,
-                updated_at: new Date()
+                active: document.getElementById('gallery-active').checked
             };
             
             showGalleryStatus('Updating database...', 'success');
