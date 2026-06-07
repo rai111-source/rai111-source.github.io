@@ -205,12 +205,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
         
         try {
+            const product = currentProducts.find(x => x.id === id);
+            const imageUrl = product ? product.image_url : null;
+
             const { error } = await supabaseClient
                 .from('products')
                 .delete()
                 .eq('id', id);
                 
             if (error) throw error;
+
+            if (imageUrl) {
+                const oldPath = getStoragePathFromUrl(imageUrl, 'product-images');
+                if (oldPath) {
+                    await supabaseClient.storage.from('product-images').remove([oldPath]);
+                }
+            }
             
             // Reload table
             loadProducts();
@@ -270,6 +280,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const id = document.getElementById('product-id').value;
             let imageUrl = document.getElementById('product-image-url').value;
+            const existingProduct = id ? currentProducts.find(x => x.id === parseInt(id)) : null;
+            const oldImageUrl = existingProduct ? existingProduct.image_url : null;
+            let fileUploaded = false;
             
             // Handle image upload if a new file is selected
             if (imageUpload.files && imageUpload.files[0]) {
@@ -290,6 +303,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .getPublicUrl(filePath);
                     
                 imageUrl = publicUrl;
+                fileUploaded = true;
             }
             
             const productData = {
@@ -313,6 +327,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .update(productData)
                     .eq('id', id);
                 if (error) throw error;
+
+                // Delete old image if a new one was successfully uploaded
+                if (fileUploaded && oldImageUrl && oldImageUrl !== imageUrl) {
+                    const oldPath = getStoragePathFromUrl(oldImageUrl, 'product-images');
+                    if (oldPath) {
+                        await supabaseClient.storage.from('product-images').remove([oldPath]);
+                    }
+                }
             } else {
                 // Insert
                 const { error } = await supabaseClient
@@ -398,12 +420,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!confirm('Are you sure you want to delete this photo?')) return;
         
         try {
+            const item = currentGallery.find(x => x.id === id);
+            const imageUrl = item ? item.image_url : null;
+
             const { error } = await supabaseClient
                 .from('gallery')
                 .delete()
                 .eq('id', id);
                 
             if (error) throw error;
+            
+            if (imageUrl) {
+                const oldPath = getStoragePathFromUrl(imageUrl, 'gallery-images');
+                if (oldPath) {
+                    await supabaseClient.storage.from('gallery-images').remove([oldPath]);
+                }
+            }
             
             loadGallery();
         } catch (error) {
@@ -460,6 +492,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const id = document.getElementById('gallery-id').value;
             let imageUrl = document.getElementById('gallery-image-url').value;
+            const existingItem = id ? currentGallery.find(x => x.id === parseInt(id)) : null;
+            const oldImageUrl = existingItem ? existingItem.image_url : null;
+            let fileUploaded = false;
             
             if (galleryImageUpload.files && galleryImageUpload.files[0]) {
                 showGalleryStatus('Uploading image...', 'success');
@@ -479,6 +514,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .getPublicUrl(filePath);
                     
                 imageUrl = publicUrl;
+                fileUploaded = true;
             }
             
             const galleryData = {
@@ -497,6 +533,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .update(galleryData)
                     .eq('id', id);
                 if (error) throw error;
+                
+                if (fileUploaded && oldImageUrl && oldImageUrl !== imageUrl) {
+                    const oldPath = getStoragePathFromUrl(oldImageUrl, 'gallery-images');
+                    if (oldPath) {
+                        await supabaseClient.storage.from('gallery-images').remove([oldPath]);
+                    }
+                }
             } else {
                 const { error } = await supabaseClient
                     .from('gallery')
@@ -663,10 +706,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         try {
             const visuals = [];
+            const oldVisuals = currentSiteContent['hero']?.visuals || [];
+            const filesToDelete = [];
             
             for (let i = 1; i <= 3; i++) {
                 const fileInput = document.getElementById(`hero-vis-${i}-file`);
                 let imageUrl = document.getElementById(`hero-vis-${i}-img-url`).value;
+                const oldImageUrl = oldVisuals[i - 1]?.image_url;
                 
                 if (fileInput.files && fileInput.files[0]) {
                     statusEl.textContent = `Uploading card ${i} image...`;
@@ -687,6 +733,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         
                     imageUrl = publicUrl;
                     document.getElementById(`hero-vis-${i}-img-url`).value = imageUrl;
+                    
+                    if (oldImageUrl && oldImageUrl !== imageUrl) {
+                        filesToDelete.push(oldImageUrl);
+                    }
                 }
                 
                 visuals.push({
@@ -724,6 +774,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
             if (error) throw error;
             
+            currentSiteContent['hero'] = heroData;
+            
+            // Delete old files from storage
+            for (const url of filesToDelete) {
+                const oldPath = getStoragePathFromUrl(url, 'site-images');
+                if (oldPath) {
+                    await supabaseClient.storage.from('site-images').remove([oldPath]);
+                }
+            }
+            
             statusEl.textContent = 'Hero section saved successfully!';
             setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
         } catch (error) {
@@ -749,9 +809,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         try {
             const steps = [];
+            const oldSteps = currentSiteContent['process']?.steps || [];
+            const filesToDelete = [];
+            
             for (let i = 1; i <= 4; i++) {
                 const fileInput = document.getElementById(`process-step-${i}-file`);
                 let iconVal = document.getElementById(`process-step-${i}-ico`).value;
+                const oldIconVal = oldSteps[i - 1]?.icon;
                 
                 if (fileInput.files && fileInput.files[0]) {
                     statusEl.textContent = `Uploading step ${i} image icon...`;
@@ -772,6 +836,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         
                     iconVal = publicUrl;
                     document.getElementById(`process-step-${i}-ico`).value = iconVal;
+                    
+                    if (oldIconVal && oldIconVal !== iconVal && (oldIconVal.startsWith('http') || oldIconVal.startsWith('/'))) {
+                        filesToDelete.push(oldIconVal);
+                    }
                 }
                 
                 steps.push({
@@ -793,6 +861,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .upsert({ key: 'process', content: processData });
                 
             if (error) throw error;
+            
+            currentSiteContent['process'] = processData;
+            
+            // Delete old files from storage
+            for (const url of filesToDelete) {
+                const oldPath = getStoragePathFromUrl(url, 'site-images');
+                if (oldPath) {
+                    await supabaseClient.storage.from('site-images').remove([oldPath]);
+                }
+            }
             
             statusEl.textContent = 'Process section saved successfully!';
             setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
@@ -862,5 +940,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    function getStoragePathFromUrl(url, bucketName) {
+        if (!url) return null;
+        const marker = `/storage/v1/object/public/${bucketName}/`;
+        const index = url.indexOf(marker);
+        if (index !== -1) {
+            return decodeURIComponent(url.substring(index + marker.length));
+        }
+        return null;
     }
 });
