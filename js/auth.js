@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageTitle = document.getElementById('page-title');
     const pageAuthBtn = document.getElementById('page-auth-btn');
     const googleLoginBtn = document.getElementById('google-login-btn');
-    const githubLoginBtn = document.getElementById('github-login-btn');
 
     // Profile Page Elements
     const profileForm = document.getElementById('profile-form');
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (pageAuthBtn) pageAuthBtn.disabled = true;
         if (googleLoginBtn) googleLoginBtn.disabled = true;
-        if (githubLoginBtn) githubLoginBtn.disabled = true;
         return;
     }
 
@@ -139,13 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         googleLoginBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             await handleGoogleLogin();
-        });
-    }
-
-    if (githubLoginBtn) {
-        githubLoginBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            await handleGithubLogin();
         });
     }
 
@@ -382,31 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function handleGithubLogin() {
-        try {
-            let redirectUrl = sessionStorage.getItem('redirectAfterAuth');
-            if (!redirectUrl) {
-                redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
-            } else {
-                sessionStorage.removeItem('redirectAfterAuth');
-            }
-
-            const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'github',
-                options: {
-                    redirectTo: redirectUrl
-                }
-            });
-            if (error) throw error;
-        } catch (error) {
-            if (pageAuthErrorMsg) {
-                pageAuthErrorMsg.style.color = "#ff6b6b";
-                pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
-            }
-            console.error('GitHub login error:', error.message);
-        }
-    }
-
     async function handleLogout() {
         try {
             const { error } = await supabaseClient.auth.signOut();
@@ -533,7 +499,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const forgotPasswordLink = document.getElementById('forgot-password-link');
         const authDivider = document.querySelector('.auth-divider');
         const googleBtn = document.getElementById('google-login-btn');
-        const githubBtn = document.getElementById('github-login-btn');
 
         // Reset visibility of elements
         if (emailGroup) emailGroup.style.display = 'flex';
@@ -542,7 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (forgotPasswordLink) forgotPasswordLink.style.display = 'inline';
         if (authDivider) authDivider.style.display = 'block';
         if (googleBtn) googleBtn.style.display = 'flex';
-        if (githubBtn) githubBtn.style.display = 'flex';
 
         // Toggle required attributes to prevent browser blockages on hidden inputs
         if (pageAuthEmailInput) pageAuthEmailInput.required = (authMode !== 'reset');
@@ -564,7 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (passwordGroup) passwordGroup.style.display = 'none';
             if (authDivider) authDivider.style.display = 'none';
             if (googleBtn) googleBtn.style.display = 'none';
-            if (githubBtn) githubBtn.style.display = 'none';
             pageAuthToggleText.innerHTML = 'Remembered your password? <a href="#" id="back-to-login-link" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Login</a>';
         } else if (authMode === 'reset') {
             pageTitle.textContent = 'Update Password';
@@ -574,7 +537,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (forgotPasswordLink) forgotPasswordLink.style.display = 'none';
             if (authDivider) authDivider.style.display = 'none';
             if (googleBtn) googleBtn.style.display = 'none';
-            if (githubBtn) githubBtn.style.display = 'none';
             pageAuthToggleText.innerHTML = 'Go to <a href="#" id="back-to-login-link" style="color: var(--white); text-decoration: underline; text-underline-offset: 3px;">Login</a>';
         }
     }
