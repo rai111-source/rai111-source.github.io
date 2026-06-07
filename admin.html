@@ -91,6 +91,8 @@
     <div class="admin-tabs">
       <div class="admin-tab active" onclick="switchTab('products')">Products</div>
       <div class="admin-tab" onclick="switchTab('gallery')">Gallery</div>
+      <div class="admin-tab" onclick="switchTab('orders')">Orders</div>
+      <div class="admin-tab" onclick="switchTab('enquiries')">Enquiries</div>
       <div class="admin-tab" onclick="switchTab('content')">Site Content</div>
     </div>
 
@@ -241,6 +243,56 @@
           
           <div class="status-msg" id="gallery-form-status"></div>
         </form>
+      </div>
+    </div>
+
+    <!-- ORDERS SECTION -->
+    <div id="section-orders" class="admin-section">
+      <div class="admin-header">
+        <h2>Orders Manager</h2>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Update Status</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-list">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ENQUIRIES SECTION -->
+    <div id="section-enquiries" class="admin-section">
+      <div class="admin-header">
+        <h2>Enquiries</h2>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Contact Details</th>
+              <th>Service</th>
+              <th>Message</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-enquiries-list">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -529,8 +581,18 @@
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
       
-      event.target.classList.add('active');
-      document.getElementById('section-' + tabId).classList.add('active');
+      // Find the tab that has the corresponding tabId in its onclick attribute
+      const tabEl = Array.from(document.querySelectorAll('.admin-tab')).find(t => 
+        t.getAttribute('onclick') && t.getAttribute('onclick').includes(`'${tabId}'`)
+      );
+      if (tabEl) {
+        tabEl.classList.add('active');
+      }
+      
+      const secEl = document.getElementById('section-' + tabId);
+      if (secEl) {
+        secEl.classList.add('active');
+      }
     }
   </script>
 

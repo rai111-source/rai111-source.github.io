@@ -71,6 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load initial data
     loadProducts();
     loadGallery();
+    loadOrders();
+    loadEnquiries();
     loadSiteContentCMS();
 
     // -- Event Listeners --
@@ -573,12 +575,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (error) throw error;
             
-            data.forEach(item => {
-                currentSiteContent[item.key] = item.content;
-                if (item.key === 'hero') populateHeroForm(item.content);
-                if (item.key === 'process') populateProcessForm(item.content);
-                if (item.key === 'about') populateAboutForm(item.content);
-            });
+            if (data) {
+                data.forEach(item => {
+                    currentSiteContent[item.key] = item.content;
+                    if (item.key === 'hero') populateHeroForm(item.content);
+                    if (item.key === 'process') populateProcessForm(item.content);
+                    if (item.key === 'about') populateAboutForm(item.content);
+                });
+            }
         } catch (error) {
             console.error('Error loading site content:', error);
         }
@@ -931,6 +935,171 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.textContent = 'Save About Section';
         }
     });
+
+    async function loadOrders() {
+        const listEl = document.getElementById('admin-orders-list');
+        if (!listEl) return;
+        listEl.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading orders...</td></tr>';
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (error) throw error;
+            
+            if (!data || !data.length) {
+                listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--gray4);">No orders found.</td></tr>';
+                return;
+            }
+            
+            const STATUS_STYLES = {
+                pending: 'background: rgba(255, 193, 7, 0.15); color: #ffc107;',
+                confirmed: 'background: rgba(33, 150, 243, 0.15); color: #2196f3;',
+                printing: 'background: rgba(156, 39, 176, 0.15); color: #9c27b0;',
+                dispatched: 'background: rgba(255, 87, 34, 0.15); color: #ff5722;',
+                delivered: 'background: rgba(76, 175, 80, 0.15); color: #4caf50;'
+            };
+            
+            listEl.innerHTML = data.map(order => {
+                const date = new Date(order.created_at).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                let itemsHtml = '';
+                if (Array.isArray(order.items)) {
+                    itemsHtml = order.items.map(item => `• ${escapeHtml(item.name)} (x${item.qty || item.quantity || 1})`).join('<br>');
+                } else if (typeof order.items === 'string') {
+                    try {
+                        const parsed = JSON.parse(order.items);
+                        itemsHtml = parsed.map(item => `• ${escapeHtml(item.name)} (x${item.qty || item.quantity || 1})`).join('<br>');
+                    } catch (e) {
+                        itemsHtml = escapeHtml(order.items);
+                    }
+                }
+                
+                const statusOptions = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'].map(s => {
+                    const sel = order.status === s ? 'selected' : '';
+                    return `<option value="${s}" ${sel}>${s.toUpperCase()}</option>`;
+                }).join('');
+                
+                const style = STATUS_STYLES[order.status || 'pending'] || STATUS_STYLES.pending;
+                
+                return `
+                <tr>
+                    <td style="font-family: monospace; font-weight: 600;">${escapeHtml(order.order_ref)}</td>
+                    <td style="font-size: 13px; color: var(--gray4);">${date}</td>
+                    <td style="font-size: 13px; line-height: 1.5; text-align: left;">${itemsHtml}</td>
+                    <td style="font-weight: 500;">₹${Number(order.total).toLocaleString('en-IN')}</td>
+                    <td>
+                        <span class="status-pill" style="text-transform: uppercase; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; ${style}">
+                            ${escapeHtml(order.status || 'pending')}
+                        </span>
+                    </td>
+                    <td>
+                        <select onchange="updateOrderStatus('${order.id}', this.value)" style="background: var(--gray8); border: 1px solid var(--line); color: var(--white); padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                            ${statusOptions}
+                        </select>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (e) {
+            console.error('Error loading orders:', e);
+            listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff6b6b;">Failed to load orders.</td></tr>';
+        }
+    }
+
+    window.updateOrderStatus = async function(orderId, newStatus) {
+        try {
+            const { error } = await supabaseClient
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', orderId);
+                
+            if (error) throw error;
+            
+            loadOrders();
+        } catch (e) {
+            console.error('Error updating order status:', e);
+            alert('Failed to update order status.');
+        }
+    };
+
+    async function loadEnquiries() {
+        const listEl = document.getElementById('admin-enquiries-list');
+        if (!listEl) return;
+        listEl.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading enquiries...</td></tr>';
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('messages')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (error) throw error;
+            
+            if (!data || !data.length) {
+                listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--gray4);">No enquiries found.</td></tr>';
+                return;
+            }
+            
+            listEl.innerHTML = data.map(msg => {
+                const date = new Date(msg.created_at).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const cleanPhone = msg.phone.replace(/[^0-9]/g, '');
+                const phoneWithCode = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+                
+                return `
+                <tr>
+                    <td style="font-size: 13px; color: var(--gray4);">${date}</td>
+                    <td style="font-weight: 500;">${escapeHtml(msg.name)}</td>
+                    <td style="font-size: 13px; line-height: 1.4; text-align: left;">
+                        📱 ${escapeHtml(msg.phone)}<br>
+                        ✉️ ${escapeHtml(msg.email)}
+                    </td>
+                    <td style="text-transform: capitalize; font-size: 13px;">${escapeHtml(msg.service || 'Other')}</td>
+                    <td style="font-size: 13px; max-width: 250px; white-space: pre-wrap; line-height: 1.4; text-align: left;">${escapeHtml(msg.message)}</td>
+                    <td>
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                            <a href="https://wa.me/${phoneWithCode}" target="_blank" class="btn btn-white" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">Reply</a>
+                            <button onclick="deleteEnquiry('${msg.id}')" class="btn btn-border" style="padding: 6px 12px; font-size: 12px; color: #ff6b6b; border-color: rgba(255,107,107,0.3); background: transparent;">Delete</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (e) {
+            console.error('Error loading enquiries:', e);
+            listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff6b6b;">Failed to load enquiries.</td></tr>';
+        }
+    }
+
+    window.deleteEnquiry = async function(msgId) {
+        if (!confirm('Are you sure you want to delete this enquiry?')) return;
+        try {
+            const { error } = await supabaseClient
+                .from('messages')
+                .delete()
+                .eq('id', msgId);
+                
+            if (error) throw error;
+            
+            loadEnquiries();
+        } catch (e) {
+            console.error('Error deleting enquiry:', e);
+            alert('Failed to delete enquiry.');
+        }
+    };
 
     function escapeHtml(str) {
         if (!str && str !== 0) return '';
