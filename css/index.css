@@ -1205,7 +1205,7 @@
     .ggrid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: 240px 240px;
+      grid-auto-rows: 240px;
       gap: 12px;
       margin-top: 44px;
     }
@@ -2378,10 +2378,6 @@
         height: 180px
       }
 
-      .ggrid .gi:nth-child(n+5) {
-        display: none;
-      }
-
       .cart-dr {
         width: 100%
       }
@@ -2694,10 +2690,6 @@
 
       .gi {
         height: 210px
-      }
-
-      .ggrid .gi:nth-child(n+3) {
-        display: none;
       }
 
       .ftgrid {
