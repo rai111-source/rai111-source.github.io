@@ -11,7 +11,23 @@
       { id: 8, name: 'Wall Art Plaque', category: 'decor', price: 249, original_price: null, description: 'Geometric typographic wall art.', badge: null, image_url: 'Images/Wall-art.jpeg' },
     ];
 
-    let cart = JSON.parse(localStorage.getItem('ll_cart') || '[]');
+    let cart = [];
+    try {
+      const stored = localStorage.getItem('littleLayersCart') || localStorage.getItem('ll_cart');
+      if (stored) {
+        cart = JSON.parse(stored);
+        if (Array.isArray(cart)) {
+          cart.forEach(item => {
+            if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
+            if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
+          });
+        } else {
+          cart = [];
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse cart:', e);
+    }
     let allP = [];
 
     document.addEventListener('DOMContentLoaded', () => { 
@@ -99,20 +115,47 @@
     function addToCart(id, e) {
       if (e) e.stopPropagation();
       const p = allP.find(x => x.id === id); if (!p) return;
-      const ex = cart.find(i => i.id === id);
-      if (ex) ex.qty++; else cart.push({ id: p.id, name: p.name, price: p.price, image_url: p.image_url, qty: 1 });
+      const ex = cart.find(i => String(i.id) === String(id));
+      if (ex) {
+        ex.quantity = (ex.quantity || ex.qty || 0) + 1;
+        if (ex.qty !== undefined) ex.qty = ex.quantity;
+      } else {
+        cart.push({ id: p.id, name: p.name, price: Number(p.price), image: p.image_url, image_url: p.image_url, quantity: 1, qty: 1 });
+      }
       saveCart(); updateCart(); showNotif(`${p.name} added to cart! 🛒`);
     }
     function changeQty(id, d) {
-      const item = cart.find(i => i.id === id); if (!item) return;
-      item.qty += d; if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      const item = cart.find(i => String(i.id) === String(id)); if (!item) return;
+      const currentQty = (item.quantity !== undefined) ? item.quantity : (item.qty || 0);
+      const newQty = currentQty + d;
+      if (newQty <= 0) {
+        cart = cart.filter(i => String(i.id) !== String(id));
+      } else {
+        item.quantity = newQty;
+        item.qty = newQty;
+      }
       saveCart(); updateCart();
     }
-    function saveCart() { localStorage.setItem('ll_cart', JSON.stringify(cart)); }
+    function saveCart() {
+      // make sure both properties are kept for safety
+      cart.forEach(item => {
+        if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
+        if (item.qty === undefined && item.quantity !== undefined) item.qty = item.quantity;
+        if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
+        if (item.image_url === undefined && item.image !== undefined) item.image_url = item.image;
+      });
+      localStorage.setItem('littleLayersCart', JSON.stringify(cart));
+    }
     function updateCart() {
-      const count = cart.reduce((s, i) => s + i.qty, 0);
+      cart.forEach(item => {
+        if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
+        if (item.qty === undefined && item.quantity !== undefined) item.qty = item.quantity;
+        if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
+        if (item.image_url === undefined && item.image !== undefined) item.image_url = item.image;
+      });
+      const count = cart.reduce((s, i) => s + (i.quantity || 0), 0);
       document.getElementById('cartCount').textContent = count;
-      const total = cart.reduce((s, i) => s + Number(i.price) * i.qty, 0);
+      const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 0), 0);
       const tv = document.getElementById('cartTotal'); if (tv) tv.textContent = '₹' + total.toLocaleString('en-IN');
       const body = document.getElementById('cartItems'); const foot = document.getElementById('cartFt'); if (!body) return;
       if (!cart.length) {
@@ -122,11 +165,11 @@
         if (foot) foot.style.display = 'block';
         body.innerHTML = cart.map(item => `
       <div class="citem">
-        <img src="${item.image_url || ''}" alt="${esc(item.name)}" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
-        <div class="ci-info"><div class="ci-name">${esc(item.name)}</div><div class="ci-price">₹${(Number(item.price) * item.qty).toLocaleString('en-IN')}</div></div>
+        <img src="${item.image || ''}" alt="${esc(item.name)}" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
+        <div class="ci-info"><div class="ci-name">${esc(item.name)}</div><div class="ci-price">₹${(Number(item.price) * (item.quantity || 1)).toLocaleString('en-IN')}</div></div>
         <div class="qctl">
           <button class="qb" onclick="changeQty(${item.id},-1)">−</button>
-          <span class="qn">${item.qty}</span>
+          <span class="qn">${item.quantity || 1}</span>
           <button class="qb" onclick="changeQty(${item.id},1)">+</button>
         </div>
       </div>`).join('');
@@ -135,9 +178,15 @@
     function toggleCart() { document.getElementById('cartDr').classList.toggle('open'); document.getElementById('cartOv').classList.toggle('open'); }
     async function checkout() {
       if (!cart.length) return;
-      const total = cart.reduce((s, i) => s + Number(i.price) * i.qty, 0);
+      cart.forEach(item => {
+        if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
+        if (item.qty === undefined && item.quantity !== undefined) item.qty = item.quantity;
+        if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
+        if (item.image_url === undefined && item.image !== undefined) item.image_url = item.image;
+      });
+      const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 0), 0);
       const ref = 'LL-' + Date.now();
-      const msg = `🛒 *New Order — ${ref}*\n\n` + cart.map(i => `• ${i.name} × ${i.qty} = ₹${(Number(i.price) * i.qty).toLocaleString('en-IN')}`).join('\n') + `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
+      const msg = `🛒 *New Order — ${ref}*\n\n` + cart.map(i => `• ${i.name} × ${(i.quantity || 1)} = ₹${(Number(i.price) * (i.quantity || 1)).toLocaleString('en-IN')}`).join('\n') + `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
       try { if (typeof sb !== 'undefined') await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' }); } catch (e) { console.error(e); }
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
       cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
