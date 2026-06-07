@@ -2480,13 +2480,26 @@
     }
 
     @media(max-width:600px) {
+      body {
+        font-size: 14.5px;
+      }
+
+      .nav-logo {
+        font-size: 18px;
+      }
+
       .topbar {
         font-size: 11px;
         padding: 6px 12px
       }
 
       .hero-h1 {
-        font-size: clamp(42px, 12vw, 68px)
+        font-size: clamp(32px, 10vw, 46px);
+      }
+
+      .hero-sub {
+        font-size: 14.5px;
+        margin: 16px 0 24px;
       }
 
       .hero-ctas,
@@ -2518,11 +2531,96 @@
         padding: 0
       }
 
+      .hstat-v {
+        font-size: 26px;
+      }
+
       .hstat + .hstat {
         border-left: none;
         border-top: 1px solid var(--line);
         padding-top: 16px;
         padding-left: 0
+      }
+
+      .btn {
+        padding: 11px 22px;
+        font-size: 13.5px;
+        border-radius: 9px;
+      }
+
+      .sec {
+        padding: 44px 16px;
+      }
+
+      .sec-h h2,
+      .sec-hrow h2,
+      #about-title-el,
+      h2 {
+        font-size: clamp(24px, 8vw, 32px) !important;
+      }
+
+      .sec-h p {
+        font-size: 14px;
+      }
+
+      .step {
+        padding: 24px 20px;
+      }
+
+      .step-ico {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin-bottom: 14px;
+      }
+
+      .step h3 {
+        font-size: 15px;
+      }
+
+      .step p {
+        font-size: 13px;
+      }
+
+      .fcard {
+        padding: 24px;
+      }
+
+      .fcard h3 {
+        font-size: 16px;
+      }
+
+      .fcard p {
+        font-size: 13px;
+      }
+
+      .fico {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
+      .scard {
+        padding: 20px;
+        gap: 16px;
+      }
+
+      .sico {
+        font-size: 28px;
+      }
+
+      .stit {
+        font-size: 18px;
+      }
+
+      .sdesc {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .sfrom {
+        font-size: 12px;
       }
 
       .acards {
@@ -2535,6 +2633,19 @@
 
       .ac.s2 {
         grid-column: span 1
+      }
+
+      .acv {
+        font-size: 28px;
+      }
+
+      .acl {
+        font-size: 13px;
+        margin-top: 6px;
+      }
+
+      .acs {
+        font-size: 12px;
       }
 
       .pgrid {
@@ -2604,6 +2715,23 @@
 
       .ftlinks {
         justify-content: center
+      }
+
+      .mobnav a {
+        font-size: 14.5px;
+        padding: 10px 14px;
+      }
+
+      .wafloat {
+        width: 44px;
+        height: 44px;
+        bottom: 16px;
+        right: 16px;
+      }
+
+      .wafloat svg {
+        width: 22px;
+        height: 22px;
       }
     }
 
