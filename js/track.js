@@ -59,4 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
             window._nt = setTimeout(() => el.classList.remove('show'), 3000); 
         }
     }
+
+    // Auto-track if URL query has ref
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref');
+    if (refParam) {
+        const inputEl = document.getElementById('trackInput');
+        if (inputEl) {
+            inputEl.value = refParam;
+            window.trackOrder();
+        }
+    }
 });

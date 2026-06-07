@@ -337,19 +337,66 @@ document.addEventListener('DOMContentLoaded', () => {
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Order placed successfully! (This is a mock checkout)');
-
-            if (currentUser) {
-                // Clear DB cart on checkout
-                const { error } = await supabase
-                    .from('cart_items')
-                    .delete()
-                    .eq('user_id', currentUser.id);
-                if (error) console.error('Error clearing DB cart:', error.message);
+            
+            if (!cart || !cart.length) {
+                alert('Your cart is empty.');
+                return;
             }
 
-            localStorage.removeItem('littleLayersCart');
-            window.location.href = 'index.html';
+            const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'PLACING ORDER...';
+            }
+
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const zip = document.getElementById('zip').value;
+            const email = document.getElementById('email').value;
+            
+            const paymentMethodInput = document.querySelector('input[name="payment_method"]:checked');
+            const paymentMethod = paymentMethodInput ? paymentMethodInput.value : 'cod';
+
+            const customer = { name, address, city, zip, email, payment_method: paymentMethod };
+            const order_ref = 'LL-' + Date.now();
+            const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 1), 0);
+
+            try {
+                if (supabase) {
+                    const { error: orderError } = await supabase
+                        .from('orders')
+                        .insert({
+                            order_ref,
+                            items: cart,
+                            total,
+                            status: 'pending',
+                            customer
+                        });
+                    if (orderError) throw orderError;
+                }
+
+                if (currentUser && supabase) {
+                    // Clear DB cart on checkout
+                    const { error } = await supabase
+                        .from('cart_items')
+                        .delete()
+                        .eq('user_id', currentUser.id);
+                    if (error) console.error('Error clearing DB cart:', error.message);
+                }
+
+                localStorage.removeItem('littleLayersCart');
+                
+                alert(`Order #${order_ref} placed successfully!`);
+                window.location.href = `track.html?ref=${order_ref}`;
+            } catch (err) {
+                console.error('Error placing order:', err.message);
+                alert('Error placing order: ' + err.message);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'PLACE ORDER';
+                }
+            }
         });
     }
 

@@ -172,10 +172,47 @@
               <input type="email" id="email" placeholder="Email" required>
             </div>
 
-            <h3 style="font-size: 18px; margin-top: 32px; margin-bottom: 24px; color: var(--white); border-bottom: 1px solid var(--line); padding-bottom: 12px;">Payment Details</h3>
-            <div class="fg" style="margin-bottom: 24px;">
-              <label for="card">Card Number</label>
-              <input type="text" id="card" placeholder="0000 0000 0000 0000" required>
+            <h3 style="font-size: 18px; margin-top: 32px; margin-bottom: 24px; color: var(--white); border-bottom: 1px solid var(--line); padding-bottom: 12px;">Payment Method</h3>
+            
+            <style>
+              .payment-method-option {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 16px;
+                background: var(--gray8);
+                border: 2px solid var(--line);
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                min-width: 200px;
+              }
+              .payment-method-option:hover {
+                border-color: var(--gray4);
+              }
+              .payment-method-option:has(input[type="radio"]:checked) {
+                border-color: var(--white) !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+              }
+            </style>
+
+            <div class="payment-methods" style="display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap;">
+              <label class="payment-method-option">
+                <input type="radio" name="payment_method" value="cod" checked style="accent-color: var(--white); cursor: pointer;">
+                <div>
+                  <div style="font-weight: 600; color: var(--white); font-size: 14px;">Cash on Delivery (COD)</div>
+                  <div style="font-size: 12px; color: var(--gray4); margin-top: 2px;">Pay with cash when package is delivered</div>
+                </div>
+              </label>
+              
+              <label class="payment-method-option">
+                <input type="radio" name="payment_method" value="online" style="accent-color: var(--white); cursor: pointer;">
+                <div>
+                  <div style="font-weight: 600; color: var(--white); font-size: 14px;">Online Payment</div>
+                  <div style="font-size: 12px; color: var(--gray4); margin-top: 2px;">Pay instantly using UPI, Card, or NetBanking</div>
+                </div>
+              </label>
             </div>
 
             <button type="submit" class="btn btn-white" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px;">PLACE ORDER</button>
