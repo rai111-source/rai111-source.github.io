@@ -2378,6 +2378,10 @@
         height: 180px
       }
 
+      .ggrid .gi:nth-child(n+5) {
+        display: none;
+      }
+
       .cart-dr {
         width: 100%
       }
@@ -2690,6 +2694,10 @@
 
       .gi {
         height: 210px
+      }
+
+      .ggrid .gi:nth-child(n+3) {
+        display: none;
       }
 
       .ftgrid {
