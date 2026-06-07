@@ -54,10 +54,10 @@
           let q = sb.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
           if (cat && cat !== 'all') q = q.eq('category', cat);
           const { data, error } = await q;
-          if (!error && data && data.length) { allP = data; renderP(data); return; }
+          if (!error && data && data.length) { allP = data.slice(0, 4); renderP(allP); return; }
         }
       } catch (e) { console.error(e); }
-      allP = cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat);
+      allP = (cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat)).slice(0, 4);
       renderP(allP);
     }
 
@@ -231,32 +231,6 @@
       cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
     }
 
-    async function trackOrder() {
-      const val = document.getElementById('trackInput').value.trim().toUpperCase();
-      if (!val) { showNotif('Please enter your Order ID'); return; }
-      const res = document.getElementById('trackResult'), msg = document.getElementById('trackMsg'), tl = document.getElementById('trackTimeline');
-      let order = null;
-      try { if (typeof sb !== 'undefined') { const { data } = await sb.from('orders').select('*').eq('order_ref', val).single(); order = data; } } catch (e) { console.error(e); }
-      if (!order) { msg.textContent = `Order "${val}" not found. Please check the ID or contact us.`; msg.style.color = 'var(--gray2)'; res.style.display = 'block'; tl.style.display = 'none'; return; }
-      const ss = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'];
-      const ll = { pending: { icon: '🕐', title: 'Order Placed', sub: 'We received your order' }, confirmed: { icon: '✓', title: 'Design Confirmed', sub: 'Sent to printer' }, printing: { icon: '🖨', title: 'Printing', sub: 'Est. 2 more days' }, dispatched: { icon: '📦', title: 'Dispatched', sub: 'Shipped via courier' }, delivered: { icon: '✓', title: 'Delivered', sub: 'Enjoy your print!' } };
-      const ci = ss.indexOf(order.status); msg.textContent = ''; tl.style.display = 'flex';
-      tl.innerHTML = ss.map((s, i) => {
-        const done = i < ci;
-        const active = i === ci;
-        const l = ll[s];
-        return `
-          <div class="tstep${done ? ' done' : ''}${active ? ' active' : ''}">
-            <div class="tdot">${done ? '✓' : l.icon}</div>
-            <div>
-              <div class="tsl">${l.title}</div>
-              <div class="tss">${l.sub}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-      res.style.display = 'block';
-    }
 
     async function submitForm(e) {
       e.preventDefault(); const btn = e.target.querySelector('button[type=submit]');
