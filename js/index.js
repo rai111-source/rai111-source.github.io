@@ -253,7 +253,20 @@
       const visEl = document.getElementById('hero-vis-el');
 
       if (titleEl && content.title) {
-        titleEl.innerHTML = content.title.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
+        let titleText = content.title.replace(/\\n/g, '\n');
+        const hasMarkdownItalic = /[\*_][^*_]+[\*_]/.test(titleText);
+        const hasHtmlItalic = /<span class="italic">|<em\b/.test(titleText);
+        
+        if (hasMarkdownItalic) {
+          titleText = titleText.replace(/[\*_]([^*_]+)[\*_]/g, '<span class="italic">$1</span>');
+        }
+        
+        const lines = titleText.split('\n');
+        if (lines.length === 3 && !hasMarkdownItalic && !hasHtmlItalic) {
+          titleEl.innerHTML = `${lines[0]}<br><span class="italic">${lines[1]}</span><br>${lines[2]}`;
+        } else {
+          titleEl.innerHTML = lines.join('<br>');
+        }
       }
       if (subEl && content.sub) {
         subEl.textContent = content.sub;
