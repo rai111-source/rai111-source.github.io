@@ -20,6 +20,7 @@
       loadSiteContent();
       initReveal(); 
       initThemeToggle();
+      initGalleryBg();
     });
 
     function initThemeToggle() {
@@ -281,5 +282,68 @@
           `;
         }).join('');
       }
+    }
+
+    async function initGalleryBg() {
+      const container = document.getElementById('gallery-bg-container');
+      if (!container) return;
+      
+      let images = [];
+      try {
+        if (typeof sb !== 'undefined') {
+          const { data, error } = await sb.from('gallery').select('image_url');
+          if (!error && data && data.length) {
+            images = data.map(item => item.image_url).filter(Boolean);
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching gallery for bg:', e);
+      }
+      
+      if (!images.length) {
+        images = [
+          'Images/Goku.jpeg',
+          'Images/Zubeen.jpeg',
+          'Images/Decor.jpeg',
+          'Images/LITHOPHANE.jpeg',
+          'Images/Dragon.jpeg',
+          'Images/Keychain.jpeg',
+          'Images/Gift.jpeg',
+          'Images/Wall-art.jpeg'
+        ];
+      }
+      
+      const positions = [
+        { left: '4%', top: '8%', anim: 'anim-fade' },
+        { left: '16%', top: '55%', anim: 'anim-zoom' },
+        { left: '8%', top: '32%', anim: 'anim-pop' },
+        { left: '22%', top: '75%', anim: 'anim-fade' },
+        { right: '4%', top: '12%', anim: 'anim-zoom' },
+        { right: '18%', top: '48%', anim: 'anim-pop' },
+        { right: '8%', top: '72%', anim: 'anim-fade' },
+        { right: '22%', top: '28%', anim: 'anim-zoom' }
+      ];
+      
+      const shuffledImages = [...images].sort(() => 0.5 - Math.random());
+      
+      positions.forEach((pos, idx) => {
+        const imgUrl = shuffledImages[idx % shuffledImages.length];
+        const imgEl = document.createElement('img');
+        imgEl.className = `bg-anim-img ${pos.anim}`;
+        imgEl.src = imgUrl;
+        
+        if (pos.left) imgEl.style.left = pos.left;
+        if (pos.right) imgEl.style.right = pos.right;
+        imgEl.style.top = pos.top;
+        
+        const delay = (idx * 1.8) + (Math.random() * 1.5);
+        imgEl.style.animationDelay = `${delay}s`;
+        
+        const baseDuration = pos.anim === 'anim-fade' ? 12 : (pos.anim === 'anim-zoom' ? 15 : 10);
+        const duration = baseDuration + (Math.random() * 3 - 1.5);
+        imgEl.style.animationDuration = `${duration}s`;
+        
+        container.appendChild(imgEl);
+      });
     }
 
