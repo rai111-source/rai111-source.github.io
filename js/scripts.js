@@ -398,6 +398,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 localStorage.removeItem('littleLayersCart');
                 
+                // Save order reference locally for tracking
+                try {
+                    let myOrders = JSON.parse(localStorage.getItem('littleLayersUserOrders') || '[]');
+                    if (!myOrders.includes(order_ref)) {
+                        myOrders.push(order_ref);
+                        localStorage.setItem('littleLayersUserOrders', JSON.stringify(myOrders));
+                    }
+                } catch (ex) {
+                    console.error('Error saving order ref to localStorage:', ex);
+                }
+                
                 alert(`Order #${order_ref} placed successfully!`);
                 window.location.href = `track.html?ref=${order_ref}`;
             } catch (err) {
@@ -445,6 +456,17 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        // Save order reference locally for tracking
+        try {
+            let myOrders = JSON.parse(localStorage.getItem('littleLayersUserOrders') || '[]');
+            if (!myOrders.includes(ref)) {
+                myOrders.push(ref);
+                localStorage.setItem('littleLayersUserOrders', JSON.stringify(myOrders));
+            }
+        } catch (ex) {
+            console.error('Error saving order ref to localStorage:', ex);
         }
 
         window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');

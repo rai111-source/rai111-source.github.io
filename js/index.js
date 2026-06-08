@@ -342,6 +342,17 @@
         }
       }
 
+      // Save order reference locally for tracking
+      try {
+        let myOrders = JSON.parse(localStorage.getItem('littleLayersUserOrders') || '[]');
+        if (!myOrders.includes(ref)) {
+          myOrders.push(ref);
+          localStorage.setItem('littleLayersUserOrders', JSON.stringify(myOrders));
+        }
+      } catch (ex) {
+        console.error('Error saving order ref to localStorage:', ex);
+      }
+
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
       cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
     }

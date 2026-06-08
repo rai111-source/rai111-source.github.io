@@ -1,9 +1,31 @@
 // LittleLayers.Co - Track Order Script
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // Load recent orders list on page load
+    loadRecentOrders();
+
     // expose trackOrder globally
-    window.trackOrder = async function() {
-        const val = document.getElementById('trackInput').value.trim().toUpperCase();
+    window.trackOrder = async function(orderRef) {
+        let val = orderRef;
+        if (!val) {
+            val = document.getElementById('trackInput').value.trim().toUpperCase();
+        } else {
+            document.getElementById('trackInput').value = val;
+        }
         if (!val) { showNotif('Please enter your Order ID'); return; }
+        
+        // Hide the recent orders list when tracking
+        const recentSection = document.getElementById('recentOrdersSection');
+        if (recentSection) {
+            recentSection.style.display = 'none';
+        }
+        
+        const backBtn = document.getElementById('backToOrdersBtn');
+        if (backBtn) {
+            const hasOrders = recentSection && recentSection.dataset.hasOrders === 'true';
+            backBtn.style.display = hasOrders ? 'inline-block' : 'none';
+        }
+
         const res = document.getElementById('trackResult');
         const msg = document.getElementById('trackMsg');
         const tl = document.getElementById('trackTimeline');
@@ -168,6 +190,135 @@ document.addEventListener('DOMContentLoaded', () => {
         res.style.display = 'block';
     }
 
+    window.showRecentOrdersList = function() {
+        document.getElementById('trackResult').style.display = 'none';
+        document.getElementById('trackInput').value = '';
+        const listSection = document.getElementById('recentOrdersSection');
+        if (listSection && listSection.dataset.hasOrders === 'true') {
+            listSection.style.display = 'block';
+        }
+        loadRecentOrders();
+    }
+
+    async function loadRecentOrders() {
+        const recentSection = document.getElementById('recentOrdersSection');
+        const recentList = document.getElementById('recentOrdersList');
+        if (!recentSection || !recentList) return;
+
+        const sb = window.supabaseClient;
+        let userEmail = null;
+        if (typeof sb !== 'undefined') {
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session && session.user) {
+                    userEmail = session.user.email;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        let localRefs = JSON.parse(localStorage.getItem('littleLayersUserOrders') || '[]');
+        
+        if (localRefs.length === 0 && !userEmail) {
+            recentSection.style.display = 'none';
+            recentSection.dataset.hasOrders = 'false';
+            return;
+        }
+
+        let ordersToShow = [];
+        if (typeof sb !== 'undefined') {
+            try {
+                let query = sb.from('orders').select('*');
+                if (userEmail && localRefs.length > 0) {
+                    const formattedRefs = localRefs.map(r => `"${r}"`).join(',');
+                    const orFilter = `customer->>email.eq.${userEmail},order_ref.in.(${formattedRefs})`;
+                    const { data, error } = await query.or(orFilter);
+                    if (!error && data) ordersToShow = data;
+                } else if (userEmail) {
+                    const { data, error } = await query.eq('customer->>email', userEmail);
+                    if (!error && data) ordersToShow = data;
+                } else if (localRefs.length > 0) {
+                    const { data, error } = await query.in('order_ref', localRefs);
+                    if (!error && data) ordersToShow = data;
+                }
+            } catch (e) {
+                console.error('Error fetching recent orders:', e);
+            }
+        }
+
+        if (ordersToShow.length === 0) {
+            recentSection.style.display = 'none';
+            recentSection.dataset.hasOrders = 'false';
+            return;
+        }
+
+        ordersToShow.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        recentSection.dataset.hasOrders = 'true';
+        recentSection.style.display = 'block';
+
+        recentList.innerHTML = ordersToShow.map(order => {
+            const dateStr = new Date(order.created_at).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+
+            let itemsArr = [];
+            if (Array.isArray(order.items)) {
+                itemsArr = order.items;
+            } else if (typeof order.items === 'string') {
+                try {
+                    itemsArr = JSON.parse(order.items);
+                } catch (e) {}
+            }
+
+            const itemsSummary = itemsArr.map(item => `${item.name} (x${item.qty || item.quantity || 1})`).join(', ');
+
+            const statusThemes = {
+                pending: { bg: 'rgba(255,193,7,0.1)', color: '#ffc107', icon: '🕐' },
+                confirmed: { bg: 'rgba(0,123,255,0.1)', color: '#007bff', icon: '✓' },
+                printing: { bg: 'rgba(23,162,184,0.1)', color: '#17a2b8', icon: '🖨' },
+                dispatched: { bg: 'rgba(108,117,125,0.1)', color: '#6c757d', icon: '📦' },
+                delivered: { bg: 'rgba(40,167,69,0.1)', color: '#28a745', icon: '✓' }
+            };
+            const theme = statusThemes[order.status] || { bg: 'rgba(255,255,255,0.05)', color: 'var(--white)', icon: '•' };
+
+            return `
+              <div class="order-brief-card" onclick="trackOrder('${order.order_ref}')" style="background: var(--gray9); border: 1px solid var(--line); border-radius: 12px; padding: 18px; cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
+                  <span style="font-weight: 700; font-size: 15px; color: var(--white);">${order.order_ref}</span>
+                  <span style="background: ${theme.bg}; color: ${theme.color}; font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                    <span>${theme.icon}</span> <span>${order.status}</span>
+                  </span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: left;">
+                  ${itemsSummary || 'No items info'}
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--gray3); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; width: 100%;">
+                  <span>Ordered on ${dateStr}</span>
+                  <span style="font-weight: 700; color: var(--white); font-size: 14px;">₹${Number(order.total).toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            `;
+        }).join('');
+
+        const styleId = 'order-brief-card-hover-style';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.innerHTML = `
+              .order-brief-card:hover {
+                transform: translateY(-2px);
+                border-color: var(--gray4) !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+              }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
     function showNotif(msg) { 
         const el = document.getElementById('notif'); 
         if (el) {
@@ -178,14 +329,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Auto-track if URL query has ref
     const urlParams = new URLSearchParams(window.location.search);
     const refParam = urlParams.get('ref');
     if (refParam) {
         const inputEl = document.getElementById('trackInput');
         if (inputEl) {
             inputEl.value = refParam;
-            window.trackOrder();
+            window.trackOrder(refParam);
         }
     }
 });

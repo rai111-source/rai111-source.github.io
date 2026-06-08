@@ -93,7 +93,17 @@
           <input type="text" class="tinp" id="trackInput" placeholder="e.g. LL-1234567890" onkeydown="if(event.key==='Enter')trackOrder()">
           <button class="btn btn-white" style="flex-shrink:0;border-radius:11px;padding:14px 24px" onclick="trackOrder()">Track →</button>
         </div>
+        
+        <!-- RECENT ORDERS LIST -->
+        <div id="recentOrdersSection" style="display:none; margin-top: 32px; text-align: left;">
+          <h3 style="font-family: var(--head); font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 16px;">My Orders</h3>
+          <div id="recentOrdersList" style="display: flex; flex-direction: column; gap: 16px;"></div>
+        </div>
+
         <div id="trackResult" style="display:none">
+          <div style="text-align: left; margin-bottom: 24px;">
+            <button id="backToOrdersBtn" class="btn btn-border" style="padding: 10px 20px; font-size: 13px; border-radius: 9px; cursor: pointer; background: transparent; border: 1px solid var(--line); color: var(--white); display: none;" onclick="showRecentOrdersList()">← Back to My Orders</button>
+          </div>
           <p id="trackMsg" style="margin-top:20px;font-size:14px;color:var(--gray3);text-align:left"></p>
           <div id="trackTimeline" class="ttl" style="display:none"></div>
           <div id="trackDetails" style="display:none"></div>
