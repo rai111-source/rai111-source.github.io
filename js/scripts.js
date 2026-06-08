@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initCartSync() {
         if (!supabase) {
             updateCartCount();
+            if (cartItemsContainer) renderCart();
             if (checkoutItemsContainer) renderCheckout();
             return;
         }
@@ -182,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await syncCartFromSupabase();
         } else {
             updateCartCount();
+            if (cartItemsContainer) renderCart();
             if (checkoutItemsContainer) renderCheckout();
         }
 
