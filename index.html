@@ -620,7 +620,10 @@
     </div>
     <div class="cart-ft" id="cartFt" style="display:none">
       <div class="ct-row"><span class="ct-lbl">Total</span><span class="ct-val" id="cartTotal">₹0</span></div>
-      <button class="chkbtn" onclick="checkout()">Order via WhatsApp →</button>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; box-sizing: border-box;">
+        <a href="cart.html" class="chkbtn" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--white); color: var(--black); box-sizing: border-box;">Proceed to Checkout</a>
+        <button class="chkbtn" onclick="checkout()" style="background: transparent; border: 1px solid var(--line); color: var(--white); display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;">Order via WhatsApp →</button>
+      </div>
     </div>
   </div>
 

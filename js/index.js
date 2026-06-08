@@ -19,9 +19,10 @@
     // so the cart drawer on this page stays in sync with cart.html / checkout.html.
     let cart = JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
     let allP = [];
+    let currentUser = null;
 
     document.addEventListener('DOMContentLoaded', () => { 
-      updateCart(); 
+      initCartSync(); 
       loadP('all'); 
       loadSiteContent();
       initReveal(); 
@@ -132,18 +133,157 @@
       btn.classList.add('on'); loadP(cat);
     }
 
-    function addToCart(id, e) {
+    async function initCartSync() {
+      if (typeof sb === 'undefined') {
+        updateCart();
+        return;
+      }
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        currentUser = session ? session.user : null;
+      } catch (e) {
+        console.error('initCartSync getSession error:', e);
+      }
+
+      if (currentUser) {
+        await syncCartFromSupabase();
+      } else {
+        updateCart();
+      }
+
+      sb.auth.onAuthStateChange(async (event, session) => {
+        const newUser = session ? session.user : null;
+        if (event === 'SIGNED_IN' || (newUser && !currentUser)) {
+          currentUser = newUser;
+          await syncCartFromSupabase();
+        } else if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          cart = [];
+          localStorage.removeItem('littleLayersCart');
+          updateCart();
+        }
+      });
+    }
+
+    async function syncCartFromSupabase() {
+      if (!currentUser || typeof sb === 'undefined') return;
+      try {
+        const { data: dbItems, error } = await sb
+          .from('cart_items')
+          .select('*')
+          .eq('user_id', currentUser.id);
+
+        if (error) throw error;
+
+        if (cart.length > 0) {
+          const itemsToUpsert = cart.map(localItem => {
+            return {
+              user_id: currentUser.id,
+              product_id: Number(localItem.id),
+              product_name: localItem.name,
+              product_price: localItem.price,
+              product_image: localItem.image,
+              quantity: localItem.quantity,
+              updated_at: new Date()
+            };
+          });
+
+          const { data: upsertedItems, error: upsertError } = await sb
+            .from('cart_items')
+            .upsert(itemsToUpsert, { onConflict: 'user_id, product_id' })
+            .select();
+
+          if (upsertError) throw upsertError;
+
+          const localItemIds = new Set(cart.map(i => Number(i.id)));
+          const otherDbItems = dbItems.filter(i => !localItemIds.has(Number(i.product_id)));
+
+          cart = [...upsertedItems, ...otherDbItems].map(mapDbToLocal);
+        } else {
+          cart = dbItems.map(mapDbToLocal);
+        }
+
+        saveCart();
+        updateCart();
+      } catch (error) {
+        console.error('Error syncing cart:', error.message);
+      }
+    }
+
+    function mapDbToLocal(dbItem) {
+      return {
+        id: Number(dbItem.product_id),
+        name: dbItem.product_name,
+        price: dbItem.product_price,
+        image: dbItem.product_image,
+        quantity: dbItem.quantity
+      };
+    }
+
+    async function addDbItem(product) {
+      if (!currentUser || typeof sb === 'undefined') return;
+      const { error } = await sb
+        .from('cart_items')
+        .upsert({
+          user_id: currentUser.id,
+          product_id: Number(product.id),
+          product_name: product.name,
+          product_price: product.price,
+          product_image: product.image,
+          quantity: product.quantity,
+          updated_at: new Date()
+        }, { onConflict: 'user_id, product_id' });
+
+      if (error) console.error('Error adding to DB:', error.message);
+    }
+
+    async function updateDbItem(productId, quantity) {
+      if (!currentUser || typeof sb === 'undefined') return;
+      const { error } = await sb
+        .from('cart_items')
+        .update({ quantity: quantity, updated_at: new Date() })
+        .eq('user_id', currentUser.id)
+        .eq('product_id', Number(productId));
+
+      if (error) console.error('Error updating DB:', error.message);
+    }
+
+    async function removeDbItem(productId) {
+      if (!currentUser || typeof sb === 'undefined') return;
+      const { error } = await sb
+        .from('cart_items')
+        .delete()
+        .eq('user_id', currentUser.id)
+        .eq('product_id', Number(productId));
+
+      if (error) console.error('Error removing from DB:', error.message);
+    }
+
+    async function addToCart(id, e) {
       if (e) e.stopPropagation();
-      const p = allP.find(x => x.id === id); if (!p) return;
-      const ex = cart.find(i => i.id === id);
-      // Unified item shape: 'quantity' + 'image' to match scripts.js (Bug #1 fix)
-      if (ex) ex.quantity++; else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image_url, quantity: 1 });
+      const p = allP.find(x => Number(x.id) === Number(id)) || SAMPLES.find(x => Number(x.id) === Number(id)); 
+      if (!p) return;
+      const ex = cart.find(i => Number(i.id) === Number(id));
+      if (ex) {
+        ex.quantity++;
+        if (currentUser) await updateDbItem(id, ex.quantity);
+      } else {
+        const item = { id: Number(p.id), name: p.name, price: p.price, image: p.image_url, quantity: 1 };
+        cart.push(item);
+        if (currentUser) await addDbItem(item);
+      }
       saveCart(); updateCart(); showNotif(`${p.name} added to cart! 🛒`);
     }
 
-    function changeQty(id, d) {
-      const item = cart.find(i => i.id === id); if (!item) return;
-      item.quantity += d; if (item.quantity <= 0) cart = cart.filter(i => i.id !== id);
+    async function changeQty(id, d) {
+      const item = cart.find(i => Number(i.id) === Number(id)); if (!item) return;
+      item.quantity += d;
+      if (item.quantity <= 0) {
+        cart = cart.filter(i => Number(i.id) !== Number(id));
+        if (currentUser) await removeDbItem(id);
+      } else {
+        if (currentUser) await updateDbItem(id, item.quantity);
+      }
       saveCart(); updateCart();
     }
 
@@ -151,7 +291,8 @@
 
     function updateCart() {
       const count = cart.reduce((s, i) => s + i.quantity, 0);
-      document.getElementById('cartCount').textContent = count;
+      const countEl = document.getElementById('cartCount') || document.getElementById('cart-count');
+      if (countEl) countEl.textContent = count;
       const total = cart.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
       const tv = document.getElementById('cartTotal'); if (tv) tv.textContent = '₹' + total.toLocaleString('en-IN');
       const body = document.getElementById('cartItems'); const foot = document.getElementById('cartFt'); if (!body) return;
@@ -180,7 +321,27 @@
       const total = cart.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
       const ref = 'LL-' + Date.now();
       const msg = `🛒 *New Order — ${ref}*\n\n` + cart.map(i => `• ${i.name} × ${i.quantity} = ₹${(Number(i.price) * i.quantity).toLocaleString('en-IN')}`).join('\n') + `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
-      try { if (typeof sb !== 'undefined') await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' }); } catch (e) { console.error(e); }
+      
+      try { 
+        if (typeof sb !== 'undefined') {
+          await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' });
+        } 
+      } catch (e) { 
+        console.error(e); 
+      }
+
+      if (currentUser && typeof sb !== 'undefined') {
+        try {
+          const { error } = await sb
+            .from('cart_items')
+            .delete()
+            .eq('user_id', currentUser.id);
+          if (error) console.error('Error clearing DB cart:', error.message);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
       cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
     }

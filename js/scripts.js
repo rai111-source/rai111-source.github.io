@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const product = {
-                    id: button.dataset.id,
+                    id: Number(button.dataset.id),
                     name: button.dataset.name,
                     price: parseFloat(button.dataset.price),
                     image: button.dataset.image,
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addToCartButtons.forEach(button => {
         button.addEventListener('click', async () => {
             const product = {
-                id: button.dataset.id,
+                id: Number(button.dataset.id),
                 name: button.dataset.name,
                 price: parseFloat(button.dataset.price),
                 image: button.dataset.image,
@@ -410,16 +410,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* --- Cart Functions --- */
+    
+    const WA = '916000061991';
+    
+    async function orderViaWhatsApp() {
+        if (!cart || !cart.length) {
+            alert('Your cart is empty.');
+            return;
+        }
+        const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 1), 0);
+        const ref = 'LL-' + Date.now();
+        const msg = `🛒 *New Order — ${ref}*\n\n` + 
+            cart.map(i => `• ${i.name} × ${i.quantity} = ₹${(Number(i.price) * i.quantity).toLocaleString('en-IN')}`).join('\n') + 
+            `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
+        
+        try {
+            if (supabase) {
+                await supabase.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' });
+            }
+        } catch (e) {
+            console.error('Error inserting order for WhatsApp:', e);
+        }
+
+        if (currentUser && supabase) {
+            try {
+                // Clear DB cart on checkout
+                const { error } = await supabase
+                    .from('cart_items')
+                    .delete()
+                    .eq('user_id', currentUser.id);
+                if (error) console.error('Error clearing DB cart:', error.message);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
+        cart = [];
+        saveCartLocally();
+        if (cartItemsContainer) renderCart();
+        alert(`Order #${ref} sent to WhatsApp! 🎉`);
+    }
+
+    // Hook up the WhatsApp checkout button on cart.html page
+    const btnWhatsapp = document.getElementById('btn-whatsapp');
+    if (btnWhatsapp) {
+        btnWhatsapp.addEventListener('click', async () => {
+            await orderViaWhatsApp();
+        });
+    }
 
     async function addToCart(productToAdd) {
-        const existingItemIndex = cart.findIndex(item => item.id === productToAdd.id);
+        const existingItemIndex = cart.findIndex(item => Number(item.id) === Number(productToAdd.id));
 
         if (existingItemIndex > -1) {
             cart[existingItemIndex].quantity += 1;
             if (currentUser) {
-                await updateDbItem(productToAdd.id, cart[existingItemIndex].quantity);
+                await updateDbItem(Number(productToAdd.id), cart[existingItemIndex].quantity);
             }
         } else {
+            productToAdd.id = Number(productToAdd.id);
             cart.push(productToAdd);
             if (currentUser) {
                 await addDbItem(productToAdd);
@@ -432,23 +482,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function removeFromCart(productId) {
-        cart = cart.filter(item => item.id !== productId);
+        cart = cart.filter(item => Number(item.id) !== Number(productId));
         if (currentUser) {
-            await removeDbItem(productId);
+            await removeDbItem(Number(productId));
         }
         saveCartLocally();
         renderCart();
     }
 
     async function updateQuantity(productId, newQuantity) {
-        const itemIndex = cart.findIndex(item => item.id === productId);
+        const itemIndex = cart.findIndex(item => Number(item.id) === Number(productId));
         if (itemIndex > -1) {
             if (newQuantity < 1) {
-                await removeFromCart(productId);
+                await removeFromCart(Number(productId));
             } else {
                 cart[itemIndex].quantity = parseInt(newQuantity);
                 if (currentUser) {
-                    await updateDbItem(productId, cart[itemIndex].quantity);
+                    await updateDbItem(Number(productId), cart[itemIndex].quantity);
                 }
                 saveCartLocally();
                 renderCart();

@@ -47,15 +47,23 @@
       align-items: flex-end;
     }
 
-    .cart-actions {
+    .cart-actions-container {
       display: flex;
-      gap: 16px;
+      flex-direction: column;
+      gap: 12px;
       margin-top: 24px;
       width: 100%;
       max-width: 400px;
+      box-sizing: border-box;
     }
 
-    .cart-actions a {
+    .cart-actions {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .cart-actions a, .cart-actions button {
       flex: 1;
       justify-content: center;
       text-align: center;
@@ -83,6 +91,9 @@
     }
 
     @media (max-width: 768px) {
+      .cart-actions-container {
+        max-width: 100%;
+      }
       .cart-actions {
         max-width: 100%;
         flex-direction: column;
@@ -163,9 +174,12 @@
           <div class="cart-total">
             <h3 style="font-weight: 600; font-size: 24px; color: var(--white);">Total: <span id="cart-total-price"> ₹0</span></h3>
           </div>
-          <div class="cart-actions">
-            <a href="products.html" class="btn btn-border">Continue Shopping</a>
-            <a href="checkout.html" class="btn btn-white">Proceed to Checkout</a>
+          <div class="cart-actions-container">
+            <div class="cart-actions">
+              <a href="products.html" class="btn btn-border">Continue Shopping</a>
+              <a href="checkout.html" class="btn btn-white">Proceed to Checkout</a>
+            </div>
+            <button id="btn-whatsapp" class="chkbtn" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;">Order via WhatsApp →</button>
           </div>
         </div>
       </div>
