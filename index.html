@@ -5,6 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LittleLayers.Co | Custom 3D Printing — Dibrugarh, Assam</title>
+  <link rel="icon" type="image/png" sizes="48x48" href="Images/Logo-48.png">
+
+  <link rel="icon" type="image/png" sizes="96x96" href="Images/Logo-96.png">
+
+  <link rel="icon" type="image/png" sizes="192x192" href="Images/Logo-192.png">
   <meta name="description"
     content="Custom 3D printing from Assam — figurines, portraits, prototypes, gifts. Starting ₹60. Pan-India delivery in 5–7 days.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,10 +43,10 @@
     <ul class="nav-links">
       <li><a href="#home">Home</a></li>
       <li><a href="#how">How It Works</a></li>
-      <li><a href="#shop">Shop</a></li>
-      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="products.html">Shop</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
       <li><a href="#services">Services</a></li>
-      <li><a href="#track">Track Order</a></li>
+      <li><a href="track.html">Track Order</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-r">
@@ -61,14 +66,14 @@
     </div>
     <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
   </nav>
-
+ 
   <div class="mobnav" id="mobnav">
     <a href="#home" onclick="closeMob()">Home</a>
     <a href="#how" onclick="closeMob()">How It Works</a>
-    <a href="#shop" onclick="closeMob()">Shop</a>
-    <a href="#gallery" onclick="closeMob()">Gallery</a>
+    <a href="products.html" onclick="closeMob()">Shop</a>
+    <a href="gallery.html" onclick="closeMob()">Gallery</a>
     <a href="#services" onclick="closeMob()">Services</a>
-    <a href="#track" onclick="closeMob()">Track Order</a>
+    <a href="track.html" onclick="closeMob()">Track Order</a>
     <a href="#contact" onclick="closeMob()">Contact</a>
     <hr class="mobnav-divider">
     <a href="login.html" onclick="closeMob()" class="mobnav-guest">Login</a>
@@ -84,18 +89,18 @@
         <div class="dot"></div>
         <span>3D Printing Studio · Dibrugarh, Assam</span>
       </div>
-      <h1 class="hero-h1">
+      <h1 class="hero-h1" id="hero-title-el">
         Turning<br>
         <span class="italic">Ideas</span><br>
         Into Reality.
       </h1>
-      <p class="hero-sub">Custom 3D printed creations from Assam — figurines, lithophane portraits, prototypes & unique
+      <p class="hero-sub" id="hero-sub-el">Custom 3D printed creations from Assam — figurines, lithophane portraits, prototypes & unique
         gifts. Delivered across India in 5–7 days.</p>
       <div class="hero-ctas">
         <a href="#shop" class="btn btn-white">Shop Now →</a>
         <a href="#contact" class="btn btn-border">Start a Custom Project</a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats" id="hero-stats-el">
         <div class="hstat">
           <div class="hstat-v">200+</div>
           <div class="hstat-l">Orders Delivered</div>
@@ -110,7 +115,7 @@
         </div>
       </div>
     </div>
-    <div class="hero-vis">
+    <div class="hero-vis" id="hero-vis-el">
       <div class="hvc"><img src="Images/Goku.jpeg" alt="3D Figurine" loading="lazy">
         <div class="hvc-lbl">Custom Figurines</div>
         <div class="hvc-price">From ₹499</div>
@@ -152,9 +157,9 @@
   <section id="how" class="sec">
     <div class="sec-h rev"><span class="label">Process</span>
       <h2>How It Works</h2>
-      <p>From idea to your doorstep in 4 simple steps — no technical knowledge needed.</p>
+      <p id="process-sub-el">From idea to your doorstep in 4 simple steps — no technical knowledge needed.</p>
     </div>
-    <div class="steps rev">
+    <div class="steps rev" id="process-steps-el">
       <div class="step">
         <div class="step-n">Step 01</div>
         <div class="step-ico">💬</div>
@@ -186,23 +191,18 @@
   <section id="shop" class="sec sec-alt">
     <div class="sec-hrow rev">
       <div><span class="label" style="display:block;margin-bottom:10px">Shop</span>
-        <h2>Our Products</h2>
+        <h2>Featured Products</h2>
       </div>
       <a href="#contact" class="btn btn-border" style="font-size:13.5px;padding:11px 20px">Request Custom →</a>
-    </div>
-    <div class="filters rev">
-      <button class="flt on" onclick="filterP('all',this)">All</button>
-      <button class="flt" onclick="filterP('figurines',this)">Figurines</button>
-      <button class="flt" onclick="filterP('keychains',this)">Keychains</button>
-      <button class="flt" onclick="filterP('decor',this)">Décor</button>
-      <button class="flt" onclick="filterP('portraits',this)">Portraits</button>
-      <button class="flt" onclick="filterP('gifts',this)">Gifts</button>
     </div>
     <div class="pgrid" id="productsGrid">
       <div class="loadbox">
         <div class="spin"></div>
         <p>Loading products…</p>
       </div>
+    </div>
+    <div style="text-align: center; margin-top: 40px;" class="rev">
+      <a href="products.html" class="btn btn-white">View All Products →</a>
     </div>
   </section>
 
@@ -300,20 +300,22 @@
     <div class="about-g">
       <div class="rev">
         <span class="label" style="display:block;margin-bottom:12px">About</span>
-        <h2
+        <h2 id="about-title-el"
           style="font-family:var(--head);font-size:clamp(36px,4vw,58px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:20px;line-height:1.0">
           Born in Assam.<br>Built for India.</h2>
-        <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">Founded in Dibrugarh with a
-          passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA printers.
-        </p>
-        <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:32px">Whether you're an engineer
-          needing a functional prototype or someone looking for a truly unique gift — we're here to make it real.</p>
+        <div id="about-text-el">
+          <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">Founded in Dibrugarh with a
+            passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA printers.
+          </p>
+          <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:32px">Whether you're an engineer
+            needing a functional prototype or someone looking for a truly unique gift — we're here to make it real.</p>
+        </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <a href="#contact" class="btn btn-white">Get in Touch →</a>
           <a href="https://wa.me/916000061991" target="_blank" class="btn btn-border">💬 WhatsApp Us</a>
         </div>
       </div>
-      <div class="acards rev">
+      <div class="acards rev" id="about-cards-el">
         <div class="ac">
           <div class="acv">FDM</div>
           <div class="acl">Fused Deposition Modeling</div>
@@ -333,20 +335,56 @@
     </div>
   </section>
 
-  <!-- ══ GALLERY ════════════════════════════════════════════ -->
-  <section id="gallery" class="sec sec-alt">
-    <div class="sec-hrow rev">
-      <div><span class="label" style="display:block;margin-bottom:10px">Gallery</span>
-        <h2>Our Work</h2>
-      </div>
-      <a href="https://instagram.com/littlelayers.co" target="_blank" class="btn btn-border"
-        style="font-size:13.5px;padding:11px 20px">More on Instagram →</a>
-    </div>
-    <div class="ggrid rev" id="galleryGrid">
-      <div class="loadbox">
-        <div class="spin"></div>
-        <p>Loading gallery…</p>
-      </div>
+  <!-- ══ GALLERY CTA ════════════════════════════════════════ -->
+  <section id="gallery-cta-sec" class="sec sec-alt" style="position:relative;overflow:hidden;">
+    <style>
+      .bg-anim-img {
+        position: absolute;
+        width: clamp(85px, 11vw, 140px);
+        height: clamp(85px, 11vw, 140px);
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        opacity: 0;
+        pointer-events: none;
+        transition: filter 0.3s ease;
+      }
+      
+      /* Animation variants */
+      .anim-fade {
+        animation: bg-fade 12s infinite ease-in-out;
+      }
+      .anim-zoom {
+        animation: bg-zoom 15s infinite ease-in-out;
+      }
+      .anim-pop {
+        animation: bg-pop 10s infinite ease-in-out;
+      }
+
+      @keyframes bg-fade {
+        0% { opacity: 0; transform: scale(0.9); }
+        25%, 75% { opacity: 0.16; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.05); }
+      }
+      @keyframes bg-zoom {
+        0% { opacity: 0; transform: scale(0.8) rotate(-4deg); }
+        30%, 70% { opacity: 0.16; transform: scale(1.05) rotate(2deg); }
+        100% { opacity: 0; transform: scale(1.2) rotate(-2deg); }
+      }
+      @keyframes bg-pop {
+        0% { opacity: 0; transform: translateY(30px) scale(0.9) rotate(5deg); }
+        20%, 80% { opacity: 0.16; transform: translateY(0) scale(1) rotate(0deg); }
+        100% { opacity: 0; transform: translateY(-30px) scale(0.95) rotate(-5deg); }
+      }
+    </style>
+    <!-- Background Animated Images Container -->
+    <div id="gallery-bg-container" style="position:absolute;inset:0;pointer-events:none;z-index:0;"></div>
+
+    <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:1;" class="rev">
+      <span class="label" style="display:block;margin-bottom:12px">Gallery</span>
+      <h2 style="font-family:var(--head);font-size:clamp(36px,4vw,56px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:14px">See Our Work In Action</h2>
+      <p style="color:var(--gray3);margin-bottom:30px">Browse our gallery of custom 3D printed objects, figurines, keychains, and portraits.</p>
+      <a href="gallery.html" class="btn btn-white">View Our Gallery →</a>
     </div>
   </section>
 
@@ -440,29 +478,6 @@
     </div>
   </section>
 
-  <!-- ══ TRACK ORDER ════════════════════════════════════════ -->
-  <section id="track" class="sec">
-    <div style="max-width:640px;margin:0 auto;text-align:center" class="rev">
-      <span class="label" style="display:block;margin-bottom:12px">Track</span>
-      <h2
-        style="font-family:var(--head);font-size:clamp(36px,4vw,56px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:14px">
-        Track Your Order</h2>
-      <p style="color:var(--gray3);margin-bottom:40px">Enter your Order ID (e.g. LL-1234567890) to see the real-time
-        status of your print.</p>
-      <div class="tbox">
-        <div class="trow">
-          <input type="text" class="tinp" id="trackInput" placeholder="e.g. LL-1234567890"
-            onkeydown="if(event.key==='Enter')trackOrder()">
-          <button class="btn btn-white" style="flex-shrink:0;border-radius:11px;padding:14px 24px"
-            onclick="trackOrder()">Track →</button>
-        </div>
-        <div id="trackResult" style="display:none">
-          <p id="trackMsg" style="margin-top:20px;font-size:14px;color:var(--gray3);text-align:left"></p>
-          <div id="trackTimeline" class="ttl" style="display:none"></div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ══ CONTACT ════════════════════════════════════════════ -->
   <section id="contact" class="sec sec-alt">
@@ -552,20 +567,21 @@
         <h4>Navigate</h4>
         <ul>
           <li><a href="#home">Home</a></li>
-          <li><a href="#shop">Shop</a></li>
-          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="products.html">Shop</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
           <li><a href="#services">Services</a></li>
+          <li><a href="track.html">Track Order</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
       <div class="ftcol">
         <h4>Products</h4>
         <ul>
-          <li><a href="#shop">Figurines</a></li>
-          <li><a href="#shop">Keychains</a></li>
-          <li><a href="#shop">Portraits</a></li>
-          <li><a href="#shop">Décor</a></li>
-          <li><a href="#shop">Prototypes</a></li>
+          <li><a href="products.html">Figurines</a></li>
+          <li><a href="products.html">Keychains</a></li>
+          <li><a href="products.html">Portraits</a></li>
+          <li><a href="products.html">Décor</a></li>
+          <li><a href="products.html">Prototypes</a></li>
         </ul>
       </div>
       <div class="ftcol ftnews">

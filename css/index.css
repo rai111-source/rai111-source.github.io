@@ -560,13 +560,11 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform .6s, filter .4s;
-      filter: brightness(.65) grayscale(.5);
+      transition: transform .6s;
     }
 
     .hvc:hover img {
       transform: scale(1.06);
-      filter: brightness(.9) grayscale(0)
     }
 
     .hvc::after {
@@ -777,6 +775,14 @@
       transition: all .3s;
     }
 
+    .step-ico img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+
     .step:hover .step-ico {
       background: var(--gray7);
       border-color: rgba(255, 255, 255, .18)
@@ -856,13 +862,11 @@
       width: 100%;
       height: 210px;
       object-fit: cover;
-      transition: transform .55s, filter .35s;
-      filter: brightness(.8) grayscale(.15);
+      transition: transform .55s;
     }
 
     .pcard:hover .pimg img {
       transform: scale(1.07);
-      filter: brightness(.95) grayscale(0)
     }
 
     .pbadge {
@@ -1201,7 +1205,7 @@
     .ggrid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: 240px 240px;
+      grid-auto-rows: 240px;
       gap: 12px;
       margin-top: 44px;
     }
@@ -1227,14 +1231,12 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform .55s, filter .35s;
-      filter: brightness(.72) grayscale(.3);
+      transition: transform .55s;
       display: block
     }
 
     .gi:hover img {
       transform: scale(1.07);
-      filter: brightness(.95) grayscale(0)
     }
 
     .gcap {
@@ -1826,7 +1828,6 @@
       border-radius: 10px;
       border: 1px solid var(--line);
       flex-shrink: 0;
-      filter: grayscale(.2)
     }
 
     .ci-info {
@@ -2472,13 +2473,26 @@
     }
 
     @media(max-width:600px) {
+      body {
+        font-size: 14.5px;
+      }
+
+      .nav-logo {
+        font-size: 18px;
+      }
+
       .topbar {
         font-size: 11px;
         padding: 6px 12px
       }
 
       .hero-h1 {
-        font-size: clamp(42px, 12vw, 68px)
+        font-size: clamp(32px, 10vw, 46px);
+      }
+
+      .hero-sub {
+        font-size: 14.5px;
+        margin: 16px 0 24px;
       }
 
       .hero-ctas,
@@ -2510,11 +2524,96 @@
         padding: 0
       }
 
+      .hstat-v {
+        font-size: 26px;
+      }
+
       .hstat + .hstat {
         border-left: none;
         border-top: 1px solid var(--line);
         padding-top: 16px;
         padding-left: 0
+      }
+
+      .btn {
+        padding: 11px 22px;
+        font-size: 13.5px;
+        border-radius: 9px;
+      }
+
+      .sec {
+        padding: 44px 16px;
+      }
+
+      .sec-h h2,
+      .sec-hrow h2,
+      #about-title-el,
+      h2 {
+        font-size: clamp(24px, 8vw, 32px) !important;
+      }
+
+      .sec-h p {
+        font-size: 14px;
+      }
+
+      .step {
+        padding: 24px 20px;
+      }
+
+      .step-ico {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin-bottom: 14px;
+      }
+
+      .step h3 {
+        font-size: 15px;
+      }
+
+      .step p {
+        font-size: 13px;
+      }
+
+      .fcard {
+        padding: 24px;
+      }
+
+      .fcard h3 {
+        font-size: 16px;
+      }
+
+      .fcard p {
+        font-size: 13px;
+      }
+
+      .fico {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
+      .scard {
+        padding: 20px;
+        gap: 16px;
+      }
+
+      .sico {
+        font-size: 28px;
+      }
+
+      .stit {
+        font-size: 18px;
+      }
+
+      .sdesc {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .sfrom {
+        font-size: 12px;
       }
 
       .acards {
@@ -2527,6 +2626,19 @@
 
       .ac.s2 {
         grid-column: span 1
+      }
+
+      .acv {
+        font-size: 28px;
+      }
+
+      .acl {
+        font-size: 13px;
+        margin-top: 6px;
+      }
+
+      .acs {
+        font-size: 12px;
       }
 
       .pgrid {
@@ -2596,6 +2708,23 @@
 
       .ftlinks {
         justify-content: center
+      }
+
+      .mobnav a {
+        font-size: 14.5px;
+        padding: 10px 14px;
+      }
+
+      .wafloat {
+        width: 44px;
+        height: 44px;
+        bottom: 16px;
+        right: 16px;
+      }
+
+      .wafloat svg {
+        width: 22px;
+        height: 22px;
       }
     }
 

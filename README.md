@@ -11,10 +11,10 @@ littlelayers/
 ├── index.html            ← Public website (customers see this)
 ├── supabase-setup.sql    ← Run once in Supabase to create tables
 ├── css/
-│   └── style.css         ← Shared styles
+│   └── index.css         ← Shared styles
 └── js/
     ├── supabase.js       ← Database config + helper functions
-    └── main.js           ← Public site logic (cart, products, etc.)
+    └── index.js          ← Public site logic (cart, products, etc.)
 ```
 
 ---
@@ -67,10 +67,10 @@ Also update your WhatsApp number in two places:
 Option A — GitHub Web UI (easiest):
 1. Click **Add file → Upload files**
 2. Upload all files maintaining the folder structure:
-   - `index.html` (root)
-   - `css/style.css`
-   - `js/supabase.js`
-   - `js/main.js`
+    - `index.html` (root)
+    - `css/index.css`
+    - `js/supabase.js`
+    - `js/index.js`
 
 Option B — Git CLI:
 ```bash
