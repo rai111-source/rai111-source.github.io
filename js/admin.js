@@ -944,10 +944,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    let allOrders = [];
+    let selectedStatusFilter = 'all';
+
     async function loadOrders() {
         const listEl = document.getElementById('admin-orders-list');
         if (!listEl) return;
-        listEl.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading orders...</td></tr>';
+        listEl.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading orders...</td></tr>';
         
         try {
             const { data, error } = await supabaseClient
@@ -957,69 +960,113 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
             if (error) throw error;
             
-            if (!data || !data.length) {
-                listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--gray4);">No orders found.</td></tr>';
-                return;
-            }
-            
-            const STATUS_STYLES = {
-                pending: 'background: rgba(255, 193, 7, 0.15); color: #ffc107;',
-                confirmed: 'background: rgba(33, 150, 243, 0.15); color: #2196f3;',
-                printing: 'background: rgba(156, 39, 176, 0.15); color: #9c27b0;',
-                dispatched: 'background: rgba(255, 87, 34, 0.15); color: #ff5722;',
-                delivered: 'background: rgba(76, 175, 80, 0.15); color: #4caf50;'
-            };
-            
-            listEl.innerHTML = data.map(order => {
-                const date = new Date(order.created_at).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                let itemsHtml = '';
-                if (Array.isArray(order.items)) {
-                    itemsHtml = order.items.map(item => `• ${escapeHtml(item.name)} (x${item.qty || item.quantity || 1})`).join('<br>');
-                } else if (typeof order.items === 'string') {
-                    try {
-                        const parsed = JSON.parse(order.items);
-                        itemsHtml = parsed.map(item => `• ${escapeHtml(item.name)} (x${item.qty || item.quantity || 1})`).join('<br>');
-                    } catch (e) {
-                        itemsHtml = escapeHtml(order.items);
-                    }
-                }
-                
-                const statusOptions = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'].map(s => {
-                    const sel = order.status === s ? 'selected' : '';
-                    return `<option value="${s}" ${sel}>${s.toUpperCase()}</option>`;
-                }).join('');
-                
-                const style = STATUS_STYLES[order.status || 'pending'] || STATUS_STYLES.pending;
-                
-                return `
-                <tr>
-                    <td style="font-family: monospace; font-weight: 600;">${escapeHtml(order.order_ref)}</td>
-                    <td style="font-size: 13px; color: var(--gray4);">${date}</td>
-                    <td style="font-size: 13px; line-height: 1.5; text-align: left;">${itemsHtml}</td>
-                    <td style="font-weight: 500;">₹${Number(order.total).toLocaleString('en-IN')}</td>
-                    <td>
-                        <span class="status-pill" style="text-transform: uppercase; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; ${style}">
-                            ${escapeHtml(order.status || 'pending')}
-                        </span>
-                    </td>
-                    <td>
-                        <select onchange="updateOrderStatus('${order.id}', this.value)" style="background: var(--gray8); border: 1px solid var(--line); color: var(--white); padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer;">
-                            ${statusOptions}
-                        </select>
-                    </td>
-                </tr>`;
-            }).join('');
+            allOrders = data || [];
+            renderOrdersList();
         } catch (e) {
             console.error('Error loading orders:', e);
-            listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff6b6b;">Failed to load orders.</td></tr>';
+            listEl.innerHTML = '<tr><td colspan="7" style="text-align:center; color: #ff6b6b;">Failed to load orders.</td></tr>';
         }
+    }
+
+    window.filterOrders = function(status) {
+        selectedStatusFilter = status;
+        renderOrdersList();
+    };
+
+    function renderOrdersList() {
+        const listEl = document.getElementById('admin-orders-list');
+        if (!listEl) return;
+
+        let filtered = allOrders;
+        if (selectedStatusFilter !== 'all') {
+            filtered = allOrders.filter(o => o.status === selectedStatusFilter);
+        }
+        
+        if (!filtered || !filtered.length) {
+            listEl.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--gray4);">No orders found.</td></tr>';
+            return;
+        }
+        
+        const STATUS_STYLES = {
+            pending: 'background: rgba(255, 193, 7, 0.15); color: #ffc107;',
+            confirmed: 'background: rgba(33, 150, 243, 0.15); color: #2196f3;',
+            printing: 'background: rgba(156, 39, 176, 0.15); color: #9c27b0;',
+            dispatched: 'background: rgba(255, 87, 34, 0.15); color: #ff5722;',
+            delivered: 'background: rgba(76, 175, 80, 0.15); color: #4caf50;'
+        };
+        
+        listEl.innerHTML = filtered.map(order => {
+            const date = new Date(order.created_at).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            let itemsHtml = '';
+            if (Array.isArray(order.items)) {
+                itemsHtml = order.items.map(item => `• ${escapeHtml(item.name)} (x${item.qty || item.quantity || 1})`).join('<br>');
+            } else if (typeof order.items === 'string') {
+                try {
+                    const parsed = JSON.parse(order.items);
+                    itemsHtml = parsed.map(item => `• ${escapeHtml(item.name)} (x${item.qty || item.quantity || 1})`).join('<br>');
+                } catch (e) {
+                    itemsHtml = escapeHtml(order.items);
+                }
+            }
+
+            // Customer details display parsing
+            let cust = null;
+            if (order.customer) {
+                if (typeof order.customer === 'object') {
+                    cust = order.customer;
+                } else if (typeof order.customer === 'string') {
+                    try {
+                        cust = JSON.parse(order.customer);
+                    } catch (e) {}
+                }
+            }
+
+            let customerHtml = '<span style="color: var(--gray4); font-style: italic;">WhatsApp Direct</span>';
+            if (cust && (cust.name || cust.address || cust.email)) {
+                const paymentMethodName = (cust.payment_method && cust.payment_method.toUpperCase() === 'COD') ? 'COD' : 'Online';
+                customerHtml = `
+                    <div style="line-height: 1.4; text-align: left; font-size: 13px;">
+                        <strong>Name:</strong> ${escapeHtml(cust.name || '-')}<br>
+                        <strong>Email:</strong> ${escapeHtml(cust.email || '-')}<br>
+                        <strong>Address:</strong> ${escapeHtml(cust.address || '-')}, ${escapeHtml(cust.city || '-')} - ${escapeHtml(cust.zip || '-')}<br>
+                        <strong>Payment:</strong> ${escapeHtml(paymentMethodName)}
+                    </div>
+                `;
+            }
+            
+            const statusOptions = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'].map(s => {
+                const sel = order.status === s ? 'selected' : '';
+                return `<option value="${s}" ${sel}>${s.toUpperCase()}</option>`;
+            }).join('');
+            
+            const style = STATUS_STYLES[order.status || 'pending'] || STATUS_STYLES.pending;
+            
+            return `
+            <tr>
+                <td style="font-family: monospace; font-weight: 600;">${escapeHtml(order.order_ref)}</td>
+                <td style="font-size: 12px; color: var(--gray4);">${date}</td>
+                <td>${customerHtml}</td>
+                <td style="font-size: 13px; line-height: 1.5; text-align: left;">${itemsHtml}</td>
+                <td style="font-weight: 500;">₹${Number(order.total).toLocaleString('en-IN')}</td>
+                <td>
+                    <span class="status-pill" style="text-transform: uppercase; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; ${style}">
+                        ${escapeHtml(order.status || 'pending')}
+                    </span>
+                </td>
+                <td>
+                    <select onchange="updateOrderStatus('${order.id}', this.value)" style="background: var(--gray8); border: 1px solid var(--line); color: var(--white); padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                        ${statusOptions}
+                    </select>
+                </td>
+            </tr>`;
+        }).join('');
     }
 
     window.updateOrderStatus = async function(orderId, newStatus) {
@@ -1031,7 +1078,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
             if (error) throw error;
             
-            loadOrders();
+            // Update the locally stored orders so we don't have to query again
+            const orderIndex = allOrders.findIndex(o => o.id === orderId);
+            if (orderIndex > -1) {
+                allOrders[orderIndex].status = newStatus;
+            }
+            renderOrdersList();
         } catch (e) {
             console.error('Error updating order status:', e);
             alert('Failed to update order status.');

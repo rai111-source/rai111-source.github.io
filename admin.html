@@ -252,8 +252,19 @@
 
     <!-- ORDERS SECTION -->
     <div id="section-orders" class="admin-section">
-      <div class="admin-header">
+      <div class="admin-header" style="flex-wrap: wrap; gap: 16px;">
         <h2>Orders Manager</h2>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <label for="order-status-filter" style="font-size: 13px; color: var(--gray4); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Filter Stage:</label>
+          <select id="order-status-filter" onchange="filterOrders(this.value)" style="background: var(--gray8); border: 1px solid var(--line); color: var(--white); padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; outline: none; transition: border-color 0.2s;">
+            <option value="all">ALL STAGES</option>
+            <option value="pending">PENDING</option>
+            <option value="confirmed">CONFIRMED</option>
+            <option value="printing">PRINTING</option>
+            <option value="dispatched">DISPATCHED</option>
+            <option value="delivered">DELIVERED</option>
+          </select>
+        </div>
       </div>
 
       <div class="admin-table-wrapper">
@@ -262,6 +273,7 @@
             <tr>
               <th>Order ID</th>
               <th>Date</th>
+              <th>Customer Info</th>
               <th>Items</th>
               <th>Total</th>
               <th>Status</th>
