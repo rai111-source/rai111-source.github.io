@@ -12,6 +12,22 @@ const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 window.supabaseClient = sb;
 
+// ── SHARED GLOBALS ────────────────────────────────────────────
+// Bug #15: single source of truth for admin email — referenced by auth.js and admin.js.
+window.ADMIN_EMAIL = 'raj@littlelayers.in';
+
+// Bug #16: centralized HTML-escaping so scripts.js, admin.js, index.js and main.js
+// all use one implementation instead of four slightly-different local copies.
+window.escHtml = function(str) {
+  if (!str && str !== 0) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
 // ── TABLE NAMES ──────────────────────────────────────────────
 const TABLES = {
   products: 'products',
@@ -43,9 +59,14 @@ async function getGallery() {
 
 
 // ── ORDERS ────────────────────────────────────────────────────
+// Bug #14 fix: distinguish 'no rows found' (PGRST116) from real DB errors.
+// Previously all errors silently returned null, masking network/permission failures.
 async function getOrder(orderId) {
   const { data, error } = await sb.from(TABLES.orders).select('*').eq('order_ref', orderId).single();
-  if (error) return null;
+  if (error) {
+    if (error.code !== 'PGRST116') console.error('getOrder:', error); // log real errors
+    return null; // null for both 'not found' and errors — caller shows appropriate UI
+  }
   return data;
 }
 

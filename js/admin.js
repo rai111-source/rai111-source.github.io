@@ -2,7 +2,9 @@
 
 let supabaseClient = window.supabaseClient;
 let currentUser = null;
-const ADMIN_EMAIL = 'raj@littlelayers.in';
+// Bug #15: use centralized ADMIN_EMAIL from supabase.js (single source of truth).
+// Fallback to hardcoded value only if supabase.js failed to load.
+const ADMIN_EMAIL = window.ADMIN_EMAIL || 'raj@littlelayers.in';
 let currentProducts = [];
 let currentGallery = [];
 
@@ -1107,15 +1109,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    function escapeHtml(str) {
-        if (!str && str !== 0) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
+    // Bug #16: removed local duplicate — use centralized window.escHtml from supabase.js.
+    const escapeHtml = window.escHtml;
 
     function getStoragePathFromUrl(url, bucketName) {
         if (!url) return null;

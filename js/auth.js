@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
         userBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentUser) {
-                // Currently logged in, go to profile or admin
-                if (currentUser.email === 'raj@littlelayers.in') {
+                // Bug #15: use centralized window.ADMIN_EMAIL (defined in supabase.js)
+                if (currentUser.email === window.ADMIN_EMAIL) {
                     window.location.href = 'admin.html';
                 } else {
                     window.location.href = 'profile.html';
@@ -137,6 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
         googleLoginBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             await handleGoogleLogin();
+        });
+    }
+
+    const githubLoginBtn = document.getElementById('github-login-btn');
+    if (githubLoginBtn) {
+        githubLoginBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await handleGithubLogin();
         });
     }
 
@@ -225,6 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event === 'PASSWORD_RECOVERY') {
                     authMode = 'reset';
                     updatePageAuthUI();
+                } else if (event === 'SIGNED_IN') {
+                    // SIGNED_IN fires after a fresh login (email/password, OAuth, magic link)
+                    // but NOT when restoring an existing session (that fires INITIAL_SESSION).
+                    // Email/password login already removes redirectAfterAuth before navigating,
+                    // so this path handles the OAuth callback case safely.
+                    const returnUrl = sessionStorage.getItem('redirectAfterAuth');
+                    if (returnUrl) {
+                        sessionStorage.removeItem('redirectAfterAuth');
+                        window.location.href = returnUrl;
+                    }
                 }
             } else {
                 currentUser = null;
@@ -347,20 +365,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleGoogleLogin() {
         try {
-            let redirectUrl = sessionStorage.getItem('redirectAfterAuth');
-            if (!redirectUrl) {
-                redirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
-            } else {
-                // We leave it in sessionStorage so when OAuth redirects back to the site, 
-                // the session is verified and we are on the requested page. 
-                // Actually, OAuth redirects directly to redirectUrl.
-                sessionStorage.removeItem('redirectAfterAuth');
-            }
-            
+            // Always redirect to a safe, Supabase-allowlisted URL (profile.html).
+            // We keep redirectAfterAuth in sessionStorage — the onAuthStateChange
+            // SIGNED_IN handler will read it after the OAuth callback and perform
+            // the final redirect to the originally intended page.
+            const safeRedirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: redirectUrl
+                    redirectTo: safeRedirectUrl
                 }
             });
             if (error) throw error;
@@ -370,6 +384,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 pageAuthErrorMsg.textContent = "Google login error: " + error.message;
             }
             console.error('Google login error:', error.message);
+        }
+    }
+
+    async function handleGithubLogin() {
+        try {
+            // Same redirect strategy as Google — keep redirectAfterAuth in sessionStorage
+            // and use a safe allowlisted URL; onAuthStateChange SIGNED_IN will finish the redirect.
+            const safeRedirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    redirectTo: safeRedirectUrl
+                }
+            });
+            if (error) throw error;
+        } catch (error) {
+            if (pageAuthErrorMsg) {
+                pageAuthErrorMsg.style.color = "#ff6b6b";
+                pageAuthErrorMsg.textContent = "GitHub login error: " + error.message;
+            }
+            console.error('GitHub login error:', error.message);
         }
     }
 
@@ -421,6 +457,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveUserProfile() {
         if (!currentUser) return;
+
+        // Bug #13: validate inputs before saving
+        if (profileName && !profileName.value.trim()) {
+            showProfileStatus('Name cannot be empty.', 'var(--color-accent)');
+            toggleProfileEdit(true);
+            return;
+        }
+        if (profileDob && profileDob.value) {
+            const dob = new Date(profileDob.value);
+            if (dob > new Date()) {
+                showProfileStatus('Date of birth cannot be in the future.', 'var(--color-accent)');
+                toggleProfileEdit(true);
+                return;
+            }
+        }
 
         showProfileStatus('Saving...', 'var(--color-text-muted)');
         toggleProfileEdit(false);
@@ -479,7 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAvatarUI(profileAvatar.value);
 
             setTimeout(() => {
-                profileStatus.style.display = 'none';
+                // Guard against navigation away from the profile page before the timer fires
+                if (profileStatus) profileStatus.style.display = 'none';
             }, 3000);
 
         } catch (error) {
@@ -490,8 +542,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* --- UI Helpers --- */
 
+    // Bug #12: the original guard blocked all execution when any of the three elements
+    // was absent, which is correct on non-login pages where NONE are present. But if only
+    // some are missing it means an HTML mistake — log a warning instead of silently bailing.
     function updatePageAuthUI() {
-        if (!pageTitle || !pageAuthBtn || !pageAuthToggleText) return;
+        const allAbsent = !pageTitle && !pageAuthBtn && !pageAuthToggleText;
+        if (allAbsent) return; // expected on non-login pages
+        if (!pageTitle || !pageAuthBtn || !pageAuthToggleText) {
+            console.warn('updatePageAuthUI: login form is partially missing from DOM. Check login.html.');
+            return;
+        }
 
         const emailGroup = document.getElementById('email-group');
         const passwordGroup = document.getElementById('password-group');

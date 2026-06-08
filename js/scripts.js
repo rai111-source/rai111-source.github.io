@@ -2,16 +2,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // -- Utils --
-    function escapeHtml(str) {
-        if (!str && str !== 0) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
+    // Bug #16: use centralized escHtml from supabase.js (loads before this script)
+    // instead of a local duplicate that could silently diverge.
+    const escapeHtml = window.escHtml;
 
     // -- State --
     let cart = JSON.parse(localStorage.getItem('littleLayersCart')) || [];
@@ -67,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
         loadProducts('all');
     }
 
+    // Bug #10 fix: previously both a DB error and an empty result fell through to the
+    // same 'No products found' message. Now errors are thrown to the catch block and
+    // shown as a distinct 'failed to load' message; empty results are handled separately.
     async function loadProducts(category) {
         productsGrid.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading products…</p></div>';
         try {
@@ -74,14 +70,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 let q = supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
                 if (category && category !== 'all') q = q.eq('category', category);
                 const { data, error } = await q;
-                if (!error && data && data.length) {
+                if (error) throw error; // surface DB errors to the catch block below
+                if (data && data.length) {
                     allProducts = data;
                     renderProducts(data);
                     return;
                 }
+                // No error but empty — distinct message from an actual failure
+                productsGrid.innerHTML = '<div class="loadbox">No products found in this category yet.</div>';
+                return;
             }
         } catch (e) {
-            console.error(e);
+            console.error('loadProducts:', e);
+            productsGrid.innerHTML = '<div class="loadbox">⚠️ Failed to load products. Please refresh the page.</div>';
+            return;
         }
         productsGrid.innerHTML = '<div class="loadbox">No products found.</div>';
     }
@@ -217,7 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cart.length > 0) {
                 const itemsToUpsert = cart.map(localItem => {
                     const dbItem = dbItems.find(i => i.product_id === localItem.id);
-                    const quantity = dbItem ? Math.max(dbItem.quantity, localItem.quantity) : localItem.quantity;
+                    // Local quantity wins — it reflects the user's most recent in-session
+                    // intent (they may have reduced or removed items while offline).
+                    // Using Math.max would silently restore quantities the user deliberately changed.
+                    const quantity = localItem.quantity;
                     return {
                         user_id: currentUser.id,
                         product_id: localItem.id,

@@ -1,9 +1,14 @@
 // ============================================================
 //  js/main.js  —  LittleLayers public site logic
 // ============================================================
+// ⚠️  NOTE (Bug #19): This file is NOT currently loaded by any HTML page.
+//  It was superseded by index.js. Ensure it is not included alongside
+//  index.js — both define loadProducts, trackOrder, checkout, etc.
+//  globally and whichever loads last wins, causing unpredictable behaviour.
 
 // ── STATE ────────────────────────────────────────────────────
-let cart = JSON.parse(localStorage.getItem('ll_cart') || '[]');
+// Bug #1 follow-up: cart key aligned to 'littleLayersCart' in case this file is used.
+let cart = JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
 let allProducts = [];
 let activeFilter = 'all';
 
@@ -119,7 +124,7 @@ function changeQty(id, delta) {
 }
 
 function saveCart() {
-  localStorage.setItem('ll_cart', JSON.stringify(cart));
+  localStorage.setItem('littleLayersCart', JSON.stringify(cart));
 }
 
 function updateCartUI() {
@@ -358,6 +363,6 @@ function toggleFaq(el) {
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+// Bug #16: local escHtml removed. window.escHtml from supabase.js is the
+// single source of truth — same function name, one canonical implementation.
+const escHtml = window.escHtml;

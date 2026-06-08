@@ -11,27 +11,13 @@
       { id: 8, name: 'Wall Art Plaque', category: 'decor', price: 249, original_price: null, description: 'Geometric typographic wall art.', badge: null, image_url: 'Images/Wall-art.jpeg' },
     ];
 
-<<<<<<< HEAD
+    // Bug #16 fix: use centralized escHtml from supabase.js instead of a local duplicate.
+    // supabase.js always loads before index.js so window.escHtml is already defined here.
+    const esc = window.escHtml;
+
+    // Bug #1 fix: unified cart key ('littleLayersCart') and item shape (quantity, image)
+    // so the cart drawer on this page stays in sync with cart.html / checkout.html.
     let cart = JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
-=======
-    let cart = [];
-    try {
-      const stored = localStorage.getItem('littleLayersCart') || localStorage.getItem('ll_cart');
-      if (stored) {
-        cart = JSON.parse(stored);
-        if (Array.isArray(cart)) {
-          cart.forEach(item => {
-            if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
-            if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
-          });
-        } else {
-          cart = [];
-        }
-      }
-    } catch (e) {
-      console.error('Failed to parse cart:', e);
-    }
->>>>>>> 6d5dfdbfbbcf3e44e052b0dbaee89a94951b4699
     let allP = [];
 
     document.addEventListener('DOMContentLoaded', () => { 
@@ -81,6 +67,36 @@
       renderP(allP);
     }
 
+    async function loadGallery() {
+      const g = document.getElementById('galleryGrid');
+      if (!g) return;
+      g.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading gallery…</p></div>';
+      try {
+        if (typeof sb !== 'undefined') {
+          const { data, error } = await sb.from('gallery').select('*').eq('active', true).order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+          if (!error && data && data.length) { renderGallery(data); return; }
+        }
+      } catch (e) { console.error(e); }
+      g.innerHTML = '<div class="loadbox">Gallery coming soon.</div>';
+    }
+
+    function renderGallery(list) {
+      const g = document.getElementById('galleryGrid');
+      if (!g) return;
+      if (!list.length) { g.innerHTML = '<div class="loadbox">Gallery coming soon.</div>'; return; }
+      g.innerHTML = list.map((item, i) => {
+        let classes = 'gi';
+        if (i % 6 === 0) classes += ' tall';
+        if (i % 5 === 4) classes += ' wide';
+        return `
+        <div class="${classes}"
+          onclick="openLb('${item.image_url || ''}','${esc(item.title)}${item.caption ? ' — ' + esc(item.caption) : ''}')">
+          <img src="${item.image_url || ''}" alt="${esc(item.title)}" loading="lazy">
+          <div class="gcap">${esc(item.title)}</div>
+        </div>`;
+      }).join('');
+    }
+
     function renderP(list) {
       const g = document.getElementById('productsGrid');
       if (!list.length) { g.innerHTML = '<div class="loadbox">No products in this category yet.</div>'; return; }
@@ -119,66 +135,24 @@
     function addToCart(id, e) {
       if (e) e.stopPropagation();
       const p = allP.find(x => x.id === id); if (!p) return;
-<<<<<<< HEAD
       const ex = cart.find(i => i.id === id);
-      // Use unified item shape: 'quantity' (not qty), 'image' (not image_url)
-      // to match scripts.js so cart.html and checkout.html see the same data.
+      // Unified item shape: 'quantity' + 'image' to match scripts.js (Bug #1 fix)
       if (ex) ex.quantity++; else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image_url, quantity: 1 });
       saveCart(); updateCart(); showNotif(`${p.name} added to cart! 🛒`);
     }
+
     function changeQty(id, d) {
       const item = cart.find(i => i.id === id); if (!item) return;
       item.quantity += d; if (item.quantity <= 0) cart = cart.filter(i => i.id !== id);
       saveCart(); updateCart();
     }
+
     function saveCart() { localStorage.setItem('littleLayersCart', JSON.stringify(cart)); }
+
     function updateCart() {
       const count = cart.reduce((s, i) => s + i.quantity, 0);
       document.getElementById('cartCount').textContent = count;
       const total = cart.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
-=======
-      const ex = cart.find(i => String(i.id) === String(id));
-      if (ex) {
-        ex.quantity = (ex.quantity || ex.qty || 0) + 1;
-        if (ex.qty !== undefined) ex.qty = ex.quantity;
-      } else {
-        cart.push({ id: p.id, name: p.name, price: Number(p.price), image: p.image_url, image_url: p.image_url, quantity: 1, qty: 1 });
-      }
-      saveCart(); updateCart(); showNotif(`${p.name} added to cart! 🛒`);
-    }
-    function changeQty(id, d) {
-      const item = cart.find(i => String(i.id) === String(id)); if (!item) return;
-      const currentQty = (item.quantity !== undefined) ? item.quantity : (item.qty || 0);
-      const newQty = currentQty + d;
-      if (newQty <= 0) {
-        cart = cart.filter(i => String(i.id) !== String(id));
-      } else {
-        item.quantity = newQty;
-        item.qty = newQty;
-      }
-      saveCart(); updateCart();
-    }
-    function saveCart() {
-      // make sure both properties are kept for safety
-      cart.forEach(item => {
-        if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
-        if (item.qty === undefined && item.quantity !== undefined) item.qty = item.quantity;
-        if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
-        if (item.image_url === undefined && item.image !== undefined) item.image_url = item.image;
-      });
-      localStorage.setItem('littleLayersCart', JSON.stringify(cart));
-    }
-    function updateCart() {
-      cart.forEach(item => {
-        if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
-        if (item.qty === undefined && item.quantity !== undefined) item.qty = item.quantity;
-        if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
-        if (item.image_url === undefined && item.image !== undefined) item.image_url = item.image;
-      });
-      const count = cart.reduce((s, i) => s + (i.quantity || 0), 0);
-      document.getElementById('cartCount').textContent = count;
-      const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 0), 0);
->>>>>>> 6d5dfdbfbbcf3e44e052b0dbaee89a94951b4699
       const tv = document.getElementById('cartTotal'); if (tv) tv.textContent = '₹' + total.toLocaleString('en-IN');
       const body = document.getElementById('cartItems'); const foot = document.getElementById('cartFt'); if (!body) return;
       if (!cart.length) {
@@ -189,45 +163,69 @@
         body.innerHTML = cart.map(item => `
       <div class="citem">
         <img src="${item.image || ''}" alt="${esc(item.name)}" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
-<<<<<<< HEAD
         <div class="ci-info"><div class="ci-name">${esc(item.name)}</div><div class="ci-price">₹${(Number(item.price) * item.quantity).toLocaleString('en-IN')}</div></div>
         <div class="qctl">
           <button class="qb" onclick="changeQty(${item.id},-1)">−</button>
           <span class="qn">${item.quantity}</span>
-=======
-        <div class="ci-info"><div class="ci-name">${esc(item.name)}</div><div class="ci-price">₹${(Number(item.price) * (item.quantity || 1)).toLocaleString('en-IN')}</div></div>
-        <div class="qctl">
-          <button class="qb" onclick="changeQty(${item.id},-1)">−</button>
-          <span class="qn">${item.quantity || 1}</span>
->>>>>>> 6d5dfdbfbbcf3e44e052b0dbaee89a94951b4699
           <button class="qb" onclick="changeQty(${item.id},1)">+</button>
         </div>
       </div>`).join('');
       }
     }
+
     function toggleCart() { document.getElementById('cartDr').classList.toggle('open'); document.getElementById('cartOv').classList.toggle('open'); }
+
     async function checkout() {
       if (!cart.length) return;
-<<<<<<< HEAD
       const total = cart.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
       const ref = 'LL-' + Date.now();
       const msg = `🛒 *New Order — ${ref}*\n\n` + cart.map(i => `• ${i.name} × ${i.quantity} = ₹${(Number(i.price) * i.quantity).toLocaleString('en-IN')}`).join('\n') + `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
-=======
-      cart.forEach(item => {
-        if (item.quantity === undefined && item.qty !== undefined) item.quantity = item.qty;
-        if (item.qty === undefined && item.quantity !== undefined) item.qty = item.quantity;
-        if (item.image === undefined && item.image_url !== undefined) item.image = item.image_url;
-        if (item.image_url === undefined && item.image !== undefined) item.image_url = item.image;
-      });
-      const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 0), 0);
-      const ref = 'LL-' + Date.now();
-      const msg = `🛒 *New Order — ${ref}*\n\n` + cart.map(i => `• ${i.name} × ${(i.quantity || 1)} = ₹${(Number(i.price) * (i.quantity || 1)).toLocaleString('en-IN')}`).join('\n') + `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address.`;
->>>>>>> 6d5dfdbfbbcf3e44e052b0dbaee89a94951b4699
       try { if (typeof sb !== 'undefined') await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' }); } catch (e) { console.error(e); }
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
       cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
     }
 
+    // Bug #14 fix: distinguish 'not found' (Supabase PGRST116) from real DB errors
+    // so users see a proper error message on network/permission failures instead of "not found".
+    async function trackOrder() {
+      const val = document.getElementById('trackInput').value.trim().toUpperCase();
+      if (!val) { showNotif('Please enter your Order ID'); return; }
+      const res = document.getElementById('trackResult'), msg = document.getElementById('trackMsg'), tl = document.getElementById('trackTimeline');
+      let order = null;
+      try {
+        if (typeof sb !== 'undefined') {
+          const { data, error } = await sb.from('orders').select('*').eq('order_ref', val).single();
+          if (error && error.code !== 'PGRST116') throw error; // real DB error — surface it
+          order = data; // null when PGRST116 (no rows), handled below
+        }
+      } catch (e) {
+        console.error(e);
+        msg.textContent = 'Could not look up your order. Please try again or contact us on WhatsApp.';
+        msg.style.color = 'var(--gray2)';
+        res.style.display = 'block';
+        tl.style.display = 'none';
+        return;
+      }
+      if (!order) { msg.textContent = `Order "${val}" not found. Please check the ID or contact us.`; msg.style.color = 'var(--gray2)'; res.style.display = 'block'; tl.style.display = 'none'; return; }
+      const ss = ['pending', 'confirmed', 'printing', 'dispatched', 'delivered'];
+      const ll = { pending: { icon: '🕐', title: 'Order Placed', sub: 'We received your order' }, confirmed: { icon: '✓', title: 'Design Confirmed', sub: 'Sent to printer' }, printing: { icon: '🖨', title: 'Printing', sub: 'Est. 2 more days' }, dispatched: { icon: '📦', title: 'Dispatched', sub: 'Shipped via courier' }, delivered: { icon: '✓', title: 'Delivered', sub: 'Enjoy your print!' } };
+      const ci = ss.indexOf(order.status); msg.textContent = ''; tl.style.display = 'flex';
+      tl.innerHTML = ss.map((s, i) => {
+        const done = i < ci;
+        const active = i === ci;
+        const l = ll[s];
+        return `
+          <div class="tstep${done ? ' done' : ''}${active ? ' active' : ''}">
+            <div class="tdot">${done ? '✓' : l.icon}</div>
+            <div>
+              <div class="tsl">${l.title}</div>
+              <div class="tss">${l.sub}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      res.style.display = 'block';
+    }
 
     async function submitForm(e) {
       e.preventDefault(); const btn = e.target.querySelector('button[type=submit]');
@@ -256,7 +254,6 @@
     }
 
     function showNotif(msg) { const el = document.getElementById('notif'); el.textContent = msg; el.classList.add('show'); clearTimeout(window._nt); window._nt = setTimeout(() => el.classList.remove('show'), 3000); }
-    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
     async function loadSiteContent() {
       try {
@@ -283,12 +280,10 @@
       if (titleEl && content.title) {
         let titleText = content.title.replace(/\\n/g, '\n');
         const hasMarkdownItalic = /[\*_][^*_]+[\*_]/.test(titleText);
-        const hasHtmlItalic = /<span class="italic">|<em\b/.test(titleText);
-        
+        const hasHtmlItalic = /\<span class="italic"\>|\<em\b/.test(titleText);
         if (hasMarkdownItalic) {
           titleText = titleText.replace(/[\*_]([^*_]+)[\*_]/g, '<span class="italic">$1</span>');
         }
-        
         const lines = titleText.split('\n');
         if (lines.length === 3 && !hasMarkdownItalic && !hasHtmlItalic) {
           titleEl.innerHTML = `${lines[0]}<br><span class="italic">${lines[1]}</span><br>${lines[2]}`;
@@ -296,9 +291,7 @@
           titleEl.innerHTML = lines.join('<br>');
         }
       }
-      if (subEl && content.sub) {
-        subEl.textContent = content.sub;
-      }
+      if (subEl && content.sub) { subEl.textContent = content.sub; }
       if (statsEl && content.stats) {
         statsEl.innerHTML = content.stats.map(s => `
           <div class="hstat">
@@ -321,10 +314,7 @@
     function renderProcess(content) {
       const subEl = document.getElementById('process-sub-el');
       const stepsEl = document.getElementById('process-steps-el');
-
-      if (subEl && content.sub) {
-        subEl.textContent = content.sub;
-      }
+      if (subEl && content.sub) { subEl.textContent = content.sub; }
       if (stepsEl && content.steps) {
         stepsEl.innerHTML = content.steps.map(s => {
           const isUrl = /^(https?:\/\/|\/|data:image\/)/.test(s.icon) || /\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i.test(s.icon);
@@ -345,10 +335,7 @@
       const titleEl = document.getElementById('about-title-el');
       const textEl = document.getElementById('about-text-el');
       const cardsEl = document.getElementById('about-cards-el');
-
-      if (titleEl && content.title) {
-        titleEl.innerHTML = content.title.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
-      }
+      if (titleEl && content.title) { titleEl.innerHTML = content.title.replace(/\n/g, '<br>').replace(/\\n/g, '<br>'); }
       if (textEl && content.paragraphs) {
         textEl.innerHTML = content.paragraphs.map(p => `
           <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">${esc(p)}</p>
@@ -372,7 +359,6 @@
     async function initGalleryBg() {
       const container = document.getElementById('gallery-bg-container');
       if (!container) return;
-      
       let images = [];
       try {
         if (typeof sb !== 'undefined') {
@@ -381,54 +367,30 @@
             images = data.map(item => item.image_url).filter(Boolean);
           }
         }
-      } catch (e) {
-        console.error('Error fetching gallery for bg:', e);
-      }
-      
+      } catch (e) { console.error('Error fetching gallery for bg:', e); }
       if (!images.length) {
-        images = [
-          'Images/Goku.jpeg',
-          'Images/Zubeen.jpeg',
-          'Images/Decor.jpeg',
-          'Images/LITHOPHANE.jpeg',
-          'Images/Dragon.jpeg',
-          'Images/Keychain.jpeg',
-          'Images/Gift.jpeg',
-          'Images/Wall-art.jpeg'
-        ];
+        images = ['Images/Goku.jpeg','Images/Zubeen.jpeg','Images/Decor.jpeg','Images/LITHOPHANE.jpeg','Images/Dragon.jpeg','Images/Keychain.jpeg','Images/Gift.jpeg','Images/Wall-art.jpeg'];
       }
-      
       const positions = [
-        { left: '4%', top: '8%', anim: 'anim-fade' },
-        { left: '16%', top: '55%', anim: 'anim-zoom' },
-        { left: '8%', top: '32%', anim: 'anim-pop' },
-        { left: '22%', top: '75%', anim: 'anim-fade' },
-        { right: '4%', top: '12%', anim: 'anim-zoom' },
-        { right: '18%', top: '48%', anim: 'anim-pop' },
-        { right: '8%', top: '72%', anim: 'anim-fade' },
-        { right: '22%', top: '28%', anim: 'anim-zoom' }
+        { left: '4%', top: '8%', anim: 'anim-fade' }, { left: '16%', top: '55%', anim: 'anim-zoom' },
+        { left: '8%', top: '32%', anim: 'anim-pop' }, { left: '22%', top: '75%', anim: 'anim-fade' },
+        { right: '4%', top: '12%', anim: 'anim-zoom' }, { right: '18%', top: '48%', anim: 'anim-pop' },
+        { right: '8%', top: '72%', anim: 'anim-fade' }, { right: '22%', top: '28%', anim: 'anim-zoom' }
       ];
-      
       const shuffledImages = [...images].sort(() => 0.5 - Math.random());
-      
       positions.forEach((pos, idx) => {
         const imgUrl = shuffledImages[idx % shuffledImages.length];
         const imgEl = document.createElement('img');
         imgEl.className = `bg-anim-img ${pos.anim}`;
         imgEl.src = imgUrl;
-        
         if (pos.left) imgEl.style.left = pos.left;
         if (pos.right) imgEl.style.right = pos.right;
         imgEl.style.top = pos.top;
-        
         const delay = (idx * 1.8) + (Math.random() * 1.5);
         imgEl.style.animationDelay = `${delay}s`;
-        
         const baseDuration = pos.anim === 'anim-fade' ? 12 : (pos.anim === 'anim-zoom' ? 15 : 10);
         const duration = baseDuration + (Math.random() * 3 - 1.5);
         imgEl.style.animationDuration = `${duration}s`;
-        
         container.appendChild(imgEl);
       });
     }
-
