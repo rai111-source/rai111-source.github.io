@@ -387,16 +387,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (orderError) throw orderError;
                 }
 
-                if (currentUser && supabase) {
+                // Ensure we have current session to avoid race conditions
+                let user = currentUser;
+                if (supabase && !user) {
+                    try {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        user = session ? session.user : null;
+                    } catch (e) {
+                        console.error('Error getting session:', e);
+                    }
+                }
+
+                if (user && supabase) {
                     // Clear DB cart on checkout
                     const { error } = await supabase
                         .from('cart_items')
                         .delete()
-                        .eq('user_id', currentUser.id);
+                        .eq('user_id', user.id);
                     if (error) console.error('Error clearing DB cart:', error.message);
                 }
 
-                localStorage.removeItem('littleLayersCart');
+                // Set cart to empty and save locally to update badge and storage
+                cart = [];
+                saveCartLocally();
                 
                 // Save order reference locally for tracking
                 try {
@@ -439,19 +452,33 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             if (supabase) {
-                await supabase.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' });
+                const { error: orderError } = await supabase.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' });
+                if (orderError) throw orderError;
             }
         } catch (e) {
             console.error('Error inserting order for WhatsApp:', e);
+            alert('Error placing order: ' + e.message);
+            return; // Stop checkout if order placement fails
         }
 
-        if (currentUser && supabase) {
+        // Ensure we have current session to avoid race conditions
+        let user = currentUser;
+        if (supabase && !user) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                user = session ? session.user : null;
+            } catch (e) {
+                console.error('Error getting session:', e);
+            }
+        }
+
+        if (user && supabase) {
             try {
                 // Clear DB cart on checkout
                 const { error } = await supabase
                     .from('cart_items')
                     .delete()
-                    .eq('user_id', currentUser.id);
+                    .eq('user_id', user.id);
                 if (error) console.error('Error clearing DB cart:', error.message);
             } catch (e) {
                 console.error(e);

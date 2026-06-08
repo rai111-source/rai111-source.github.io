@@ -179,14 +179,19 @@ async function checkout() {
   // Save order to Supabase (guard against sb being undefined if Supabase failed to load)
   try {
     if (typeof sb !== 'undefined') {
-      await sb.from('orders').insert({
+      const { error: orderError } = await sb.from('orders').insert({
         order_ref: orderRef,
         items: cart,
         total,
         status: 'pending',
       });
+      if (orderError) throw orderError;
     }
-  } catch(e) { console.warn('Order save failed:', e); }
+  } catch(e) {
+    console.warn('Order save failed:', e);
+    alert('Error placing order: ' + e.message);
+    return;
+  }
 
   // Redirect to WhatsApp
   const waNum = document.body.dataset.waNumber || '916000061991';

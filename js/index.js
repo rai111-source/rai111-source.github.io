@@ -324,18 +324,32 @@
       
       try { 
         if (typeof sb !== 'undefined') {
-          await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' });
+          const { error: orderError } = await sb.from('orders').insert({ order_ref: ref, items: cart, total, status: 'pending' });
+          if (orderError) throw orderError;
         } 
       } catch (e) { 
         console.error(e); 
+        alert('Error placing order: ' + e.message);
+        return; // Stop checkout if order placement fails
       }
 
-      if (currentUser && typeof sb !== 'undefined') {
+      // Ensure we have current session to avoid race conditions
+      let user = currentUser;
+      if (typeof sb !== 'undefined' && !user) {
+        try {
+          const { data: { session } } = await sb.auth.getSession();
+          user = session ? session.user : null;
+        } catch (e) {
+          console.error('Error getting session:', e);
+        }
+      }
+
+      if (user && typeof sb !== 'undefined') {
         try {
           const { error } = await sb
             .from('cart_items')
             .delete()
-            .eq('user_id', currentUser.id);
+            .eq('user_id', user.id);
           if (error) console.error('Error clearing DB cart:', error.message);
         } catch (e) {
           console.error(e);
