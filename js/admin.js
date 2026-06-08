@@ -1080,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (error) throw error;
             
             // Update the locally stored orders so we don't have to query again
-            const orderIndex = allOrders.findIndex(o => o.id === orderId);
+            const orderIndex = allOrders.findIndex(o => String(o.id) === String(orderId));
             if (orderIndex > -1) {
                 allOrders[orderIndex].status = newStatus;
             }
