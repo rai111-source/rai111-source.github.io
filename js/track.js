@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                       <strong style="color: var(--white);">${escapeHtml(cust.name)}</strong><br>
                       ${escapeHtml(cust.address)}<br>
                       ${escapeHtml(cust.city)} - ${escapeHtml(cust.zip)}<br>
-                      ✉️ ${escapeHtml(cust.email)}
+                      📱 ${escapeHtml(cust.phone || '-')}${cust.email ? `<br>✉️ ${escapeHtml(cust.email)}` : ''}
                     </div>
                   </div>
                 `;

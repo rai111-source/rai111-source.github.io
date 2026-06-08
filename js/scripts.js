@@ -364,12 +364,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const address = document.getElementById('address').value;
             const city = document.getElementById('city').value;
             const zip = document.getElementById('zip').value;
-            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value || '';
             
             const paymentMethodInput = document.querySelector('input[name="payment_method"]:checked');
             const paymentMethod = paymentMethodInput ? paymentMethodInput.value : 'cod';
 
-            const customer = { name, address, city, zip, email, payment_method: paymentMethod };
+            const customer = { name, address, city, zip, phone, email, payment_method: paymentMethod };
             const order_ref = 'LL-' + Date.now();
             const total = cart.reduce((s, i) => s + Number(i.price) * (i.quantity || 1), 0);
 

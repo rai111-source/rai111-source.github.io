@@ -1029,11 +1029,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             let customerHtml = '<span style="color: var(--gray4); font-style: italic;">WhatsApp Direct</span>';
-            if (cust && (cust.name || cust.address || cust.email)) {
+            if (cust && (cust.name || cust.address || cust.phone || cust.email)) {
                 const paymentMethodName = (cust.payment_method && cust.payment_method.toUpperCase() === 'COD') ? 'COD' : 'Online';
                 customerHtml = `
                     <div style="line-height: 1.4; text-align: left; font-size: 13px;">
                         <strong>Name:</strong> ${escapeHtml(cust.name || '-')}<br>
+                        <strong>Phone:</strong> ${escapeHtml(cust.phone || '-')}<br>
                         <strong>Email:</strong> ${escapeHtml(cust.email || '-')}<br>
                         <strong>Address:</strong> ${escapeHtml(cust.address || '-')}, ${escapeHtml(cust.city || '-')} - ${escapeHtml(cust.zip || '-')}<br>
                         <strong>Payment:</strong> ${escapeHtml(paymentMethodName)}
