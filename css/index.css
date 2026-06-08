@@ -165,6 +165,13 @@
       border-bottom: 1px solid var(--line);
     }
 
+    /* Offset all anchor targets by the sticky nav height so clicking any
+       nav link (#home, #shop, #gallery…) doesn't hide content behind the bar. */
+    [id] {
+      scroll-margin-top: 64px;
+    }
+
+
     .nav-logo {
       font-family: var(--head);
       font-size: 21px;
