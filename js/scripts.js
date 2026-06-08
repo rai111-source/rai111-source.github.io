@@ -168,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initCartSync() {
         if (!supabase) {
             updateCartCount();
+            if (checkoutItemsContainer) renderCheckout();
             return;
         }
 
@@ -179,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await syncCartFromSupabase();
         } else {
             updateCartCount();
+            if (checkoutItemsContainer) renderCheckout();
         }
 
         // Listen for auth changes
@@ -194,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.removeItem('littleLayersCart');
                 updateCartCount();
                 if (cartItemsContainer) renderCart();
+                if (checkoutItemsContainer) renderCheckout();
             }
         });
     }
@@ -246,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             saveCartLocally();
             if (cartItemsContainer) renderCart();
+            if (checkoutItemsContainer) renderCheckout();
         } catch (error) {
             console.error('Error syncing cart:', error.message);
         }
@@ -371,6 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         saveCartLocally();
+        if (cartItemsContainer) renderCart();
+        if (checkoutItemsContainer) renderCheckout();
     }
 
     async function removeFromCart(productId) {
@@ -410,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function renderCart() {
+        if (!cartItemsContainer) return; // guard: not on cart page
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
             if (cartSummary) cartSummary.style.display = 'none';

@@ -171,14 +171,16 @@ async function checkout() {
     cart.map(i => `• ${i.name} × ${i.qty} = ₹${(Number(i.price)*i.qty).toLocaleString('en-IN')}`).join('\n') +
     `\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease share your delivery address to confirm.`;
 
-  // Save order to Supabase
+  // Save order to Supabase (guard against sb being undefined if Supabase failed to load)
   try {
-    await sb.from('orders').insert({
-      order_ref: orderRef,
-      items: cart,
-      total,
-      status: 'pending',
-    });
+    if (typeof sb !== 'undefined') {
+      await sb.from('orders').insert({
+        order_ref: orderRef,
+        items: cart,
+        total,
+        status: 'pending',
+      });
+    }
   } catch(e) { console.warn('Order save failed:', e); }
 
   // Redirect to WhatsApp

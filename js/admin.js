@@ -53,6 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     currentUser = session.user;
 
+    // ⚠️  SECURITY NOTE: This client-side check is a UX gate only.
+    // True access control MUST be enforced via Supabase Row-Level Security (RLS)
+    // policies on the 'products' and 'gallery' tables so that only the admin's
+    // user ID can INSERT / UPDATE / DELETE rows, regardless of client-side code.
     if (currentUser.email !== ADMIN_EMAIL) {
         loadingContainer.innerHTML = `
             <div class="loadbox" style="margin-top: 100px;">
@@ -61,6 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <a href="index.html" class="btn btn-border" style="margin-top: 20px;">Return Home</a>
             </div>
         `;
+        // Ensure admin content is never visible to non-admin users on the client
+        if (adminContent) adminContent.remove();
         return;
     }
 
