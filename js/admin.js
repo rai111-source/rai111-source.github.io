@@ -960,7 +960,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
             if (error) throw error;
             
-            allOrders = data || [];
+            // Fetch associated reviews
+            let reviewsData = [];
+            try {
+                const { data: revs } = await supabaseClient
+                    .from('reviews')
+                    .select('*');
+                reviewsData = revs || [];
+            } catch (e) {
+                console.error('Error loading reviews:', e);
+            }
+            
+            allOrders = (data || []).map(order => {
+                const review = reviewsData.find(r => r.order_ref === order.order_ref);
+                return { ...order, review };
+            });
+            
             renderOrdersList();
         } catch (e) {
             console.error('Error loading orders:', e);
@@ -1028,6 +1043,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
+            let reviewHtml = '';
+            if (order.review) {
+                const stars = '★'.repeat(order.review.rating) + '☆'.repeat(5 - order.review.rating);
+                reviewHtml = `
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dotted var(--line); font-size: 12px; color: var(--gray3);">
+                        <strong style="color: #ffc107;">Review:</strong> ${stars}<br>
+                        <span style="font-style: italic;">"${escapeHtml(order.review.comment || 'No comment')}"</span>
+                    </div>
+                `;
+            }
+
             let customerHtml = '<span style="color: var(--gray4); font-style: italic;">WhatsApp Direct</span>';
             if (cust && (cust.name || cust.address || cust.phone || cust.email)) {
                 const paymentMethodName = (cust.payment_method && cust.payment_method.toUpperCase() === 'COD') ? 'COD' : 'Online';
@@ -1038,6 +1064,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <strong>Email:</strong> ${escapeHtml(cust.email || '-')}<br>
                         <strong>Address:</strong> ${escapeHtml(cust.address || '-')}, ${escapeHtml(cust.city || '-')} - ${escapeHtml(cust.zip || '-')}<br>
                         <strong>Payment:</strong> ${escapeHtml(paymentMethodName)}
+                        ${reviewHtml}
+                    </div>
+                `;
+            } else if (reviewHtml) {
+                customerHtml = `
+                    <div style="line-height: 1.4; text-align: left; font-size: 13px;">
+                        <span style="color: var(--gray4); font-style: italic;">WhatsApp Direct</span>
+                        ${reviewHtml}
                     </div>
                 `;
             }

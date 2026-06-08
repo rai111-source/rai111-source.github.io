@@ -158,6 +158,42 @@
     </div>
   </footer>
 
+  <!-- REVIEW MODAL -->
+  <div class="mov" id="reviewOverlay" onclick="closeReviewModal()"></div>
+  <div class="mbox" id="reviewModal">
+    <div class="mhd">
+      <h3 style="font-family: var(--head); color: var(--white); font-size: 18px; font-weight: 700; margin: 0;">Write a Review</h3>
+      <button onclick="closeReviewModal()" style="background: none; border: none; color: var(--gray4); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">✕</button>
+    </div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 16px;">
+      <input type="hidden" id="reviewOrderRef" value="">
+      
+      <div class="fg" style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+        <label for="reviewName" style="font-size: 12.5px; font-weight: 600; color: var(--gray2);">Your Name</label>
+        <input type="text" id="reviewName" class="tinp" placeholder="Enter your name" style="width: 100%; box-sizing: border-box;" required>
+      </div>
+      
+      <div class="fg" style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+        <label style="font-size: 12.5px; font-weight: 600; color: var(--gray2);">Rating</label>
+        <div id="reviewStars" style="display: flex; gap: 8px; font-size: 28px; cursor: pointer; color: var(--gray6); user-select: none;">
+          <span data-star="1" onclick="setRating(1)" style="transition: color 0.15s ease;">★</span>
+          <span data-star="2" onclick="setRating(2)" style="transition: color 0.15s ease;">★</span>
+          <span data-star="3" onclick="setRating(3)" style="transition: color 0.15s ease;">★</span>
+          <span data-star="4" onclick="setRating(4)" style="transition: color 0.15s ease;">★</span>
+          <span data-star="5" onclick="setRating(5)" style="transition: color 0.15s ease;">★</span>
+        </div>
+        <input type="hidden" id="reviewRating" value="5">
+      </div>
+
+      <div class="fg" style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+        <label for="reviewComment" style="font-size: 12.5px; font-weight: 600; color: var(--gray2);">Review (Optional)</label>
+        <textarea id="reviewComment" class="tinp" placeholder="Tell us about the print quality, packaging, or delivery..." style="width: 100%; min-height: 100px; padding: 12px; font-family: inherit; font-size: 14px; box-sizing: border-box; resize: vertical;"></textarea>
+      </div>
+
+      <button class="btn btn-white" id="submitReviewBtn" style="width: 100%; justify-content: center; padding: 14px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;" onclick="submitReview()">Submit Review</button>
+    </div>
+  </div>
+
   <!-- NOTIFICATION -->
   <div class="notif" id="notif"></div>
 

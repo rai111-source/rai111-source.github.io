@@ -153,7 +153,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? (cust.payment_method.toUpperCase() === 'COD' ? 'Cash on Delivery (COD)' : 'Online Payment')
                 : 'WhatsApp Direct';
 
+            let reviewHtml = '';
+            if (order.status === 'delivered') {
+                let alreadyReviewed = false;
+                if (typeof sb !== 'undefined') {
+                    try {
+                        const { data: revData } = await sb.from('reviews').select('id').eq('order_ref', order.order_ref);
+                        if (revData && revData.length > 0) {
+                            alreadyReviewed = true;
+                        }
+                    } catch (e) {
+                        console.error('Error checking review:', e);
+                    }
+                }
+                
+                const custName = cust ? (cust.name || '') : '';
+                
+                if (alreadyReviewed) {
+                    reviewHtml = `
+                      <div style="background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--line); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--gray3); font-size: 13.5px;">
+                        <span>✅</span> Thanks for sharing your feedback! Your review has been submitted.
+                      </div>
+                    `;
+                } else {
+                    reviewHtml = `
+                      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--line); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                        <div style="font-size: 32px;">🎉</div>
+                        <h4 style="font-family: var(--head); color: var(--white); font-size: 18px; font-weight: 700; margin: 0;">How was your experience?</h4>
+                        <p style="font-size: 13px; color: var(--gray3); margin: 0; max-width: 420px; line-height: 1.6;">Your order has been delivered! We would love to hear your feedback on our custom 3D printing. (Writing a review is optional)</p>
+                        <button class="btn btn-white" style="padding: 10px 20px; font-size: 13.5px; border-radius: 9px; cursor: pointer;" onclick="openReviewModal('${escapeHtml(order.order_ref)}', '${escapeHtml(custName)}')">Write a Review</button>
+                      </div>
+                    `;
+                }
+            }
+
             det.innerHTML = `
+              ${reviewHtml}
               <h3 style="font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; border-top: 1px solid var(--line); padding-top: 24px; text-align: left;">Order Details</h3>
               <div style="display: flex; flex-direction: column; gap: 20px;">
                 <!-- Summary Cards -->
@@ -338,4 +373,77 @@ document.addEventListener('DOMContentLoaded', () => {
             window.trackOrder(refParam);
         }
     }
+
+    /* --- Order Reviews Modal --- */
+    window.openReviewModal = function(orderRef, customerName) {
+        document.getElementById('reviewOrderRef').value = orderRef;
+        document.getElementById('reviewName').value = customerName || '';
+        document.getElementById('reviewComment').value = '';
+        setRating(5); // Default to 5 stars
+        
+        document.getElementById('reviewOverlay').classList.add('open');
+        document.getElementById('reviewModal').classList.add('open');
+    };
+    
+    window.closeReviewModal = function() {
+        document.getElementById('reviewOverlay').classList.remove('open');
+        document.getElementById('reviewModal').classList.remove('open');
+    };
+    
+    window.setRating = function(val) {
+        document.getElementById('reviewRating').value = val;
+        const stars = document.querySelectorAll('#reviewStars span');
+        stars.forEach((star, idx) => {
+            if (idx < val) {
+                star.style.color = '#ffc107'; // Golden/Yellow
+            } else {
+                star.style.color = 'var(--gray6)'; // Default gray
+            }
+        });
+    };
+    
+    window.submitReview = async function() {
+        const orderRef = document.getElementById('reviewOrderRef').value;
+        const name = document.getElementById('reviewName').value.trim();
+        const rating = parseInt(document.getElementById('reviewRating').value, 10);
+        const comment = document.getElementById('reviewComment').value.trim();
+        
+        if (!name) {
+            alert('Please enter your name.');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('submitReviewBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SUBMITTING...';
+        }
+        
+        try {
+            if (typeof sb !== 'undefined') {
+                const { error } = await sb.from('reviews').insert({
+                    order_ref: orderRef,
+                    name,
+                    rating,
+                    comment
+                });
+                
+                if (error) throw error;
+                
+                showNotif('Thank you for your review! 🎉');
+                closeReviewModal();
+                
+                // Re-track the order to show the thanks card
+                window.trackOrder(orderRef);
+            }
+        } catch (e) {
+            console.error('Error submitting review:', e);
+            alert('Failed to submit review: ' + e.message);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Review';
+            }
+        }
+    };
 });
