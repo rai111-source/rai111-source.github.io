@@ -21,7 +21,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="css/index.css">
   <script>
-    (function() {
+    (function () {
       if (localStorage.getItem('theme') === 'light') {
         document.documentElement.classList.add('light-theme');
       }
@@ -52,11 +52,14 @@
     <div class="nav-r">
       <div id="auth-buttons" style="display: flex; gap: 8px;">
         <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
-        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+        <a href="login.html?mode=signup" class="btn-signup"
+          style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
       </div>
-      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
-          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-          👤
+      <a href="profile.html" class="action-btn" id="user-btn"
+        style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+        <span id="user-btn-text"
+          style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+        👤
       </a>
       <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" style="margin-right: 8px;">
         <i class="ph ph-sun" id="theme-icon"></i>
@@ -66,7 +69,7 @@
     </div>
     <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
   </nav>
- 
+
   <div class="mobnav" id="mobnav">
     <a href="#home" onclick="closeMob()">Home</a>
     <a href="#how" onclick="closeMob()">How It Works</a>
@@ -94,7 +97,8 @@
         <span class="italic">Ideas</span><br>
         Into Reality.
       </h1>
-      <p class="hero-sub" id="hero-sub-el">Custom 3D printed creations from Assam — figurines, lithophane portraits, prototypes & unique
+      <p class="hero-sub" id="hero-sub-el">Custom 3D printed creations from Assam — figurines, lithophane portraits,
+        prototypes & unique
         gifts. Delivered across India in 5–7 days.</p>
       <div class="hero-ctas">
         <a href="#shop" class="btn btn-white">Shop Now →</a>
@@ -305,7 +309,8 @@
           Born in Assam.<br>Built for India.</h2>
         <div id="about-text-el">
           <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">Founded in Dibrugarh with a
-            passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA printers.
+            passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA
+            printers.
           </p>
           <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:32px">Whether you're an engineer
             needing a functional prototype or someone looking for a truly unique gift — we're here to make it real.</p>
@@ -344,37 +349,77 @@
         height: clamp(85px, 11vw, 140px);
         object-fit: cover;
         border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         opacity: 0;
         pointer-events: none;
         transition: filter 0.3s ease;
       }
-      
+
       /* Animation variants */
       .anim-fade {
         animation: bg-fade 12s infinite ease-in-out;
       }
+
       .anim-zoom {
         animation: bg-zoom 15s infinite ease-in-out;
       }
+
       .anim-pop {
         animation: bg-pop 10s infinite ease-in-out;
       }
 
       @keyframes bg-fade {
-        0% { opacity: 0; transform: scale(0.9); }
-        25%, 75% { opacity: 0.16; transform: scale(1); }
-        100% { opacity: 0; transform: scale(1.05); }
+        0% {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+
+        25%,
+        75% {
+          opacity: 0.16;
+          transform: scale(1);
+        }
+
+        100% {
+          opacity: 0;
+          transform: scale(1.05);
+        }
       }
+
       @keyframes bg-zoom {
-        0% { opacity: 0; transform: scale(0.8) rotate(-4deg); }
-        30%, 70% { opacity: 0.16; transform: scale(1.05) rotate(2deg); }
-        100% { opacity: 0; transform: scale(1.2) rotate(-2deg); }
+        0% {
+          opacity: 0;
+          transform: scale(0.8) rotate(-4deg);
+        }
+
+        30%,
+        70% {
+          opacity: 0.16;
+          transform: scale(1.05) rotate(2deg);
+        }
+
+        100% {
+          opacity: 0;
+          transform: scale(1.2) rotate(-2deg);
+        }
       }
+
       @keyframes bg-pop {
-        0% { opacity: 0; transform: translateY(30px) scale(0.9) rotate(5deg); }
-        20%, 80% { opacity: 0.16; transform: translateY(0) scale(1) rotate(0deg); }
-        100% { opacity: 0; transform: translateY(-30px) scale(0.95) rotate(-5deg); }
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.9) rotate(5deg);
+        }
+
+        20%,
+        80% {
+          opacity: 0.16;
+          transform: translateY(0) scale(1) rotate(0deg);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translateY(-30px) scale(0.95) rotate(-5deg);
+        }
       }
     </style>
     <!-- Background Animated Images Container -->
@@ -382,8 +427,11 @@
 
     <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:1;" class="rev">
       <span class="label" style="display:block;margin-bottom:12px">Gallery</span>
-      <h2 style="font-family:var(--head);font-size:clamp(36px,4vw,56px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:14px">See Our Work In Action</h2>
-      <p style="color:var(--gray3);margin-bottom:30px">Browse our gallery of custom 3D printed objects, figurines, keychains, and portraits.</p>
+      <h2
+        style="font-family:var(--head);font-size:clamp(36px,4vw,56px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:14px">
+        See Our Work In Action</h2>
+      <p style="color:var(--gray3);margin-bottom:30px">Browse our gallery of custom 3D printed objects, figurines,
+        keychains, and portraits.</p>
       <a href="gallery.html" class="btn btn-white">View Our Gallery →</a>
     </div>
   </section>
@@ -488,8 +536,8 @@
     <div class="cgrid">
       <form class="cform rev" onsubmit="submitForm(event)">
         <div class="frow">
-          <div class="fg"><label>Your Name *</label><input name="name" placeholder="Rohit Kumar" required></div>
-          <div class="fg"><label>Phone *</label><input name="phone" type="tel" placeholder="+91 98765 43210" required>
+          <div class="fg"><label>Your Name *</label><input name="name" placeholder="Abc Xyz" required></div>
+          <div class="fg"><label>Phone *</label><input name="phone" type="tel" placeholder="+91 1234567890" required>
           </div>
         </div>
         <div class="fg"><label>Email *</label><input name="email" type="email" placeholder="hello@example.com" required>
@@ -536,7 +584,8 @@
           <div class="icico">📸</div>
           <div>
             <div class="icl">Instagram</div>
-            <div class="icv"><a href="https://instagram.com/little_layers.co" target="_blank">@little_layers.co</a></div>
+            <div class="icv"><a href="https://instagram.com/little_layers.co" target="_blank">@little_layers.co</a>
+            </div>
           </div>
         </div>
         <div class="ic" style="background:var(--gray8);border-color:var(--line2)">
@@ -620,9 +669,14 @@
     </div>
     <div class="cart-ft" id="cartFt" style="display:none">
       <div class="ct-row"><span class="ct-lbl">Total</span><span class="ct-val" id="cartTotal">₹0</span></div>
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; box-sizing: border-box;">
-        <a href="cart.html" class="chkbtn" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--white); color: var(--black); box-sizing: border-box;">Proceed to Checkout</a>
-        <button class="chkbtn" onclick="checkout()" style="background: transparent; border: 1px solid var(--line); color: var(--white); display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;">Order via WhatsApp →</button>
+      <div
+        style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; box-sizing: border-box;">
+        <a href="cart.html" class="chkbtn"
+          style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--white); color: var(--black); box-sizing: border-box;">Proceed
+          to Checkout</a>
+        <button class="chkbtn" onclick="checkout()"
+          style="background: transparent; border: 1px solid var(--line); color: var(--white); display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;">Order
+          via WhatsApp →</button>
       </div>
     </div>
   </div>

@@ -312,6 +312,48 @@
         </div>
       </div>`).join('');
       }
+      updateFloatingCart();
+    }
+
+    function updateFloatingCart() {
+      let floatBtn = document.getElementById('cartFloatBtn');
+      const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+      
+      if (totalItems > 0) {
+        if (!floatBtn) {
+          floatBtn = document.createElement('a');
+          floatBtn.id = 'cartFloatBtn';
+          floatBtn.className = 'cartfloat';
+          floatBtn.href = 'javascript:void(0)';
+          floatBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleCart();
+          });
+          
+          // Position above WhatsApp float button if it exists
+          const waFloat = document.querySelector('.wafloat');
+          if (waFloat) {
+            floatBtn.style.bottom = '96px';
+          } else {
+            floatBtn.style.bottom = '28px';
+          }
+          
+          floatBtn.innerHTML = `
+            <i class="ph ph-shopping-cart" style="font-size: 24px;"></i>
+            <div class="cartfloat-badge" id="cartFloatCount">0</div>
+          `;
+          document.body.appendChild(floatBtn);
+          
+          // Trigger reflow for transition
+          floatBtn.getBoundingClientRect();
+        }
+        
+        floatBtn.classList.add('show');
+        const countEl = document.getElementById('cartFloatCount');
+        if (countEl) countEl.textContent = totalItems;
+      } else if (floatBtn) {
+        floatBtn.classList.remove('show');
+      }
     }
 
     function toggleCart() { document.getElementById('cartDr').classList.toggle('open'); document.getElementById('cartOv').classList.toggle('open'); }

@@ -2109,6 +2109,59 @@
       box-shadow: 0 12px 36px rgba(37, 211, 102, .55)
     }
 
+    /* ── FLOATING CART ───────────────────────────────────────── */
+    .cartfloat {
+      position: fixed;
+      bottom: 96px; /* positioned above wafloat */
+      right: 28px;
+      z-index: 200;
+      width: 56px;
+      height: 56px;
+      background: var(--white);
+      color: var(--black);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .25);
+      cursor: pointer;
+      transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+      pointer-events: none;
+    }
+
+    .cartfloat.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+
+    .cartfloat:hover {
+      transform: scale(1.12);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, .35);
+      background: var(--gray1);
+      color: var(--black);
+    }
+
+    .cartfloat-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #ff4757;
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+    }
+
     /* ── NOTIFICATION ───────────────────────────────────────── */
     .notif {
       position: fixed;
