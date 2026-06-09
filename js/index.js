@@ -478,7 +478,12 @@
       } catch (ex) { 
         console.error(ex); 
       }
-      showNotif("Message sent! Chat started below 💬"); e.target.reset();
+      if (currentUser) {
+        showNotif("Message sent! Chat started below 💬");
+      } else {
+        showNotif("Message sent! Log in to start a private chat 💬");
+      }
+      e.target.reset();
       btn.disabled = false; btn.textContent = 'Send Message →';
     }
 

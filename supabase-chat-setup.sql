@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   customer_name   TEXT NOT NULL,
   customer_phone  TEXT,
+  user_id         UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at      TIMESTAMPTZ DEFAULT NOW(),
   updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
@@ -36,17 +37,17 @@ CREATE POLICY "Admin full access chat_sessions"
 DROP POLICY IF EXISTS "Public insert chat_sessions" ON chat_sessions;
 CREATE POLICY "Public insert chat_sessions"
   ON chat_sessions FOR INSERT
-  WITH CHECK (TRUE);
+  WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Public read chat_sessions" ON chat_sessions;
 CREATE POLICY "Public read chat_sessions"
   ON chat_sessions FOR SELECT
-  USING (TRUE);
+  USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Public update chat_sessions" ON chat_sessions;
 CREATE POLICY "Public update chat_sessions"
   ON chat_sessions FOR UPDATE
-  USING (TRUE);
+  USING (auth.uid() = user_id);
 
 -- ── CHAT MESSAGES POLICIES ──────────────────────────────────
 DROP POLICY IF EXISTS "Admin full access chat_messages" ON chat_messages;
@@ -57,12 +58,12 @@ CREATE POLICY "Admin full access chat_messages"
 DROP POLICY IF EXISTS "Public insert chat_messages" ON chat_messages;
 CREATE POLICY "Public insert chat_messages"
   ON chat_messages FOR INSERT
-  WITH CHECK (TRUE);
+  WITH CHECK (session_id IN (SELECT id FROM chat_sessions));
 
 DROP POLICY IF EXISTS "Public read chat_messages" ON chat_messages;
 CREATE POLICY "Public read chat_messages"
   ON chat_messages FOR SELECT
-  USING (TRUE);
+  USING (session_id IN (SELECT id FROM chat_sessions));
 
 -- ============================================================
 --  TRIGGERS & FUNCTIONS
