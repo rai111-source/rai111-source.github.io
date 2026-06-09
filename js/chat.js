@@ -270,7 +270,9 @@
           unreadDot.style.display = 'none';
         }
 
+        let isNewSession = false;
         if (!sessionId) {
+          isNewSession = true;
           // 1. Create a brand new session
           const { data, error } = await supabase
             .from('chat_sessions')
@@ -285,15 +287,6 @@
 
           // Render active chat widget layout
           renderChatState();
-
-          // 2. Insert first friendly system greeting
-          await supabase
-            .from('chat_messages')
-            .insert([{
-              session_id: sessionId,
-              sender: 'admin',
-              message: `Hello ${name}! We received your enquiry for the "${service || 'Custom'}" service. One of our designers will look at your message and reply here shortly.`
-            }]);
         } else {
           // If session already exists, update name and phone details in DB
           await supabase
@@ -304,7 +297,7 @@
           renderChatState();
         }
 
-        // 3. Send the enquiry details as a message from the customer
+        // 2. Send the enquiry details as a message from the customer first
         const enquiryText = `[New Enquiry]\nService: ${service || 'Other'}\nMessage: ${message}`;
         const { error: msgErr } = await supabase
           .from('chat_messages')
@@ -315,6 +308,17 @@
           }]);
           
         if (msgErr) throw msgErr;
+
+        // 3. If it's a new session, insert the friendly system greeting AFTER the customer's enquiry
+        if (isNewSession) {
+          await supabase
+            .from('chat_messages')
+            .insert([{
+              session_id: sessionId,
+              sender: 'admin',
+              message: `Hello ${name}! We received your enquiry for the "${service || 'Custom'}" service. One of our designers will look at your message and reply here shortly.`
+            }]);
+        }
 
         scrollToBottom();
 
