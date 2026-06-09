@@ -97,6 +97,7 @@
       <div class="admin-tab" onclick="switchTab('gallery')">Gallery</div>
       <div class="admin-tab" onclick="switchTab('orders')">Orders</div>
       <div class="admin-tab" onclick="switchTab('enquiries')">Enquiries</div>
+      <div class="admin-tab" onclick="switchTab('chats')">Chats</div>
       <div class="admin-tab" onclick="switchTab('content')">Site Content</div>
     </div>
 
@@ -309,6 +310,45 @@
             <!-- Populated by JS -->
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- CHATS SECTION -->
+    <div id="section-chats" class="admin-section">
+      <div class="admin-header">
+        <h2>Customer Chats</h2>
+      </div>
+
+      <div class="admin-chat-layout">
+        <!-- Left panel: Sessions list -->
+        <div class="admin-sessions-panel">
+          <div class="admin-panel-header">Active Sessions</div>
+          <div class="admin-sessions-list" id="admin-sessions-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Right panel: Messages area -->
+        <div class="admin-chat-detail-panel" id="admin-chat-detail-panel">
+          <div class="admin-chat-placeholder" id="admin-chat-placeholder">
+            <i class="ph ph-chat-centered-dots" style="font-size: 48px; margin-bottom: 12px; display: block; color: var(--gray4);"></i>
+            <p>Select a chat session to start replying</p>
+          </div>
+          <div class="admin-chat-header" id="admin-chat-header" style="display: none;">
+            <div class="admin-chat-cust-info">
+              <h4 id="admin-chat-cust-name" style="margin: 0; font-size: 16px; font-weight: 600; color: var(--white);">Name</h4>
+              <span id="admin-chat-cust-phone" style="font-size: 13px; color: var(--gray4);">Phone</span>
+            </div>
+            <button id="admin-delete-chat-btn" class="btn btn-border" style="padding: 6px 12px; font-size: 12px; color: #ff6b6b; border-color: rgba(255,107,107,0.3); background: transparent;">Delete Chat</button>
+          </div>
+          <div class="admin-chat-body" id="admin-chat-body" style="display: none;">
+            <!-- Messages populated dynamically -->
+          </div>
+          <div class="admin-chat-footer" id="admin-chat-footer" style="display: none; padding: 16px; border-top: 1px solid var(--line); background: var(--gray9); display: flex; gap: 12px;">
+            <input type="text" class="chat-input" id="adminChatInput" placeholder="Type a reply..." style="background: var(--gray8); border: 1px solid var(--line); color: var(--white); padding: 12px 16px; border-radius: 8px; font-family: inherit; font-size: 15px; outline: none; flex: 1;">
+            <button class="btn btn-white" id="adminChatSendBtn" style="padding: 12px 20px; font-size: 14px; border-radius: 8px;">Send</button>
+          </div>
+        </div>
       </div>
     </div>
 

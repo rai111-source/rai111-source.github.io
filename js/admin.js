@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadGallery();
     loadOrders();
     loadEnquiries();
+    loadChats();
     loadSiteContentCMS();
 
     // -- Event Listeners --
@@ -1207,5 +1208,302 @@ document.addEventListener('DOMContentLoaded', async () => {
             return decodeURIComponent(url.substring(index + marker.length));
         }
         return null;
+    }
+
+    // ── CHAT DASHBOARD LOGIC ──────────────────────────────────────
+    let activeChatSessions = [];
+    let selectedSessionId = null;
+    let chatMessagesChannel = null;
+    let chatSessionsChannel = null;
+
+    async function loadChats() {
+        const listEl = document.getElementById('admin-sessions-list');
+        if (!listEl) return;
+
+        listEl.innerHTML = '<div style="text-align: center; color: var(--gray4); padding: 20px;">Loading chats...</div>';
+
+        // Initial Load
+        await reloadSessions();
+
+        // Subscribe to real-time sessions
+        if (!chatSessionsChannel) {
+            chatSessionsChannel = supabaseClient
+                .channel('public:chat_sessions_admin')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'chat_sessions' },
+                    async (payload) => {
+                        await reloadSessions();
+                    }
+                )
+                .subscribe();
+        }
+
+        // Set up event listeners for sending messages
+        const adminSendBtn = document.getElementById('adminChatSendBtn');
+        const adminInput = document.getElementById('adminChatInput');
+
+        if (adminSendBtn && adminInput) {
+            adminSendBtn.addEventListener('click', sendAdminReply);
+            adminInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendAdminReply();
+                }
+            });
+        }
+
+        const deleteBtn = document.getElementById('admin-delete-chat-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', deleteActiveChat);
+        }
+    }
+
+    async function reloadSessions() {
+        try {
+            const { data: sessions, error: sError } = await supabaseClient
+                .from('chat_sessions')
+                .select('*')
+                .order('updated_at', { ascending: false });
+
+            if (sError) throw sError;
+
+            const { data: messages, error: mError } = await supabaseClient
+                .from('chat_messages')
+                .select('session_id, message, sender, created_at')
+                .order('created_at', { ascending: false })
+                .limit(200);
+
+            if (mError) throw mError;
+
+            activeChatSessions = sessions || [];
+
+            const lastMsgMap = {};
+            if (messages) {
+                messages.forEach(m => {
+                    if (!lastMsgMap[m.session_id]) {
+                        lastMsgMap[m.session_id] = m;
+                    }
+                });
+            }
+
+            renderSessionsList(lastMsgMap);
+        } catch (e) {
+            console.error('Error reloading chat sessions:', e);
+        }
+    }
+
+    function renderSessionsList(lastMsgMap) {
+        const listEl = document.getElementById('admin-sessions-list');
+        if (!listEl) return;
+
+        if (!activeChatSessions.length) {
+            listEl.innerHTML = '<div style="text-align: center; color: var(--gray4); padding: 20px; font-size: 13px;">No active chat sessions.</div>';
+            return;
+        }
+
+        listEl.innerHTML = activeChatSessions.map(session => {
+            const lastMsg = lastMsgMap[session.id];
+            let snippet = 'No messages yet';
+            let isUnread = false;
+            let timeStr = '';
+
+            if (lastMsg) {
+                snippet = lastMsg.sender === 'admin' ? `You: ${lastMsg.message}` : lastMsg.message;
+                isUnread = lastMsg.sender === 'customer' && selectedSessionId !== session.id;
+                
+                const date = new Date(lastMsg.created_at);
+                timeStr = date.toLocaleTimeString('en-IN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+
+            const activeClass = selectedSessionId === session.id ? 'active' : '';
+            const unreadClass = isUnread ? 'unread' : '';
+
+            return `
+                <div class="admin-session-item ${activeClass}" onclick="selectChatSession('${session.id}')">
+                    <div class="admin-session-header">
+                        <div class="admin-session-name">${escapeHtml(session.customer_name)}</div>
+                        <div class="admin-session-time">${timeStr}</div>
+                    </div>
+                    <div class="admin-session-phone">📱 ${escapeHtml(session.customer_phone || '-')}</div>
+                    <div class="admin-session-snippet ${unreadClass}">${escapeHtml(snippet)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.selectChatSession = async function(sessionId) {
+        selectedSessionId = sessionId;
+        
+        // Rerender list to clear unread highlight and set active item
+        await reloadSessions();
+
+        const placeholder = document.getElementById('admin-chat-placeholder');
+        const header = document.getElementById('admin-chat-header');
+        const body = document.getElementById('admin-chat-body');
+        const footer = document.getElementById('admin-chat-footer');
+
+        const session = activeChatSessions.find(s => s.id === sessionId);
+        if (!session) return;
+
+        document.getElementById('admin-chat-cust-name').textContent = session.customer_name;
+        document.getElementById('admin-chat-cust-phone').textContent = `Phone: ${session.customer_phone || '-'}`;
+
+        placeholder.style.display = 'none';
+        header.style.display = 'flex';
+        body.style.display = 'flex';
+        footer.style.display = 'flex';
+
+        body.innerHTML = '<div style="text-align: center; color: var(--gray4); padding: 20px;">Loading chat messages...</div>';
+
+        // Load messages
+        try {
+            const { data, error } = await supabaseClient
+                .from('chat_messages')
+                .select('*')
+                .eq('session_id', sessionId)
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+
+            body.innerHTML = '';
+            if (data && data.length) {
+                data.forEach(msg => appendAdminMessageUI(msg));
+            } else {
+                body.innerHTML = '<div style="text-align: center; color: var(--gray4); padding: 20px;">No messages.</div>';
+            }
+            scrollToAdminChatBottom();
+
+            // Subscribe to active messages channel
+            subscribeToActiveMessages(sessionId);
+        } catch (e) {
+            console.error('Error loading chat messages:', e);
+            body.innerHTML = '<div style="text-align: center; color: #ff6b6b; padding: 20px;">Failed to load messages.</div>';
+        }
+    };
+
+    function subscribeToActiveMessages(sessionId) {
+        if (chatMessagesChannel) {
+            chatMessagesChannel.unsubscribe();
+        }
+
+        chatMessagesChannel = supabaseClient
+            .channel(`chat_messages_admin:${sessionId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: `session_id=eq.${sessionId}`
+                },
+                (payload) => {
+                    // Check if already rendered
+                    if (document.getElementById(`admin-msg-${payload.new.id}`)) return;
+                    
+                    const body = document.getElementById('admin-chat-body');
+                    // Remove no messages placeholder
+                    if (body.querySelector('div[style*="text-align"]')) {
+                        body.innerHTML = '';
+                    }
+
+                    appendAdminMessageUI(payload.new);
+                    scrollToAdminChatBottom();
+                }
+            )
+            .subscribe();
+    }
+
+    function appendAdminMessageUI(msg) {
+        const body = document.getElementById('admin-chat-body');
+        if (!body) return;
+
+        const bubble = document.createElement('div');
+        bubble.id = `admin-msg-${msg.id}`;
+        bubble.className = `msg-bubble ${msg.sender}`;
+
+        const time = new Date(msg.created_at).toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        const escapedMsg = escapeHtml(msg.message);
+        bubble.innerHTML = `
+            ${escapedMsg}
+            <span class="msg-time">${time}</span>
+        `;
+        body.appendChild(bubble);
+    }
+
+    async function sendAdminReply() {
+        const input = document.getElementById('adminChatInput');
+        if (!input || !selectedSessionId) return;
+
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = '';
+        const sendBtn = document.getElementById('adminChatSendBtn');
+        sendBtn.disabled = true;
+
+        try {
+            const { error } = await supabaseClient
+                .from('chat_messages')
+                .insert([{
+                    session_id: selectedSessionId,
+                    sender: 'admin',
+                    message: text
+                }]);
+
+            if (error) throw error;
+        } catch (e) {
+            console.error('Error sending admin reply:', e);
+            alert('Failed to send message.');
+            input.value = text;
+        } finally {
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    }
+
+    async function deleteActiveChat() {
+        if (!selectedSessionId) return;
+        if (!confirm('Are you sure you want to delete this chat session? All messages will be permanently deleted.')) return;
+
+        try {
+            const { error } = await supabaseClient
+                .from('chat_sessions')
+                .delete()
+                .eq('id', selectedSessionId);
+
+            if (error) throw error;
+
+            // Clear selected chat UI
+            selectedSessionId = null;
+            document.getElementById('admin-chat-placeholder').style.display = 'flex';
+            document.getElementById('admin-chat-header').style.display = 'none';
+            document.getElementById('admin-chat-body').style.display = 'none';
+            document.getElementById('admin-chat-footer').style.display = 'none';
+
+            if (chatMessagesChannel) {
+                chatMessagesChannel.unsubscribe();
+                chatMessagesChannel = null;
+            }
+
+            await reloadSessions();
+        } catch (e) {
+            console.error('Error deleting chat session:', e);
+            alert('Failed to delete chat session.');
+        }
+    }
+
+    function scrollToAdminChatBottom() {
+        const body = document.getElementById('admin-chat-body');
+        if (body) body.scrollTop = body.scrollHeight;
     }
 });
