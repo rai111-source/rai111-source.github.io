@@ -474,8 +474,16 @@
       e.preventDefault(); const btn = e.target.querySelector('button[type=submit]');
       btn.disabled = true; btn.textContent = 'Sending…';
       const d = { name: e.target.name.value, phone: e.target.phone.value, email: e.target.email.value, service: e.target.service.value, message: e.target.message.value };
-      try { if (typeof sb !== 'undefined') await sb.from('messages').insert(d); } catch (ex) { console.error(ex); }
-      showNotif("Message sent! We'll reply within 24h ✉️"); e.target.reset();
+      try { 
+        if (typeof sb !== 'undefined') await sb.from('messages').insert(d); 
+        // Automatically open and start real-time chat widget
+        if (window.startChatFromEnquiry) {
+          await window.startChatFromEnquiry(d.name, d.phone, d.email, d.service, d.message);
+        }
+      } catch (ex) { 
+        console.error(ex); 
+      }
+      showNotif("Message sent! Chat started below 💬"); e.target.reset();
       btn.disabled = false; btn.textContent = 'Send Message →';
     }
 

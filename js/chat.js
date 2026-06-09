@@ -262,6 +262,70 @@
       }
     }
 
+    async function startChatFromEnquiry(name, phone, email, service, message) {
+      try {
+        // Toggle chat open if not already open
+        if (!chatWindow.classList.contains('open')) {
+          chatWindow.classList.add('open');
+          unreadDot.style.display = 'none';
+        }
+
+        if (!sessionId) {
+          // 1. Create a brand new session
+          const { data, error } = await supabase
+            .from('chat_sessions')
+            .insert([{ customer_name: name, customer_phone: phone }])
+            .select()
+            .single();
+
+          if (error) throw error;
+          
+          sessionId = data.id;
+          localStorage.setItem('littleLayersChatSessionId', sessionId);
+
+          // Render active chat widget layout
+          renderChatState();
+
+          // 2. Insert first friendly system greeting
+          await supabase
+            .from('chat_messages')
+            .insert([{
+              session_id: sessionId,
+              sender: 'admin',
+              message: `Hello ${name}! We received your enquiry for the "${service || 'Custom'}" service. One of our designers will look at your message and reply here shortly.`
+            }]);
+        } else {
+          // If session already exists, update name and phone details in DB
+          await supabase
+            .from('chat_sessions')
+            .update({ customer_name: name, customer_phone: phone })
+            .eq('id', sessionId);
+            
+          renderChatState();
+        }
+
+        // 3. Send the enquiry details as a message from the customer
+        const enquiryText = `[New Enquiry]\nService: ${service || 'Other'}\nMessage: ${message}`;
+        const { error: msgErr } = await supabase
+          .from('chat_messages')
+          .insert([{
+            session_id: sessionId,
+            sender: 'customer',
+            message: enquiryText
+          }]);
+          
+        if (msgErr) throw msgErr;
+
+        scrollToBottom();
+
+      } catch (err) {
+        console.error('Error starting chat from enquiry:', err);
+      }
+    }
+
+    // Expose globally
+    window.startChatFromEnquiry = startChatFromEnquiry;
+
     function scrollToBottom() {
       chatBody.scrollTop = chatBody.scrollHeight;
     }
