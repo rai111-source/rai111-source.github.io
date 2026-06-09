@@ -345,13 +345,8 @@
             toggleCart();
           });
           
-          // Position above WhatsApp float button if it exists
-          const waFloat = document.querySelector('.wafloat');
-          if (waFloat) {
-            floatBtn.style.bottom = '96px';
-          } else {
-            floatBtn.style.bottom = '28px';
-          }
+          // Position above chat widget
+          floatBtn.style.bottom = '96px';
           
           floatBtn.innerHTML = `
             <i class="ph ph-shopping-cart" style="font-size: 24px;"></i>
