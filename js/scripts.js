@@ -1,4 +1,9 @@
 /* LittleLayers.Co - Main Scripts */
+let initialProductsPromise = null;
+const supabaseClientInstance = window.supabaseClient;
+if (supabaseClientInstance) {
+    initialProductsPromise = supabaseClientInstance.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -66,20 +71,27 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadProducts(category) {
         productsGrid.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading products…</p></div>';
         try {
-            if (supabase) {
+            let data, error;
+            if (category === 'all' && initialProductsPromise) {
+                const res = await initialProductsPromise;
+                data = res.data;
+                error = res.error;
+            } else if (supabase) {
                 let q = supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
                 if (category && category !== 'all') q = q.eq('category', category);
-                const { data, error } = await q;
-                if (error) throw error; // surface DB errors to the catch block below
-                if (data && data.length) {
-                    allProducts = data;
-                    renderProducts(data);
-                    return;
-                }
-                // No error but empty — distinct message from an actual failure
-                productsGrid.innerHTML = '<div class="loadbox">No products found in this category yet.</div>';
+                const res = await q;
+                data = res.data;
+                error = res.error;
+            }
+            if (error) throw error; // surface DB errors to the catch block below
+            if (data && data.length) {
+                allProducts = data;
+                renderProducts(data);
                 return;
             }
+            // No error but empty — distinct message from an actual failure
+            productsGrid.innerHTML = '<div class="loadbox">No products found in this category yet.</div>';
+            return;
         } catch (e) {
             console.error('loadProducts:', e);
             productsGrid.innerHTML = '<div class="loadbox">⚠️ Failed to load products. Please refresh the page.</div>';

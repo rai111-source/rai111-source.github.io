@@ -1,6 +1,15 @@
-// LittleLayers.Co - Standalone Gallery Script
+let initialGalleryPromise = null;
+const sb = window.supabaseClient;
+
+if (typeof sb !== 'undefined') {
+    initialGalleryPromise = sb.from('gallery')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    const sb = window.supabaseClient;
 
     // Helper functions
     function esc(s) {
@@ -39,16 +48,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!g) return;
         g.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading gallery…</p></div>';
         try {
-            if (typeof sb !== 'undefined') {
-                const { data, error } = await sb.from('gallery')
+            let data, error;
+            if (initialGalleryPromise) {
+                const res = await initialGalleryPromise;
+                data = res.data;
+                error = res.error;
+            } else if (typeof sb !== 'undefined') {
+                const res = await sb.from('gallery')
                     .select('*')
                     .eq('active', true)
                     .order('sort_order', { ascending: true })
                     .order('created_at', { ascending: false });
-                if (!error && data && data.length) {
-                    renderGallery(data);
-                    return;
-                }
+                data = res.data;
+                error = res.error;
+            }
+            if (!error && data && data.length) {
+                renderGallery(data);
+                return;
             }
         } catch (e) {
             console.error(e);

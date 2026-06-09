@@ -21,6 +21,14 @@
     let allP = [];
     let currentUser = null;
 
+    // Start network requests immediately to avoid DOMContentLoaded bottlenecks
+    let initialProductsPromise = null;
+    let initialSiteContentPromise = null;
+    if (typeof sb !== 'undefined') {
+      initialProductsPromise = sb.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
+      initialSiteContentPromise = sb.from('site_content').select('*');
+    }
+
     document.addEventListener('DOMContentLoaded', () => { 
       initCartSync(); 
       loadP('all'); 
@@ -55,14 +63,21 @@
 
     async function loadP(cat) {
       const g = document.getElementById('productsGrid');
-      g.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading products…</p></div>';
+      if (g) g.innerHTML = '<div class="loadbox"><div class="spin"></div><p>Loading products…</p></div>';
       try {
-        if (typeof sb !== 'undefined') {
+        let data, error;
+        if (cat === 'all' && initialProductsPromise) {
+          const res = await initialProductsPromise;
+          data = res.data;
+          error = res.error;
+        } else if (typeof sb !== 'undefined') {
           let q = sb.from('products').select('*').eq('active', true).order('created_at', { ascending: false });
           if (cat && cat !== 'all') q = q.eq('category', cat);
-          const { data, error } = await q;
-          if (!error && data && data.length) { allP = data.slice(0, 4); renderP(allP); return; }
+          const res = await q;
+          data = res.data;
+          error = res.error;
         }
+        if (!error && data && data.length) { allP = data.slice(0, 4); renderP(allP); return; }
       } catch (e) { console.error(e); }
       allP = (cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat)).slice(0, 4);
       renderP(allP);
@@ -485,16 +500,23 @@
 
     async function loadSiteContent() {
       try {
-        if (typeof sb !== 'undefined') {
-          const { data, error } = await sb.from('site_content').select('*');
-          if (!error && data && data.length) {
-            data.forEach(item => {
-              if (item.key === 'hero') renderHero(item.content);
-              if (item.key === 'process') renderProcess(item.content);
-              if (item.key === 'about') renderAbout(item.content);
-            });
-            initReveal();
-          }
+        let data, error;
+        if (initialSiteContentPromise) {
+          const res = await initialSiteContentPromise;
+          data = res.data;
+          error = res.error;
+        } else if (typeof sb !== 'undefined') {
+          const res = await sb.from('site_content').select('*');
+          data = res.data;
+          error = res.error;
+        }
+        if (!error && data && data.length) {
+          data.forEach(item => {
+            if (item.key === 'hero') renderHero(item.content);
+            if (item.key === 'process') renderProcess(item.content);
+            if (item.key === 'about') renderAbout(item.content);
+          });
+          initReveal();
         }
       } catch (e) { console.error('Error loading site content:', e); }
     }
@@ -531,7 +553,7 @@
       if (visEl && content.visuals) {
         visEl.innerHTML = content.visuals.map(v => `
           <div class="hvc">
-            <img src="${v.image_url || ''}" alt="${esc(v.label)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=100'">
+            <img src="${v.image_url || ''}" alt="${esc(v.label)}" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=70'">
             <div class="hvc-lbl">${esc(v.label)}</div>
             <div class="hvc-price">${esc(v.price)}</div>
           </div>

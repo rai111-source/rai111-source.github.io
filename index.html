@@ -20,6 +20,12 @@
   <!-- Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="css/index.css">
+  
+  <!-- Preload above-the-fold hero images for instant display -->
+  <link rel="preload" href="Images/Goku.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="Images/Zubeen.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="Images/Room.webp" as="image" fetchpriority="high">
+
   <script>
     (function () {
       if (localStorage.getItem('theme') === 'light') {
@@ -120,15 +126,15 @@
       </div>
     </div>
     <div class="hero-vis" id="hero-vis-el">
-      <div class="hvc"><img src="Images/Goku.jpeg" alt="3D Figurine" loading="lazy">
+      <div class="hvc"><img src="Images/Goku.webp" alt="3D Figurine" fetchpriority="high">
         <div class="hvc-lbl">Custom Figurines</div>
         <div class="hvc-price">From ₹499</div>
       </div>
-      <div class="hvc"><img src="Images/Zubeen.jpeg" alt="Keychain" loading="lazy">
+      <div class="hvc"><img src="Images/Zubeen.webp" alt="Keychain" fetchpriority="high">
         <div class="hvc-lbl">Keychains</div>
         <div class="hvc-price">₹149</div>
       </div>
-      <div class="hvc"><img src="Images/Room.jpeg" alt="Prototype" loading="lazy">
+      <div class="hvc"><img src="Images/Room.webp" alt="Prototype" fetchpriority="high">
         <div class="hvc-lbl">Prototypes</div>
         <div class="hvc-price">Custom Quote</div>
       </div>
