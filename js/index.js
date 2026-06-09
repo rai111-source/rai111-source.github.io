@@ -117,7 +117,7 @@
       const g = document.getElementById('productsGrid');
       if (!list.length) { g.innerHTML = '<div class="loadbox">No products in this category yet.</div>'; return; }
       g.innerHTML = list.map(p => `
-    <div class="pcard">
+    <div class="pcard" onclick="if(!event.target.closest('button')){ window.location.href='product.html?id=${p.id}'; }">
       <div class="pimg">
         <img src="${p.image_url || ''}" alt="${esc(p.name)}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400&q=70'">
