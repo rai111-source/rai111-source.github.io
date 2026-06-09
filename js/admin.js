@@ -80,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadProducts();
     loadGallery();
     loadOrders();
-    loadEnquiries();
     loadChats();
     loadSiteContentCMS();
 
@@ -1126,76 +1125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    async function loadEnquiries() {
-        const listEl = document.getElementById('admin-enquiries-list');
-        if (!listEl) return;
-        listEl.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading enquiries...</td></tr>';
-        
-        try {
-            const { data, error } = await supabaseClient
-                .from('messages')
-                .select('*')
-                .order('created_at', { ascending: false });
-                
-            if (error) throw error;
-            
-            if (!data || !data.length) {
-                listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--gray4);">No enquiries found.</td></tr>';
-                return;
-            }
-            
-            listEl.innerHTML = data.map(msg => {
-                const date = new Date(msg.created_at).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                const cleanPhone = msg.phone.replace(/[^0-9]/g, '');
-                const phoneWithCode = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
-                
-                return `
-                <tr>
-                    <td style="font-size: 13px; color: var(--gray4);">${date}</td>
-                    <td style="font-weight: 500;">${escapeHtml(msg.name)}</td>
-                    <td style="font-size: 13px; line-height: 1.4; text-align: left;">
-                        📱 ${escapeHtml(msg.phone)}<br>
-                        ✉️ ${escapeHtml(msg.email)}
-                    </td>
-                    <td style="text-transform: capitalize; font-size: 13px;">${escapeHtml(msg.service || 'Other')}</td>
-                    <td style="font-size: 13px; max-width: 250px; white-space: pre-wrap; line-height: 1.4; text-align: left;">${escapeHtml(msg.message)}</td>
-                    <td>
-                        <div style="display: flex; gap: 6px; justify-content: center;">
-                            <a href="https://wa.me/${phoneWithCode}" target="_blank" class="btn btn-white" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">Reply</a>
-                            <button onclick="deleteEnquiry('${msg.id}')" class="btn btn-border" style="padding: 6px 12px; font-size: 12px; color: #ff6b6b; border-color: rgba(255,107,107,0.3); background: transparent;">Delete</button>
-                        </div>
-                    </td>
-                </tr>`;
-            }).join('');
-        } catch (e) {
-            console.error('Error loading enquiries:', e);
-            listEl.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff6b6b;">Failed to load enquiries.</td></tr>';
-        }
-    }
-
-    window.deleteEnquiry = async function(msgId) {
-        if (!confirm('Are you sure you want to delete this enquiry?')) return;
-        try {
-            const { error } = await supabaseClient
-                .from('messages')
-                .delete()
-                .eq('id', msgId);
-                
-            if (error) throw error;
-            
-            loadEnquiries();
-        } catch (e) {
-            console.error('Error deleting enquiry:', e);
-            alert('Failed to delete enquiry.');
-        }
-    };
+    
 
     // Bug #16: removed local duplicate — use centralized window.escHtml from supabase.js.
     const escapeHtml = window.escHtml;
