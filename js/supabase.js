@@ -4,8 +4,8 @@
 //  from: https://supabase.com/dashboard → Project Settings → API
 // ============================================================
 
-const SUPABASE_URL  = window.ENV?.SUPABASE_URL || 'https://lirmqwaxsqrnrlcvigfj.supabase.co';
-const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxpcm1xd2F4c3FybnJsY3ZpZ2ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTMwNDUsImV4cCI6MjA5MzgyOTA0NX0.BZNslFBXoBAzJ7fdoyZ0MLJ8_tVZSaP52tzDgw-XsO8';
+const SUPABASE_URL  = window.ENV?.SUPABASE_URL || 'https://amzijtwogsibxganxsty.supabase.co';
+const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || 'sb_publishable_AU321-iXA66NaZ0d4FShPw_0h83Qy9J';
 
 // Supabase JS v2 loaded via CDN in each HTML file
 const { createClient } = supabase;
