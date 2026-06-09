@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 const { error: uploadError } = await supabaseClient.storage
                     .from('product-images')
-                    .upload(filePath, file);
+                    .upload(filePath, file, { cacheControl: '31536000' });
                     
                 if (uploadError) throw uploadError;
                 
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 const { error: uploadError } = await supabaseClient.storage
                     .from('gallery-images')
-                    .upload(filePath, file);
+                    .upload(filePath, file, { cacheControl: '31536000' });
                     
                 if (uploadError) throw uploadError;
                 
@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     const { error: uploadError } = await supabaseClient.storage
                         .from('site-images')
-                        .upload(filePath, file);
+                        .upload(filePath, file, { cacheControl: '31536000' });
                         
                     if (uploadError) throw uploadError;
                     
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     const { error: uploadError } = await supabaseClient.storage
                         .from('site-images')
-                        .upload(filePath, file);
+                        .upload(filePath, file, { cacheControl: '31536000' });
                         
                     if (uploadError) throw uploadError;
                     
