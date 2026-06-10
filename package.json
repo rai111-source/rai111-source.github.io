@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "build": "node build.js",
     "sync-templates": "node scripts/sync-templates.js",
     "sync-templates-ps": "powershell -ExecutionPolicy Bypass -File scripts/sync-templates.ps1"
   },
