@@ -1,7 +1,12 @@
 {
+  "scripts": {
+    "sync-templates": "node scripts/sync-templates.js",
+    "sync-templates-ps": "powershell -ExecutionPolicy Bypass -File scripts/sync-templates.ps1"
+  },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
     "jimp": "^0.22.12",
     "sharp": "^0.34.5"
   }
 }
+

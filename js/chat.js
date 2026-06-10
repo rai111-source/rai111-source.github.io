@@ -6,11 +6,16 @@
   let currentUser = null;
 
   // Wait for Supabase to be initialized
+  let attempts = 0;
   const initInterval = setInterval(() => {
+    attempts++;
     if (window.supabaseClient) {
       clearInterval(initInterval);
       supabase = window.supabaseClient;
       initChat();
+    } else if (attempts >= 50) {
+      clearInterval(initInterval);
+      console.warn('Supabase client failed to initialize after 50 attempts.');
     }
   }, 100);
   
@@ -123,6 +128,10 @@
         }
       } else {
         // Clear local storage session on logout to preserve privacy
+        if (channel) {
+          channel.unsubscribe();
+          channel = null;
+        }
         sessionId = null;
         localStorage.removeItem('littleLayersChatSessionId');
       }

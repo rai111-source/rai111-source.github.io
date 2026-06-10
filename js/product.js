@@ -19,11 +19,16 @@
   };
 
   // Initialize Supabase Client
+  let attempts = 0;
   const initInterval = setInterval(() => {
+    attempts++;
     if (window.supabaseClient) {
       clearInterval(initInterval);
       supabase = window.supabaseClient;
       initPage();
+    } else if (attempts >= 50) {
+      clearInterval(initInterval);
+      console.warn('Supabase client failed to initialize after 50 attempts.');
     }
   }, 100);
 
@@ -251,10 +256,7 @@
       quantity: quantity
     };
 
-    // Load current cart from localStorage
-    let cart = JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
-
-    // Check if item already exists
+    let cart = window.CartManager.getCart();
     const existingIndex = cart.findIndex(item => Number(item.id) === Number(cartItem.id) && item.name === cartItem.name);
 
     if (existingIndex > -1) {
@@ -263,31 +265,22 @@
       cart.push(cartItem);
     }
 
-    // Save locally
-    localStorage.setItem('littleLayersCart', JSON.stringify(cart));
-
-    // Update cart badge
+    window.CartManager.saveCart(cart);
     updateCartBadgeCount(cart);
 
-    // Sync to database if user is logged in
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session ? session.user : null;
 
       if (user) {
-        // Upsert cart item in DB
         const targetQty = existingIndex > -1 ? cart[existingIndex].quantity : quantity;
-        await supabase
-          .from('cart_items')
-          .upsert({
-            user_id: user.id,
-            product_id: cartItem.id,
-            product_name: cartItem.name,
-            product_price: cartItem.price,
-            product_image: cartItem.image,
-            quantity: targetQty,
-            updated_at: new Date()
-          }, { onConflict: 'user_id, product_id' });
+        await window.CartManager.addDbItem(user.id, {
+          id: cartItem.id,
+          name: cartItem.name,
+          price: cartItem.price,
+          image: cartItem.image,
+          quantity: targetQty
+        });
       }
     } catch (err) {
       console.error('Error syncing cart addition to DB:', err);
@@ -295,7 +288,7 @@
   }
 
   function updateCartBadgeCount(cartArray) {
-    const totalCount = cartArray.reduce((acc, item) => acc + item.quantity, 0);
+    const totalCount = window.CartManager.getCartCount(cartArray);
     const countBadge = document.getElementById('cart-count');
     if (countBadge) countBadge.textContent = totalCount;
   }
@@ -542,7 +535,7 @@
         };
 
         // Load current cart from localStorage
-        let cart = JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
+        let cart = window.CartManager.getCart();
         const existingIndex = cart.findIndex(item => Number(item.id) === Number(p.id) && item.name === p.name);
 
         if (existingIndex > -1) {
@@ -551,23 +544,19 @@
           cart.push(p);
         }
 
-        localStorage.setItem('littleLayersCart', JSON.stringify(cart));
+        window.CartManager.saveCart(cart);
         updateCartBadgeCount(cart);
 
         // Database Sync
         if (currentUser) {
           const targetQty = existingIndex > -1 ? cart[existingIndex].quantity : 1;
-          await supabase
-            .from('cart_items')
-            .upsert({
-              user_id: currentUser.id,
-              product_id: p.id,
-              product_name: p.name,
-              product_price: p.price,
-              product_image: p.image,
-              quantity: targetQty,
-              updated_at: new Date()
-            }, { onConflict: 'user_id, product_id' });
+          await window.CartManager.addDbItem(currentUser.id, {
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            image: p.image,
+            quantity: targetQty
+          });
         }
 
         showLocalNotification(`${p.name} added to cart! 🛒`);

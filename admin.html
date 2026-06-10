@@ -74,13 +74,35 @@
 
 <body>
   <nav>
-    <a href="index.html" class="nav-logo">Little<em>Layers</em>.Co</a>
+    <a href="index.html#home" class="nav-logo">Little<em>Layers</em>.Co</a>
     <ul class="nav-links">
-      <li><a href="index.html">View Site ↗</a></li>
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#how">How It Works</a></li>
+      <li><a href="products.html">Shop</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="track.html">Track Order</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
     </ul>
     <div class="nav-r">
-      <button class="btn btn-white" id="logout-btn" style="padding: 8px 16px; font-size: 13px;">Logout</button>
+      <div id="auth-buttons" style="display: flex; gap: 8px;">
+        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup"
+          style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      </div>
+      <a href="profile.html" class="action-btn" id="user-btn"
+        style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+        <span id="user-btn-text"
+          style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+        👤
+      </a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" style="margin-right: 8px;">
+        <i class="ph ph-sun" id="theme-icon"></i>
+      </button>
+      <div class="cart-pill" onclick="toggleCart()">🛒<div class="cbadge" id="cartCount">0</div>
+      </div>
     </div>
+    <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
   </nav>
 
   <div class="admin-container" id="loading-container">

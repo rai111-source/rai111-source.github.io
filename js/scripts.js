@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const escapeHtml = window.escHtml;
 
     // -- State --
-    let cart = JSON.parse(localStorage.getItem('littleLayersCart')) || [];
+    let cart = window.CartManager.getCart();
 
     // -- Elements --
     const cartCountElements = document.querySelectorAll('#cart-count');
@@ -187,140 +187,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Check current session
         const { data: { session } } = await supabase.auth.getSession();
         currentUser = session ? session.user : null;
 
         if (currentUser) {
-            await syncCartFromSupabase();
+            cart = await window.CartManager.syncCartFromSupabase(currentUser.id);
+            updateCartCount();
+            if (cartItemsContainer) renderCart();
+            if (checkoutItemsContainer) renderCheckout();
         } else {
             updateCartCount();
             if (cartItemsContainer) renderCart();
             if (checkoutItemsContainer) renderCheckout();
         }
 
-        // Listen for auth changes
         supabase.auth.onAuthStateChange(async (event, session) => {
             const newUser = session ? session.user : null;
 
             if (event === 'SIGNED_IN' || (newUser && !currentUser)) {
                 currentUser = newUser;
-                await syncCartFromSupabase();
+                cart = await window.CartManager.syncCartFromSupabase(currentUser.id);
+                updateCartCount();
+                if (cartItemsContainer) renderCart();
+                if (checkoutItemsContainer) renderCheckout();
             } else if (event === 'SIGNED_OUT') {
                 currentUser = null;
                 cart = [];
-                localStorage.removeItem('littleLayersCart');
+                window.CartManager.saveCart(cart);
                 updateCartCount();
                 if (cartItemsContainer) renderCart();
                 if (checkoutItemsContainer) renderCheckout();
             }
         });
-    }
-
-    async function syncCartFromSupabase() {
-        if (!currentUser) return;
-
-        try {
-            // 1. Fetch from Supabase
-            const { data: dbItems, error } = await supabase
-                .from('cart_items')
-                .select('*')
-                .eq('user_id', currentUser.id);
-
-            if (error) throw error;
-
-            // 2. Merge local cart into database (if local cart has items)
-            if (cart.length > 0) {
-                const itemsToUpsert = cart.map(localItem => {
-                    const dbItem = dbItems.find(i => i.product_id === localItem.id);
-                    // Local quantity wins — it reflects the user's most recent in-session
-                    // intent (they may have reduced or removed items while offline).
-                    // Using Math.max would silently restore quantities the user deliberately changed.
-                    const quantity = localItem.quantity;
-                    return {
-                        user_id: currentUser.id,
-                        product_id: localItem.id,
-                        product_name: localItem.name,
-                        product_price: localItem.price,
-                        product_image: localItem.image,
-                        quantity: quantity,
-                        updated_at: new Date()
-                    };
-                });
-
-                // Batch upsert to avoid N+1 queries
-                const { data: upsertedItems, error: upsertError } = await supabase
-                    .from('cart_items')
-                    .upsert(itemsToUpsert, { onConflict: 'user_id, product_id' })
-                    .select();
-
-                if (upsertError) throw upsertError;
-
-                // Merge upserted items with DB items that weren't in local cart
-                const localItemIds = new Set(cart.map(i => i.id));
-                const otherDbItems = dbItems.filter(i => !localItemIds.has(i.product_id));
-
-                cart = [...upsertedItems, ...otherDbItems].map(mapDbToLocal);
-            } else {
-                // If local cart is empty, just take DB items
-                cart = dbItems.map(mapDbToLocal);
-            }
-
-            saveCartLocally();
-            if (cartItemsContainer) renderCart();
-            if (checkoutItemsContainer) renderCheckout();
-        } catch (error) {
-            console.error('Error syncing cart:', error.message);
-        }
-    }
-
-    function mapDbToLocal(dbItem) {
-        return {
-            id: dbItem.product_id,
-            name: dbItem.product_name,
-            price: dbItem.product_price,
-            image: dbItem.product_image,
-            quantity: dbItem.quantity
-        };
-    }
-
-    async function addDbItem(product) {
-        if (!currentUser) return;
-        const { error } = await supabase
-            .from('cart_items')
-            .upsert({
-                user_id: currentUser.id,
-                product_id: product.id,
-                product_name: product.name,
-                product_price: product.price,
-                product_image: product.image,
-                quantity: product.quantity,
-                updated_at: new Date()
-            }, { onConflict: 'user_id, product_id' });
-
-        if (error) console.error('Error adding to DB:', error.message);
-    }
-
-    async function updateDbItem(productId, quantity) {
-        if (!currentUser) return;
-        const { error } = await supabase
-            .from('cart_items')
-            .update({ quantity: quantity, updated_at: new Date() })
-            .eq('user_id', currentUser.id)
-            .eq('product_id', productId);
-
-        if (error) console.error('Error updating DB:', error.message);
-    }
-
-    async function removeDbItem(productId) {
-        if (!currentUser) return;
-        const { error } = await supabase
-            .from('cart_items')
-            .delete()
-            .eq('user_id', currentUser.id)
-            .eq('product_id', productId);
-
-        if (error) console.error('Error removing from DB:', error.message);
     }
 
     /* --- Event Listeners --- */
@@ -412,12 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (user && supabase) {
-                    // Clear DB cart on checkout
-                    const { error } = await supabase
-                        .from('cart_items')
-                        .delete()
-                        .eq('user_id', user.id);
-                    if (error) console.error('Error clearing DB cart:', error.message);
+                    await window.CartManager.clearDbCart(user.id);
                 }
 
                 // Set cart to empty and save locally to update badge and storage
@@ -486,16 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (user && supabase) {
-            try {
-                // Clear DB cart on checkout
-                const { error } = await supabase
-                    .from('cart_items')
-                    .delete()
-                    .eq('user_id', user.id);
-                if (error) console.error('Error clearing DB cart:', error.message);
-            } catch (e) {
-                console.error(e);
-            }
+            await window.CartManager.clearDbCart(user.id);
         }
 
         // Save order reference locally for tracking
@@ -530,13 +414,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (existingItemIndex > -1) {
             cart[existingItemIndex].quantity += 1;
             if (currentUser) {
-                await updateDbItem(Number(productToAdd.id), cart[existingItemIndex].quantity);
+                await window.CartManager.updateDbItem(currentUser.id, Number(productToAdd.id), cart[existingItemIndex].quantity);
             }
         } else {
             productToAdd.id = Number(productToAdd.id);
             cart.push(productToAdd);
             if (currentUser) {
-                await addDbItem(productToAdd);
+                await window.CartManager.addDbItem(currentUser.id, productToAdd);
             }
         }
 
@@ -548,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function removeFromCart(productId) {
         cart = cart.filter(item => Number(item.id) !== Number(productId));
         if (currentUser) {
-            await removeDbItem(Number(productId));
+            await window.CartManager.removeDbItem(currentUser.id, Number(productId));
         }
         saveCartLocally();
         renderCart();
@@ -562,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 cart[itemIndex].quantity = parseInt(newQuantity);
                 if (currentUser) {
-                    await updateDbItem(Number(productId), cart[itemIndex].quantity);
+                    await window.CartManager.updateDbItem(currentUser.id, Number(productId), cart[itemIndex].quantity);
                 }
                 saveCartLocally();
                 renderCart();
@@ -571,12 +455,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveCartLocally() {
-        localStorage.setItem('littleLayersCart', JSON.stringify(cart));
+        window.CartManager.saveCart(cart);
         updateCartCount();
     }
 
     function updateCartCount() {
-        const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+        const totalItems = window.CartManager.getCartCount(cart);
         cartCountElements.forEach(el => el.textContent = totalItems);
         updateFloatingCart();
     }
@@ -714,8 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.getCartTotal = function(cartArray) {
-    if (!cartArray || !Array.isArray(cartArray)) return 0;
-    return cartArray.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return window.CartManager.getCartTotal(cartArray);
 };
 
 window.toggleMob = function() {

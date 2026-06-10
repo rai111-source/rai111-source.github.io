@@ -17,7 +17,7 @@
 
     // Bug #1 fix: unified cart key ('littleLayersCart') and item shape (quantity, image)
     // so the cart drawer on this page stays in sync with cart.html / checkout.html.
-    let cart = JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
+    let cart = window.CartManager.getCart();
     let allP = [];
     let currentUser = null;
 
@@ -161,7 +161,8 @@
       }
 
       if (currentUser) {
-        await syncCartFromSupabase();
+        cart = await window.CartManager.syncCartFromSupabase(currentUser.id);
+        updateCart();
       } else {
         updateCart();
       }
@@ -170,108 +171,15 @@
         const newUser = session ? session.user : null;
         if (event === 'SIGNED_IN' || (newUser && !currentUser)) {
           currentUser = newUser;
-          await syncCartFromSupabase();
+          cart = await window.CartManager.syncCartFromSupabase(currentUser.id);
+          updateCart();
         } else if (event === 'SIGNED_OUT') {
           currentUser = null;
           cart = [];
-          localStorage.removeItem('littleLayersCart');
+          window.CartManager.saveCart(cart);
           updateCart();
         }
       });
-    }
-
-    async function syncCartFromSupabase() {
-      if (!currentUser || typeof sb === 'undefined') return;
-      try {
-        const { data: dbItems, error } = await sb
-          .from('cart_items')
-          .select('*')
-          .eq('user_id', currentUser.id);
-
-        if (error) throw error;
-
-        if (cart.length > 0) {
-          const itemsToUpsert = cart.map(localItem => {
-            return {
-              user_id: currentUser.id,
-              product_id: Number(localItem.id),
-              product_name: localItem.name,
-              product_price: localItem.price,
-              product_image: localItem.image,
-              quantity: localItem.quantity,
-              updated_at: new Date()
-            };
-          });
-
-          const { data: upsertedItems, error: upsertError } = await sb
-            .from('cart_items')
-            .upsert(itemsToUpsert, { onConflict: 'user_id, product_id' })
-            .select();
-
-          if (upsertError) throw upsertError;
-
-          const localItemIds = new Set(cart.map(i => Number(i.id)));
-          const otherDbItems = dbItems.filter(i => !localItemIds.has(Number(i.product_id)));
-
-          cart = [...upsertedItems, ...otherDbItems].map(mapDbToLocal);
-        } else {
-          cart = dbItems.map(mapDbToLocal);
-        }
-
-        saveCart();
-        updateCart();
-      } catch (error) {
-        console.error('Error syncing cart:', error.message);
-      }
-    }
-
-    function mapDbToLocal(dbItem) {
-      return {
-        id: Number(dbItem.product_id),
-        name: dbItem.product_name,
-        price: dbItem.product_price,
-        image: dbItem.product_image,
-        quantity: dbItem.quantity
-      };
-    }
-
-    async function addDbItem(product) {
-      if (!currentUser || typeof sb === 'undefined') return;
-      const { error } = await sb
-        .from('cart_items')
-        .upsert({
-          user_id: currentUser.id,
-          product_id: Number(product.id),
-          product_name: product.name,
-          product_price: product.price,
-          product_image: product.image,
-          quantity: product.quantity,
-          updated_at: new Date()
-        }, { onConflict: 'user_id, product_id' });
-
-      if (error) console.error('Error adding to DB:', error.message);
-    }
-
-    async function updateDbItem(productId, quantity) {
-      if (!currentUser || typeof sb === 'undefined') return;
-      const { error } = await sb
-        .from('cart_items')
-        .update({ quantity: quantity, updated_at: new Date() })
-        .eq('user_id', currentUser.id)
-        .eq('product_id', Number(productId));
-
-      if (error) console.error('Error updating DB:', error.message);
-    }
-
-    async function removeDbItem(productId) {
-      if (!currentUser || typeof sb === 'undefined') return;
-      const { error } = await sb
-        .from('cart_items')
-        .delete()
-        .eq('user_id', currentUser.id)
-        .eq('product_id', Number(productId));
-
-      if (error) console.error('Error removing from DB:', error.message);
     }
 
     async function addToCart(id, e) {
@@ -281,13 +189,15 @@
       const ex = cart.find(i => Number(i.id) === Number(id));
       if (ex) {
         ex.quantity++;
-        if (currentUser) await updateDbItem(id, ex.quantity);
+        if (currentUser) await window.CartManager.updateDbItem(currentUser.id, id, ex.quantity);
       } else {
         const item = { id: Number(p.id), name: p.name, price: p.price, image: p.image_url, quantity: 1 };
         cart.push(item);
-        if (currentUser) await addDbItem(item);
+        if (currentUser) await window.CartManager.addDbItem(currentUser.id, item);
       }
-      saveCart(); updateCart(); showNotif(`${p.name} added to cart! 🛒`);
+      window.CartManager.saveCart(cart);
+      updateCart();
+      showNotif(`${p.name} added to cart! 🛒`);
     }
 
     async function changeQty(id, d) {
@@ -295,20 +205,19 @@
       item.quantity += d;
       if (item.quantity <= 0) {
         cart = cart.filter(i => Number(i.id) !== Number(id));
-        if (currentUser) await removeDbItem(id);
+        if (currentUser) await window.CartManager.removeDbItem(currentUser.id, id);
       } else {
-        if (currentUser) await updateDbItem(id, item.quantity);
+        if (currentUser) await window.CartManager.updateDbItem(currentUser.id, id, item.quantity);
       }
-      saveCart(); updateCart();
+      window.CartManager.saveCart(cart);
+      updateCart();
     }
 
-    function saveCart() { localStorage.setItem('littleLayersCart', JSON.stringify(cart)); }
-
     function updateCart() {
-      const count = cart.reduce((s, i) => s + i.quantity, 0);
+      const count = window.CartManager.getCartCount(cart);
       const countEl = document.getElementById('cartCount') || document.getElementById('cart-count');
       if (countEl) countEl.textContent = count;
-      const total = cart.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
+      const total = window.CartManager.getCartTotal(cart);
       const tv = document.getElementById('cartTotal'); if (tv) tv.textContent = '₹' + total.toLocaleString('en-IN');
       const body = document.getElementById('cartItems'); const foot = document.getElementById('cartFt'); if (!body) return;
       if (!cart.length) {
@@ -397,15 +306,7 @@
       }
 
       if (user && typeof sb !== 'undefined') {
-        try {
-          const { error } = await sb
-            .from('cart_items')
-            .delete()
-            .eq('user_id', user.id);
-          if (error) console.error('Error clearing DB cart:', error.message);
-        } catch (e) {
-          console.error(e);
-        }
+        await window.CartManager.clearDbCart(user.id);
       }
 
       // Save order reference locally for tracking
@@ -420,7 +321,7 @@
       }
 
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
-      cart = []; saveCart(); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
+      cart = []; window.CartManager.saveCart(cart); updateCart(); toggleCart(); showNotif(`Order #${ref} sent! 🎉`);
     }
 
     // Bug #14 fix: distinguish 'not found' (Supabase PGRST116) from real DB errors

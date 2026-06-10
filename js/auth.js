@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) throw error;
 
-            if (email === 'raj@littlelayers.in') {
+            if (email === window.ADMIN_EMAIL) {
                 sessionStorage.removeItem('redirectAfterAuth'); // Admin always goes to admin panel
                 window.location.href = 'admin.html';
             } else {

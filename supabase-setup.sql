@@ -384,3 +384,14 @@ INSERT INTO site_content (key, content) VALUES (
     ]
   }'::jsonb
 ) ON CONFLICT (key) DO NOTHING;
+
+
+-- ============================================================
+--  PERFORMANCE INDEXES
+-- ============================================================
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_active ON products(active);
+CREATE INDEX IF NOT EXISTS idx_gallery_active_sort ON gallery(active, sort_order);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
+

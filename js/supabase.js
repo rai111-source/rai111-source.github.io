@@ -41,6 +41,131 @@ const TABLES = {
 };
 
 
+// ── CENTRALIZED CART MANAGER ──────────────────────────────────
+window.CartManager = {
+  getCart() {
+    return JSON.parse(localStorage.getItem('littleLayersCart') || '[]');
+  },
+
+  saveCart(cart) {
+    localStorage.setItem('littleLayersCart', JSON.stringify(cart));
+  },
+
+  getCartCount(cart) {
+    if (!cart) cart = this.getCart();
+    return cart.reduce((s, i) => s + (i.quantity || i.qty || 1), 0);
+  },
+
+  getCartTotal(cart) {
+    if (!cart) cart = this.getCart();
+    return cart.reduce((s, i) => s + Number(i.price) * (i.quantity || i.qty || 1), 0);
+  },
+
+  mapDbToLocal(dbItem) {
+    return {
+      id: Number(dbItem.product_id),
+      name: dbItem.product_name,
+      price: Number(dbItem.product_price),
+      image: dbItem.product_image,
+      quantity: dbItem.quantity
+    };
+  },
+
+  async syncCartFromSupabase(userId) {
+    if (!userId || typeof sb === 'undefined') return this.getCart();
+    try {
+      const { data: dbItems, error } = await sb
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      let cart = this.getCart();
+      if (cart.length > 0) {
+        const itemsToUpsert = cart.map(localItem => ({
+          user_id: userId,
+          product_id: Number(localItem.id),
+          product_name: localItem.name,
+          product_price: localItem.price,
+          product_image: localItem.image,
+          quantity: localItem.quantity,
+          updated_at: new Date()
+        }));
+
+        const { data: upsertedItems, error: upsertError } = await sb
+          .from('cart_items')
+          .upsert(itemsToUpsert, { onConflict: 'user_id, product_id' })
+          .select();
+
+        if (upsertError) throw upsertError;
+
+        const localItemIds = new Set(cart.map(i => Number(i.id)));
+        const otherDbItems = dbItems.filter(i => !localItemIds.has(Number(i.product_id)));
+
+        cart = [...upsertedItems, ...otherDbItems].map(this.mapDbToLocal);
+      } else {
+        cart = dbItems.map(this.mapDbToLocal);
+      }
+
+      this.saveCart(cart);
+      return cart;
+    } catch (e) {
+      console.error('Error syncing cart:', e);
+      return this.getCart();
+    }
+  },
+
+  async addDbItem(userId, product) {
+    if (!userId || typeof sb === 'undefined') return;
+    const { error } = await sb
+      .from('cart_items')
+      .upsert({
+        user_id: userId,
+        product_id: Number(product.id),
+        product_name: product.name,
+        product_price: product.price,
+        product_image: product.image,
+        quantity: product.quantity,
+        updated_at: new Date()
+      }, { onConflict: 'user_id, product_id' });
+
+    if (error) console.error('Error adding to DB cart:', error.message);
+  },
+
+  async updateDbItem(userId, productId, quantity) {
+    if (!userId || typeof sb === 'undefined') return;
+    const { error } = await sb
+      .from('cart_items')
+      .update({ quantity: quantity, updated_at: new Date() })
+      .eq('user_id', userId)
+      .eq('product_id', Number(productId));
+
+    if (error) console.error('Error updating DB cart:', error.message);
+  },
+
+  async removeDbItem(userId, productId) {
+    if (!userId || typeof sb === 'undefined') return;
+    const { error } = await sb
+      .from('cart_items')
+      .delete()
+      .eq('user_id', userId)
+      .eq('product_id', Number(productId));
+
+    if (error) console.error('Error removing from DB cart:', error.message);
+  },
+
+  async clearDbCart(userId) {
+    if (!userId || typeof sb === 'undefined') return;
+    const { error } = await sb
+      .from('cart_items')
+      .delete()
+      .eq('user_id', userId);
+    if (error) console.error('Error clearing DB cart:', error.message);
+  }
+};
+
+
 
 // ── PRODUCTS ─────────────────────────────────────────────────
 async function getProducts(category = null) {

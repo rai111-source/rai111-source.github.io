@@ -63,16 +63,20 @@
     <div class="nav-r">
       <div id="auth-buttons" style="display: flex; gap: 8px;">
         <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
-        <a href="login.html?mode=signup" class="btn-signup" style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+        <a href="login.html?mode=signup" class="btn-signup"
+          style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
       </div>
-      <a href="profile.html" class="action-btn" id="user-btn" style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
-          <span id="user-btn-text" style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-          👤
+      <a href="profile.html" class="action-btn" id="user-btn"
+        style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
+        <span id="user-btn-text"
+          style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
+        👤
       </a>
       <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" style="margin-right: 8px;">
         <i class="ph ph-sun" id="theme-icon"></i>
       </button>
-      <a href="cart.html" class="cart-pill" style="text-decoration: none;">🛒<div class="cbadge" id="cart-count">0</div></a>
+      <div class="cart-pill" href="cart.html" style="text-decoration: none;">🛒<div class="cbadge" id="cartCount">0</div>
+      </div>
     </div>
     <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
   </nav>

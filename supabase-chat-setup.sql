@@ -113,3 +113,11 @@ BEGIN
     END;
   END IF;
 END $$;
+
+
+-- ============================================================
+--  PERFORMANCE INDEXES
+-- ============================================================
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user ON chat_sessions(user_id);
+
