@@ -8,6 +8,16 @@
   let selectedColor = 'White';
   let selectedRating = 5;
 
+  const esc = window.escHtml || function(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+
   // Initialize Supabase Client
   const initInterval = setInterval(() => {
     if (window.supabaseClient) {
@@ -423,8 +433,8 @@
           month: 'short',
           year: 'numeric'
         });
-        const escName = window.escHtml ? window.escHtml(r.user_name) : r.user_name;
-        const escComment = window.escHtml ? window.escHtml(r.comment) : r.comment;
+        const escName = esc(r.user_name);
+        const escComment = esc(r.comment);
 
         return `
           <div class="review-item">
@@ -495,7 +505,7 @@
       return;
     }
 
-    const esc = window.escHtml || ((str) => str);
+
 
     grid.innerHTML = list.map(p => `
       <div class="pcard" onclick="if(!event.target.closest('button')){ window.location.href='product.html?id=${p.id}'; }">

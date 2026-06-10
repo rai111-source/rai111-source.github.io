@@ -109,14 +109,34 @@ CREATE POLICY "Public insert orders"
   WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Public read own order by ref" ON orders;
-CREATE POLICY "Public read own order by ref"
+DROP POLICY IF EXISTS "Users read own orders" ON orders;
+CREATE POLICY "Users read own orders"
   ON orders FOR SELECT
-  USING (TRUE);   -- relies on app filtering by order_ref
+  USING (customer->>'email' = auth.jwt() ->> 'email');
 
 DROP POLICY IF EXISTS "Admin full access orders" ON orders;
 CREATE POLICY "Admin full access orders"
   ON orders FOR ALL
   USING (auth.jwt() ->> 'email' = 'raj@littlelayers.in');
+
+-- RPC helper functions to query orders securely (bypassing table SELECT RLS)
+CREATE OR REPLACE FUNCTION get_order_by_ref(order_ref_param text)
+RETURNS SETOF orders
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM orders WHERE order_ref = order_ref_param;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_orders_by_refs(refs text[])
+RETURNS SETOF orders
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM orders WHERE order_ref = ANY(refs);
+END;
+$$ LANGUAGE plpgsql;
 
 -- ── MESSAGES: public can insert, only admin can read/update ───
 DROP POLICY IF EXISTS "Public insert messages" ON messages;
@@ -203,14 +223,14 @@ CREATE POLICY "Public read product images"
   USING (bucket_id = 'product-images');
 
 DROP POLICY IF EXISTS "Auth upload product images" ON storage.objects;
-CREATE POLICY "Auth upload product images"
+CREATE POLICY "Admin upload product images"
   ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'product-images' AND auth.role() = 'authenticated');
+  WITH CHECK (bucket_id = 'product-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 DROP POLICY IF EXISTS "Auth delete product images" ON storage.objects;
-CREATE POLICY "Auth delete product images"
+CREATE POLICY "Admin delete product images"
   ON storage.objects FOR DELETE
-  USING (bucket_id = 'product-images' AND auth.role() = 'authenticated');
+  USING (bucket_id = 'product-images' AND auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 DROP POLICY IF EXISTS "Public read gallery images" ON storage.objects;
 CREATE POLICY "Public read gallery images"
@@ -239,17 +259,17 @@ CREATE POLICY "Public read avatars"
 DROP POLICY IF EXISTS "Auth upload avatars" ON storage.objects;
 CREATE POLICY "Auth upload avatars"
   ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+  WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated' AND (storage.foldername(name))[1] = auth.uid()::text);
 
 DROP POLICY IF EXISTS "Auth update avatars" ON storage.objects;
 CREATE POLICY "Auth update avatars"
   ON storage.objects FOR UPDATE
-  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated' AND (storage.foldername(name))[1] = auth.uid()::text);
 
 DROP POLICY IF EXISTS "Auth delete avatars" ON storage.objects;
 CREATE POLICY "Auth delete avatars"
   ON storage.objects FOR DELETE
-  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated' AND (storage.foldername(name))[1] = auth.uid()::text);
 
 
 -- ============================================================

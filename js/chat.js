@@ -293,12 +293,20 @@
         hour12: true
       });
 
-      const escapedMsg = window.escHtml ? window.escHtml(msg.message) : msg.message;
+      // Split message by newlines and render securely via Text Nodes
+      const lines = (msg.message || '').split('\n');
+      lines.forEach((line, index) => {
+        if (index > 0) {
+          bubble.appendChild(document.createElement('br'));
+        }
+        bubble.appendChild(document.createTextNode(line));
+      });
 
-      bubble.innerHTML = `
-        ${escapedMsg}
-        <span class="msg-time">${time}</span>
-      `;
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'msg-time';
+      timeSpan.textContent = time;
+      bubble.appendChild(timeSpan);
+
       list.appendChild(bubble);
     }
 

@@ -12,13 +12,7 @@ if (typeof sb !== 'undefined') {
 document.addEventListener('DOMContentLoaded', () => {
 
     // Helper functions
-    function esc(s) {
-        return String(s || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
+    const esc = window.escHtml;
 
     window.openLb = function(src, cap) {
         const lbImg = document.getElementById('lbImg');

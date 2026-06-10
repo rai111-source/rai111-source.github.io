@@ -432,9 +432,9 @@
       let order = null;
       try {
         if (typeof sb !== 'undefined') {
-          const { data, error } = await sb.from('orders').select('*').eq('order_ref', val).single();
-          if (error && error.code !== 'PGRST116') throw error; // real DB error — surface it
-          order = data; // null when PGRST116 (no rows), handled below
+          const { data, error } = await sb.rpc('get_order_by_ref', { order_ref_param: val });
+          if (error) throw error;
+          order = data && data[0];
         }
       } catch (e) {
         console.error(e);

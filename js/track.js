@@ -35,8 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const sb = window.supabaseClient;
         try { 
             if (typeof sb !== 'undefined') { 
-                const { data } = await sb.from('orders').select('*').eq('order_ref', val).single(); 
-                order = data; 
+                const { data, error } = await sb.rpc('get_order_by_ref', { order_ref_param: val }); 
+                if (error) throw error;
+                order = data && data[0]; 
             } 
         } catch (e) { 
             console.error(e); 
@@ -264,19 +265,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let ordersToShow = [];
         if (typeof sb !== 'undefined') {
             try {
-                let query = sb.from('orders').select('*');
-                if (userEmail && localRefs.length > 0) {
-                    const formattedRefs = localRefs.map(r => `"${r}"`).join(',');
-                    const orFilter = `customer->>email.eq.${userEmail},order_ref.in.(${formattedRefs})`;
-                    const { data, error } = await query.or(orFilter);
-                    if (!error && data) ordersToShow = data;
-                } else if (userEmail) {
-                    const { data, error } = await query.eq('customer->>email', userEmail);
-                    if (!error && data) ordersToShow = data;
-                } else if (localRefs.length > 0) {
-                    const { data, error } = await query.in('order_ref', localRefs);
-                    if (!error && data) ordersToShow = data;
+                let dbOrders = [];
+                let rpcOrders = [];
+                if (userEmail) {
+                    const { data, error } = await sb.from('orders').select('*').eq('customer->>email', userEmail);
+                    if (!error && data) dbOrders = data;
                 }
+                if (localRefs.length > 0) {
+                    const { data, error } = await sb.rpc('get_orders_by_refs', { refs: localRefs });
+                    if (!error && data) rpcOrders = data;
+                }
+                const combined = [...dbOrders, ...rpcOrders];
+                const seen = new Set();
+                ordersToShow = combined.filter(o => {
+                    if (seen.has(o.order_ref)) return false;
+                    seen.add(o.order_ref);
+                    return true;
+                });
             } catch (e) {
                 console.error('Error fetching recent orders:', e);
             }

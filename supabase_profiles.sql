@@ -13,8 +13,9 @@ create table profiles (
 alter table profiles
   enable row level security;
 
-create policy "Public profiles are viewable by everyone." on profiles
-  for select using (true);
+drop policy if exists "Public profiles are viewable by everyone." on profiles;
+create policy "Profiles are viewable by owners and admin." on profiles
+  for select using (auth.uid() = id or auth.jwt() ->> 'email' = 'raj@littlelayers.in');
 
 create policy "Users can insert their own profile." on profiles
   for insert with check (auth.uid() = id);

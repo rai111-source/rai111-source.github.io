@@ -4,8 +4,12 @@
 //  from: https://supabase.com/dashboard → Project Settings → API
 // ============================================================
 
-const SUPABASE_URL  = window.ENV?.SUPABASE_URL || 'https://amzijtwogsibxganxsty.supabase.co';
-const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || 'sb_publishable_AU321-iXA66NaZ0d4FShPw_0h83Qy9J';
+const SUPABASE_URL  = window.ENV?.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('Supabase credentials not found. Make sure build.js has run and process.env is configured.');
+}
 
 // Supabase JS v2 loaded via CDN in each HTML file
 const { createClient } = supabase;
