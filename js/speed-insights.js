@@ -1,12 +1,11 @@
 // Vercel Speed Insights initialization
-// This script initializes Speed Insights for the project
-import { injectSpeedInsights } from '@vercel/speed-insights';
+// This script dynamically injects Vercel Speed Insights for a vanilla HTML/JS website.
+window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
 
-// Initialize Speed Insights when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    injectSpeedInsights();
-  });
-} else {
-  injectSpeedInsights();
+if (!document.querySelector('script[src="/_vercel/speed-insights/script.js"]')) {
+  const script = document.createElement('script');
+  script.src = '/_vercel/speed-insights/script.js';
+  script.defer = true;
+  document.head.appendChild(script);
 }
+
