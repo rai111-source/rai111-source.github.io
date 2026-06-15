@@ -1,3 +1,4 @@
+(function() {
 // admin.js - Admin Dashboard Logic
 
 let supabaseClient = window.supabaseClient;
@@ -12,6 +13,8 @@ let productAdditionalImages = [];
 let newImageFiles = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const escapeHtml = window.escHtml;
+
     if (!supabaseClient) {
         alert("Supabase client is not initialized.");
         return;
@@ -95,10 +98,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // -- Event Listeners --
     
-    logoutBtn.addEventListener('click', async () => {
-        await supabaseClient.auth.signOut();
-        window.location.href = 'index.html';
-    });
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+    }
 
     addNewBtn.addEventListener('click', () => {
         openForm();
@@ -1190,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderOrdersList();
         } catch (e) {
             console.error('Error loading orders:', e);
-            listEl.innerHTML = '<tr><td colspan="7" style="text-align:center; color: #ff6b6b;">Failed to load orders.</td></tr>';
+            listEl.innerHTML = '<tr><td colspan="7" style="text-align:center; color: #ff6b6b;">Failed to load orders: ' + (e.message || e.details || JSON.stringify(e)) + '</td></tr>';
         }
     }
 
@@ -1339,7 +1344,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     
 
     // Bug #16: removed local duplicate — use centralized window.escHtml from supabase.js.
-    const escapeHtml = window.escHtml;
 
     function getStoragePathFromUrl(url, bucketName) {
         if (!url) return null;
@@ -1648,3 +1652,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (body) body.scrollTop = body.scrollHeight;
     }
 });
+})();

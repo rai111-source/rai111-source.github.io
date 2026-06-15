@@ -1,3 +1,4 @@
+(function() {
 // Supabase client is initialized globally in js/supabase.js
 let supabaseClient = window.supabaseClient;
 
@@ -5,6 +6,7 @@ let supabaseClient = window.supabaseClient;
 document.addEventListener('DOMContentLoaded', () => {
     // -- Elements --
     const userBtn = document.getElementById('user-btn'); // The user icon in the header
+    const navLogoutBtn = document.getElementById('nav-logout-btn');
 
     // Login Page Elements
     const pageLoginForm = document.getElementById('page-login-form');
@@ -162,6 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // -- Profile Page Logic --
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    if (navLogoutBtn) {
+        navLogoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
     }
 
     const mobLogoutBtn = document.getElementById('mobnav-logout');
@@ -613,10 +622,12 @@ document.addEventListener('DOMContentLoaded', () => {
             mobGuests.forEach(el => el.style.display = 'none');
             mobUsers.forEach(el => el.style.display = 'block');
             mobDividers.forEach(el => el.style.display = 'block');
+            if (navLogoutBtn) navLogoutBtn.style.display = 'flex';
         } else {
             mobGuests.forEach(el => el.style.display = 'block');
             mobUsers.forEach(el => el.style.display = 'none');
             mobDividers.forEach(el => el.style.display = 'none');
+            if (navLogoutBtn) navLogoutBtn.style.display = 'none';
         }
 
         if (userBtn) {
@@ -689,3 +700,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+})();
