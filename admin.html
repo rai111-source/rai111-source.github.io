@@ -190,6 +190,70 @@
                 <img src="" style="width: 80px; border-radius: 4px; border: 1px solid var(--line);">
               </div>
             </div>
+            <!-- Product Specifications -->
+            <div class="form-group full" style="border-top: 1px solid var(--line); padding-top: 20px; margin-top: 10px;">
+              <h4 style="margin: 0; font-size: 14px; text-transform: uppercase; color: var(--accent);">Specifications</h4>
+            </div>
+            <div class="form-group">
+              <label>Material Option</label>
+              <input type="text" id="product-spec-material" placeholder="e.g. PLA / PETG (Eco-friendly filament)">
+            </div>
+            <div class="form-group">
+              <label>Resolution / Layer Height</label>
+              <input type="text" id="product-spec-resolution" placeholder="e.g. 0.12mm - 0.2mm (Highly precise)">
+            </div>
+            <div class="form-group">
+              <label>Infill Density</label>
+              <input type="text" id="product-spec-infill" placeholder="e.g. 15% - 20% (Optimized for weight & strength)">
+            </div>
+            <div class="form-group">
+              <label>Origin</label>
+              <input type="text" id="product-spec-origin" placeholder="e.g. Made in Assam, India">
+            </div>
+
+            <!-- Product Colors Manager -->
+            <div class="form-group full" style="border-top: 1px solid var(--line); padding-top: 20px; margin-top: 10px;">
+              <h4 style="margin: 0; font-size: 14px; text-transform: uppercase; color: var(--accent);">Product Colors</h4>
+              <p style="font-size: 12px; color: var(--gray4); margin: 4px 0 12px 0;">Configure custom color dots for the product details page.</p>
+              
+              <div id="admin-colors-list" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                <!-- Dynamically populated -->
+              </div>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: flex-end; background: var(--gray9); padding: 12px; border-radius: 8px; border: 1px solid var(--line);">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <label style="font-size: 11px;">Color Name</label>
+                  <input type="text" id="new-color-name" placeholder="e.g. White" style="padding: 8px 12px; font-size: 14px;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <label style="font-size: 11px;">Hex Code</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="color" id="new-color-hex" value="#ffffff" style="width: 40px; height: 36px; padding: 0; border: none; border-radius: 4px; cursor: pointer;">
+                    <input type="text" id="new-color-hex-text" value="#ffffff" placeholder="#ffffff" style="padding: 8px; font-size: 14px; width: 90px; text-transform: uppercase;">
+                  </div>
+                </div>
+                <button type="button" class="btn btn-border" id="btn-add-color" style="padding: 8px 16px; font-size: 13px; height: 38px;">Add Color</button>
+              </div>
+            </div>
+
+            <!-- Additional Product Images Manager -->
+            <div class="form-group full" style="border-top: 1px solid var(--line); padding-top: 20px; margin-top: 10px;">
+              <h4 style="margin: 0; font-size: 14px; text-transform: uppercase; color: var(--accent);">Additional Images</h4>
+              <p style="font-size: 12px; color: var(--gray4); margin: 4px 0 12px 0;">Upload multiple additional views or detail images for the product gallery.</p>
+              
+              <div id="admin-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                <!-- Dynamically populated -->
+              </div>
+              
+              <div style="background: var(--gray9); padding: 16px; border-radius: 8px; border: 1px solid var(--line); text-align: center;">
+                <label for="additional-images-upload" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 500; font-size: 14px;">
+                  📁 Select Additional Images
+                </label>
+                <input type="file" id="additional-images-upload" accept="image/*" multiple style="display: none;">
+                <div id="additional-images-status" style="font-size: 12px; color: var(--gray4); margin-top: 8px;"></div>
+              </div>
+            </div>
+
             <div class="form-group" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 24px;">
               <input type="checkbox" id="product-active" checked style="width: 18px; height: 18px;">
               <label style="margin: 0;">Active (Visible on site)</label>

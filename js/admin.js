@@ -7,6 +7,9 @@ let currentUser = null;
 const ADMIN_EMAIL = window.ADMIN_EMAIL || 'raj@littlelayers.in';
 let currentProducts = [];
 let currentGallery = [];
+let productColors = [];
+let productAdditionalImages = [];
+let newImageFiles = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!supabaseClient) {
@@ -31,6 +34,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const imageUpload = document.getElementById('product-image-upload');
     const imagePreviewContainer = document.getElementById('image-preview');
     const imagePreviewImg = imagePreviewContainer.querySelector('img');
+    
+    // Specs, Colors, and Additional Images Form Elements
+    const newColorNameInput = document.getElementById('new-color-name');
+    const newColorHexInput = document.getElementById('new-color-hex');
+    const newColorHexTextInput = document.getElementById('new-color-hex-text');
+    const addColorBtn = document.getElementById('btn-add-color');
+    const additionalImagesUpload = document.getElementById('additional-images-upload');
 
     // Gallery Elements
     const galleryList = document.getElementById('admin-gallery-list');
@@ -118,6 +128,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         await saveProduct();
     });
+
+    // -- Specifications, Colors, and Additional Images Event Listeners --
+    
+    // Sync hex color picker and hex text input
+    if (newColorHexInput && newColorHexTextInput) {
+        newColorHexInput.addEventListener('input', (e) => {
+            newColorHexTextInput.value = e.target.value;
+        });
+        newColorHexTextInput.addEventListener('input', (e) => {
+            let val = e.target.value.trim();
+            if (val && !val.startsWith('#')) val = '#' + val;
+            if (val.length === 7) {
+                newColorHexInput.value = val;
+            }
+        });
+    }
+
+    // Add Color Button Click Handler
+    if (addColorBtn && newColorNameInput && newColorHexInput) {
+        addColorBtn.addEventListener('click', () => {
+            const name = newColorNameInput.value.trim();
+            const hex = newColorHexInput.value;
+
+            if (!name) {
+                alert('Please enter a color name.');
+                return;
+            }
+
+            // Check duplicate color names
+            if (productColors.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                alert('A color with this name already exists.');
+                return;
+            }
+
+            productColors.push({ name, hex });
+            newColorNameInput.value = '';
+            renderFormColors();
+        });
+    }
+
+    // Additional Images Select Change Handler
+    if (additionalImagesUpload) {
+        additionalImagesUpload.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                newImageFiles = [...newImageFiles, ...files];
+                renderFormAdditionalImages();
+            }
+            additionalImagesUpload.value = '';
+        });
+    }
 
     // -- Gallery Event Listeners --
     addNewGalleryBtn.addEventListener('click', () => {
@@ -243,6 +304,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         formPanel.classList.add('active');
         formStatus.style.display = 'none';
         
+        // Reset state
+        newImageFiles = [];
+        
         if (product) {
             formTitle.textContent = 'Edit Product';
             document.getElementById('product-id').value = product.id;
@@ -254,6 +318,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('product-badge').value = product.badge || '';
             document.getElementById('product-active').checked = product.active;
             
+            // Populate specifications
+            const specs = product.specifications || {};
+            document.getElementById('product-spec-material').value = specs.material || '';
+            document.getElementById('product-spec-resolution').value = specs.resolution || '';
+            document.getElementById('product-spec-infill').value = specs.infill || '';
+            document.getElementById('product-spec-origin').value = specs.origin || '';
+
+            // Populate colors
+            productColors = Array.isArray(product.colors) ? [...product.colors] : [];
+
+            // Populate additional images
+            productAdditionalImages = Array.isArray(product.images) ? [...product.images] : [];
+
             document.getElementById('product-image-url').value = product.image_url || '';
             if (product.image_url) {
                 imagePreviewImg.src = product.image_url;
@@ -268,13 +345,101 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('product-image-url').value = '';
             document.getElementById('product-active').checked = true;
             imagePreviewContainer.style.display = 'none';
+
+            // Populate default specifications for new product
+            document.getElementById('product-spec-material').value = 'PLA / PETG (Eco-friendly filament)';
+            document.getElementById('product-spec-resolution').value = '0.12mm - 0.2mm (Highly precise)';
+            document.getElementById('product-spec-infill').value = '15% - 20% (Optimized for weight & strength)';
+            document.getElementById('product-spec-origin').value = 'Made in Assam, India';
+
+            // Reset colors and images
+            productColors = [];
+            productAdditionalImages = [];
         }
+
+        // Render colors list and images grid in the form
+        renderFormColors();
+        renderFormAdditionalImages();
     }
 
     function closeForm() {
         formPanel.classList.remove('active');
         productForm.reset();
+        productColors = [];
+        productAdditionalImages = [];
+        newImageFiles = [];
     }
+
+    function renderFormColors() {
+        const container = document.getElementById('admin-colors-list');
+        if (!container) return;
+        
+        if (productColors.length === 0) {
+            container.innerHTML = '<div style="color: var(--gray4); font-size: 13.5px; width: 100%;">No custom colors added yet. (Will fallback to default colors: White, Grey, Black, Gold)</div>';
+            return;
+        }
+        
+        container.innerHTML = productColors.map((c, idx) => `
+            <div style="display: flex; align-items: center; gap: 8px; background: var(--gray9); border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; font-size: 13px;">
+                <span style="width: 12px; height: 12px; border-radius: 50%; background: ${c.hex}; ${c.hex.toLowerCase() === '#ffffff' ? 'border: 1px solid var(--line);' : ''}"></span>
+                <span>${escapeHtml(c.name)} (${c.hex})</span>
+                <span style="color: #ff6b6b; cursor: pointer; font-weight: bold; margin-left: 4px;" onclick="window.removeFormColor(${idx})">×</span>
+            </div>
+        `).join('');
+    }
+
+    window.removeFormColor = function(idx) {
+        productColors.splice(idx, 1);
+        renderFormColors();
+    };
+
+    function renderFormAdditionalImages() {
+        const container = document.getElementById('admin-images-list');
+        if (!container) return;
+        
+        const hasExisting = productAdditionalImages.length > 0;
+        const hasNew = newImageFiles.length > 0;
+        
+        if (!hasExisting && !hasNew) {
+            container.innerHTML = '<div style="color: var(--gray4); font-size: 13.5px; grid-column: span 2;">No additional images.</div>';
+            return;
+        }
+        
+        let html = '';
+        
+        // Render existing ones
+        productAdditionalImages.forEach((url, idx) => {
+            html += `
+                <div style="position: relative; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; padding-bottom: 100%; height: 0;">
+                    <img src="${url}" style="position: absolute; width: 100%; height: 100%; object-fit: cover;">
+                    <button type="button" style="position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #ff6b6b; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="window.removeFormImage(${idx}, false)">×</button>
+                </div>
+            `;
+        });
+        
+        // Render new ones (using local Object URLs)
+        newImageFiles.forEach((file, idx) => {
+            const localUrl = URL.createObjectURL(file);
+            html += `
+                <div style="position: relative; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; padding-bottom: 100%; height: 0; opacity: 0.8;">
+                    <img src="${localUrl}" style="position: absolute; width: 100%; height: 100%; object-fit: cover;">
+                    <span style="position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.6); color: var(--accent); padding: 2px 4px; font-size: 9px; border-radius: 3px;">NEW</span>
+                    <button type="button" style="position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #ff6b6b; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="window.removeFormImage(${idx}, true)">×</button>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    window.removeFormImage = function(idx, isLocal) {
+        if (isLocal) {
+            newImageFiles.splice(idx, 1);
+        } else {
+            productAdditionalImages.splice(idx, 1);
+        }
+        renderFormAdditionalImages();
+    };
 
     function showStatus(msg, type) {
         formStatus.textContent = msg;
@@ -316,6 +481,38 @@ document.addEventListener('DOMContentLoaded', async () => {
                 fileUploaded = true;
             }
             
+            // Handle uploading additional images if any
+            const uploadedUrls = [];
+            for (let i = 0; i < newImageFiles.length; i++) {
+                showStatus(`Uploading additional image ${i + 1}/${newImageFiles.length}...`, 'success');
+                const file = newImageFiles[i];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `products/additional_${fileName}`;
+                
+                const { error: uploadError } = await supabaseClient.storage
+                    .from('product-images')
+                    .upload(filePath, file, { cacheControl: '31536000' });
+                    
+                if (uploadError) throw uploadError;
+                
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('product-images')
+                    .getPublicUrl(filePath);
+                    
+                uploadedUrls.push(publicUrl);
+            }
+            
+            const finalAdditionalImages = [...productAdditionalImages, ...uploadedUrls];
+
+            // Build specifications object
+            const specifications = {
+                material: document.getElementById('product-spec-material').value.trim(),
+                resolution: document.getElementById('product-spec-resolution').value.trim(),
+                infill: document.getElementById('product-spec-infill').value.trim(),
+                origin: document.getElementById('product-spec-origin').value.trim()
+            };
+
             const productData = {
                 name: document.getElementById('product-name').value,
                 category: document.getElementById('product-category').value,
@@ -325,6 +522,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 badge: document.getElementById('product-badge').value || null,
                 image_url: imageUrl,
                 active: document.getElementById('product-active').checked,
+                colors: productColors,
+                images: finalAdditionalImages,
+                specifications: specifications,
                 updated_at: new Date()
             };
             
@@ -338,11 +538,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .eq('id', id);
                 if (error) throw error;
 
-                // Delete old image if a new one was successfully uploaded
+                // Delete old main image if a new one was successfully uploaded
                 if (fileUploaded && oldImageUrl && oldImageUrl !== imageUrl) {
                     const oldPath = getStoragePathFromUrl(oldImageUrl, 'product-images');
                     if (oldPath) {
                         await supabaseClient.storage.from('product-images').remove([oldPath]);
+                    }
+                }
+
+                // Delete removed additional images from storage bucket
+                if (existingProduct && existingProduct.images) {
+                    const deletedImages = existingProduct.images.filter(url => !finalAdditionalImages.includes(url));
+                    for (const url of deletedImages) {
+                        const path = getStoragePathFromUrl(url, 'product-images');
+                        if (path) {
+                            await supabaseClient.storage.from('product-images').remove([path]);
+                        }
                     }
                 }
             } else {

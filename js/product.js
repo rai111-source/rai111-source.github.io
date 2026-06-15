@@ -125,15 +125,25 @@
         badge.style.display = 'none';
       }
 
-      // Spec mapping based on category
-      document.getElementById('spec-material').textContent = 
-        product.category === 'figurines' ? 'SLA Resin (Ultra-fine details)' : 'PLA / PETG (Eco-friendly filament)';
+      // Spec mapping based on category and specifications JSONB
+      const specs = product.specifications || {};
+      document.getElementById('spec-material').textContent = specs.material || 
+        (product.category === 'figurines' ? 'SLA Resin (Ultra-fine details)' : 'PLA / PETG (Eco-friendly filament)');
+      if (document.getElementById('spec-resolution')) {
+        document.getElementById('spec-resolution').textContent = specs.resolution || '0.12mm - 0.2mm (Highly precise)';
+      }
+      if (document.getElementById('spec-infill')) {
+        document.getElementById('spec-infill').textContent = specs.infill || '15% - 20% (Optimized for weight & strength)';
+      }
+      if (document.getElementById('spec-origin')) {
+        document.getElementById('spec-origin').textContent = specs.origin || 'Made in Assam, India';
+      }
 
       // Setup Image Gallery
-      setupGallery(product.image_url);
+      setupGallery(product.image_url, product.images);
 
       // Setup Color Selector
-      setupColorSelector();
+      setupColorSelector(product.colors);
 
       // Setup Quantity Controls
       setupQuantitySelector();
@@ -160,19 +170,27 @@
     }
   }
 
-  function setupGallery(mainImgUrl) {
+  function setupGallery(mainImgUrl, additionalImages = []) {
     const mainImg = document.getElementById('main-product-img');
     const fallbackUrl = 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=800';
     mainImg.src = mainImgUrl || fallbackUrl;
     mainImg.onerror = () => { mainImg.src = fallbackUrl; };
 
     // Setup thumbs
-    const thumbs = [
-      { url: mainImgUrl || fallbackUrl, label: 'Main View' },
-      { url: 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400', label: 'Close-up Detail' },
-      { url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400', label: 'Printing Process' },
-      { url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400', label: 'Box Packaging' }
-    ];
+    let thumbs = [];
+    if (additionalImages && additionalImages.length > 0) {
+      thumbs = [
+        { url: mainImgUrl || fallbackUrl, label: 'Main View' },
+        ...additionalImages.map((url, idx) => ({ url, label: `View ${idx + 2}` }))
+      ];
+    } else {
+      thumbs = [
+        { url: mainImgUrl || fallbackUrl, label: 'Main View' },
+        { url: 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400', label: 'Close-up Detail' },
+        { url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400', label: 'Printing Process' },
+        { url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400', label: 'Box Packaging' }
+      ];
+    }
 
     const thumbsContainer = document.getElementById('product-thumbnails');
     thumbsContainer.innerHTML = thumbs.map((t, idx) => `
@@ -191,9 +209,28 @@
     });
   }
 
-  function setupColorSelector() {
+  function setupColorSelector(colors = []) {
     const dotsContainer = document.getElementById('color-dots-container');
     if (!dotsContainer) return;
+
+    let colorList = colors;
+    if (!colorList || colorList.length === 0) {
+      colorList = [
+        { name: 'White', hex: '#ffffff' },
+        { name: 'Grey', hex: '#555555' },
+        { name: 'Black', hex: '#111111' },
+        { name: 'Gold', hex: '#ffd700' }
+      ];
+    }
+
+    dotsContainer.innerHTML = colorList.map((c, idx) => `
+      <div class="color-dot ${idx === 0 ? 'active' : ''}" 
+           style="background: ${c.hex}; ${c.hex.toLowerCase() === '#ffffff' ? 'border: 1px solid var(--line);' : ''}" 
+           data-color="${c.name}" 
+           title="${c.name}"></div>
+    `).join('');
+
+    selectedColor = colorList[0].name;
 
     dotsContainer.querySelectorAll('.color-dot').forEach(dot => {
       dot.addEventListener('click', () => {

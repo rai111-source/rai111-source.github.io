@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS products (
   image_url      TEXT,
   badge          TEXT,
   active         BOOLEAN DEFAULT TRUE,
+  images         TEXT[] DEFAULT '{}',
+  colors         JSONB DEFAULT '[]',
+  specifications JSONB DEFAULT '{}',
   created_at     TIMESTAMPTZ DEFAULT NOW(),
   updated_at     TIMESTAMPTZ DEFAULT NOW()
 );
