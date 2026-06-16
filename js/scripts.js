@@ -409,12 +409,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function addToCart(productToAdd) {
-        const existingItemIndex = cart.findIndex(item => Number(item.id) === Number(productToAdd.id));
+        const existingItemIndex = cart.findIndex(item => Number(item.id) === Number(productToAdd.id) && item.name === productToAdd.name);
 
         if (existingItemIndex > -1) {
             cart[existingItemIndex].quantity += 1;
             if (currentUser) {
-                await window.CartManager.updateDbItem(currentUser.id, Number(productToAdd.id), cart[existingItemIndex].quantity);
+                await window.CartManager.updateDbItem(currentUser.id, Number(productToAdd.id), productToAdd.name, cart[existingItemIndex].quantity);
             }
         } else {
             productToAdd.id = Number(productToAdd.id);
@@ -429,24 +429,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (checkoutItemsContainer) renderCheckout();
     }
 
-    async function removeFromCart(productId) {
-        cart = cart.filter(item => Number(item.id) !== Number(productId));
+    async function removeFromCart(productId, productName) {
+        cart = cart.filter(item => !(Number(item.id) === Number(productId) && item.name === productName));
         if (currentUser) {
-            await window.CartManager.removeDbItem(currentUser.id, Number(productId));
+            await window.CartManager.removeDbItem(currentUser.id, Number(productId), productName);
         }
         saveCartLocally();
         renderCart();
     }
 
-    async function updateQuantity(productId, newQuantity) {
-        const itemIndex = cart.findIndex(item => Number(item.id) === Number(productId));
+    async function updateQuantity(productId, productName, newQuantity) {
+        const itemIndex = cart.findIndex(item => Number(item.id) === Number(productId) && item.name === productName);
         if (itemIndex > -1) {
             if (newQuantity < 1) {
-                await removeFromCart(Number(productId));
+                await removeFromCart(Number(productId), productName);
             } else {
                 cart[itemIndex].quantity = parseInt(newQuantity);
                 if (currentUser) {
-                    await window.CartManager.updateDbItem(currentUser.id, Number(productId), cart[itemIndex].quantity);
+                    await window.CartManager.updateDbItem(currentUser.id, Number(productId), productName, cart[itemIndex].quantity);
                 }
                 saveCartLocally();
                 renderCart();
@@ -539,11 +539,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>
                     <td style="padding: 20px 0; font-size: 14px; color: var(--color-text-muted); text-align: center;">₹${price}</td>
                     <td style="padding: 20px 0; text-align: center;">
-                        <input type="number" class="cart-quantity-input" min="1" value="${quantity}" data-id="${escapedId}" style="width: 60px; padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; text-align: center;">
+                        <input type="number" class="cart-quantity-input" min="1" value="${quantity}" data-id="${escapedId}" data-name="${escapedName}" style="width: 60px; padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; font-size: 14px; outline: none; text-align: center;">
                     </td>
                     <td style="padding: 20px 0; font-weight: 500; text-align: center;">₹${price * quantity}</td>
                     <td style="padding: 20px 0; text-align: right;">
-                        <button class="btn-remove" data-id="${escapedId}" style="color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">Remove</button>
+                        <button class="btn-remove" data-id="${escapedId}" data-name="${escapedName}" style="color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">Remove</button>
                     </td>
                 </tr>
             `;
@@ -558,13 +558,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Attach event listeners to new elements
         document.querySelectorAll('.cart-quantity-input').forEach(input => {
             input.addEventListener('change', async (e) => {
-                await updateQuantity(e.target.dataset.id, e.target.value);
+                await updateQuantity(e.target.dataset.id, e.target.dataset.name, e.target.value);
             });
         });
 
         document.querySelectorAll('.btn-remove').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                await removeFromCart(e.target.dataset.id);
+                await removeFromCart(e.target.dataset.id, e.target.dataset.name);
             });
         });
     }

@@ -95,13 +95,13 @@ window.CartManager = {
 
         const { data: upsertedItems, error: upsertError } = await sb
           .from('cart_items')
-          .upsert(itemsToUpsert, { onConflict: 'user_id, product_id' })
+          .upsert(itemsToUpsert, { onConflict: 'user_id, product_id, product_name' })
           .select();
 
         if (upsertError) throw upsertError;
 
-        const localItemIds = new Set(cart.map(i => Number(i.id)));
-        const otherDbItems = dbItems.filter(i => !localItemIds.has(Number(i.product_id)));
+        const localItemKeys = new Set(cart.map(i => `${Number(i.id)}::${i.name}`));
+        const otherDbItems = dbItems.filter(i => !localItemKeys.has(`${Number(i.product_id)}::${i.product_name}`));
 
         cart = [...upsertedItems, ...otherDbItems].map(this.mapDbToLocal);
       } else {
@@ -128,29 +128,31 @@ window.CartManager = {
         product_image: product.image,
         quantity: product.quantity,
         updated_at: new Date()
-      }, { onConflict: 'user_id, product_id' });
+      }, { onConflict: 'user_id, product_id, product_name' });
 
     if (error) console.error('Error adding to DB cart:', error.message);
   },
 
-  async updateDbItem(userId, productId, quantity) {
+  async updateDbItem(userId, productId, productName, quantity) {
     if (!userId || typeof sb === 'undefined') return;
     const { error } = await sb
       .from('cart_items')
       .update({ quantity: quantity, updated_at: new Date() })
       .eq('user_id', userId)
-      .eq('product_id', Number(productId));
+      .eq('product_id', Number(productId))
+      .eq('product_name', productName);
 
     if (error) console.error('Error updating DB cart:', error.message);
   },
 
-  async removeDbItem(userId, productId) {
+  async removeDbItem(userId, productId, productName) {
     if (!userId || typeof sb === 'undefined') return;
     const { error } = await sb
       .from('cart_items')
       .delete()
       .eq('user_id', userId)
-      .eq('product_id', Number(productId));
+      .eq('product_id', Number(productId))
+      .eq('product_name', productName);
 
     if (error) console.error('Error removing from DB cart:', error.message);
   },

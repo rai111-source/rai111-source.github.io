@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
   product_image TEXT,
   quantity      INTEGER DEFAULT 1,
   updated_at    TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, product_id)
+  UNIQUE(user_id, product_id, product_name)
 );
 
 
