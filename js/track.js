@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let dbOrders = [];
                 let rpcOrders = [];
                 if (userEmail) {
-                    const { data, error } = await sb.from('orders').select('*').eq('customer->>email', userEmail);
+                    const { data, error } = await sb.from('orders').select('*').eq('customer->email', userEmail);
                     if (!error && data) dbOrders = data;
                 }
                 if (localRefs.length > 0) {
