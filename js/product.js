@@ -176,7 +176,7 @@
     mainImg.src = mainImgUrl || fallbackUrl;
     mainImg.onerror = () => { mainImg.src = fallbackUrl; };
 
-    // Setup thumbs
+    // Setup thumbs — only show the actual uploaded image(s)
     let thumbs = [];
     if (additionalImages && additionalImages.length > 0) {
       thumbs = [
@@ -184,11 +184,9 @@
         ...additionalImages.map((url, idx) => ({ url, label: `View ${idx + 2}` }))
       ];
     } else {
+      // Only show the real product image — no dummy placeholders
       thumbs = [
-        { url: mainImgUrl || fallbackUrl, label: 'Main View' },
-        { url: 'https://images.unsplash.com/photo-1631378534457-aa7adf893b2d?w=400', label: 'Close-up Detail' },
-        { url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400', label: 'Printing Process' },
-        { url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400', label: 'Box Packaging' }
+        { url: mainImgUrl || fallbackUrl, label: 'Main View' }
       ];
     }
 
