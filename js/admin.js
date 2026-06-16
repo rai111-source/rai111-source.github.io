@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!container) return;
         
         if (productColors.length === 0) {
-            container.innerHTML = '<div style="color: var(--gray4); font-size: 13.5px; width: 100%;">No custom colors added yet. (Will fallback to default colors: White, Grey, Black, Gold)</div>';
+            container.innerHTML = '<div style="color: var(--gray4); font-size: 13.5px; width: 100%;">No custom colors added yet. The product details page will hide the color selector.</div>';
             return;
         }
         

@@ -5,7 +5,7 @@
   let productId = null;
   let currentProduct = null;
   let currentUser = null;
-  let selectedColor = 'White';
+  let selectedColor = null;
   let selectedRating = 5;
 
   const esc = window.escHtml || function(str) {
@@ -213,24 +213,24 @@
     const dotsContainer = document.getElementById('color-dots-container');
     if (!dotsContainer) return;
 
-    let colorList = colors;
-    if (!colorList || colorList.length === 0) {
-      colorList = [
-        { name: 'White', hex: '#ffffff' },
-        { name: 'Grey', hex: '#555555' },
-        { name: 'Black', hex: '#111111' },
-        { name: 'Gold', hex: '#ffd700' }
-      ];
+    const optionGroup = dotsContainer.closest('.option-group');
+
+    if (!colors || colors.length === 0) {
+      if (optionGroup) optionGroup.style.display = 'none';
+      selectedColor = null;
+      return;
     }
 
-    dotsContainer.innerHTML = colorList.map((c, idx) => `
+    if (optionGroup) optionGroup.style.display = 'block';
+
+    dotsContainer.innerHTML = colors.map((c, idx) => `
       <div class="color-dot ${idx === 0 ? 'active' : ''}" 
            style="background: ${c.hex}; ${c.hex.toLowerCase() === '#ffffff' ? 'border: 1px solid var(--line);' : ''}" 
            data-color="${c.name}" 
            title="${c.name}"></div>
     `).join('');
 
-    selectedColor = colorList[0].name;
+    selectedColor = colors[0].name;
 
     dotsContainer.querySelectorAll('.color-dot').forEach(dot => {
       dot.addEventListener('click', () => {
@@ -269,7 +269,10 @@
       addCartBtn.addEventListener('click', async () => {
         const qty = parseInt(document.getElementById('qty-input').value) || 1;
         await addProductToCart(qty);
-        showLocalNotification(`${currentProduct.name} (${selectedColor}) added to cart! 🛒`);
+        const notifMsg = selectedColor 
+          ? `${currentProduct.name} (${selectedColor}) added to cart! 🛒` 
+          : `${currentProduct.name} added to cart! 🛒`;
+        showLocalNotification(notifMsg);
       });
     }
 
@@ -287,7 +290,7 @@
 
     const cartItem = {
       id: Number(currentProduct.id),
-      name: `${currentProduct.name} - ${selectedColor}`,
+      name: selectedColor ? `${currentProduct.name} - ${selectedColor}` : currentProduct.name,
       price: parseFloat(currentProduct.price),
       image: currentProduct.image_url,
       quantity: quantity
