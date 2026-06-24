@@ -14,12 +14,497 @@
     content="Custom 3D printing from Assam — figurines, portraits, prototypes, gifts. Starting ₹60. Pan-India delivery in 5–7 days.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"></noscript>
   <!-- Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-  <link rel="stylesheet" href="css/index.min.css">
+  <style>
+    /* ── DESIGN TOKENS ── */
+    :root {
+      --black: #080808;
+      --gray9: #111111;
+      --gray8: #1a1a1a;
+      --gray7: #242424;
+      --gray6: #2e2e2e;
+      --gray4: #555555;
+      --gray3: #888888;
+      --gray2: #bbbbbb;
+      --gray1: #e8e8e8;
+      --white: #f5f5f3;
+      --pure: #ffffff;
+      --line: rgba(255, 255, 255, 0.08);
+      --line2: rgba(255, 255, 255, 0.14);
+      --r: 12px;
+      --rb: 20px;
+      --head: 'Playfair Display', Georgia, serif;
+      --body: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --nav-bg: rgba(8, 8, 8, 0.93);
+      --mobnav-bg: rgba(8, 8, 8, 0.97);
+    }
+    :root.light-theme {
+      --black: #faf9f6;
+      --gray9: #ffffff;
+      --gray8: #f1f3f5;
+      --gray7: #e9ecef;
+      --gray6: #dee2e6;
+      --gray4: #868e96;
+      --gray3: #495057;
+      --gray2: #212529;
+      --gray1: #0f1115;
+      --white: #0f1115;
+      --pure: #000000;
+      --line: rgba(15, 17, 21, 0.06);
+      --line2: rgba(15, 17, 21, 0.12);
+      --nav-bg: rgba(250, 249, 246, 0.93);
+      --mobnav-bg: rgba(250, 249, 246, 0.97);
+    }
+    /* ── RESET ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    body {
+      background: var(--black);
+      color: var(--gray1);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100vw;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: .03;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    img { display: block; max-width: 100% }
+    a { text-decoration: none; color: inherit }
+    button { cursor: pointer; font-family: inherit; border: none; background: none }
+    /* ── UTILITY ── */
+    .label {
+      font-family: var(--body);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gray3);
+    }
+    .display {
+      font-family: var(--head);
+      letter-spacing: -.02em;
+      line-height: .95;
+    }
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border-width: 0 !important;
+    }
+    /* ── TOPBAR ── */
+    .topbar {
+      position: relative;
+      z-index: 10;
+      background: var(--white);
+      color: var(--black);
+      text-align: center;
+      padding: 9px 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      contain: content;
+    }
+    .topbar a {
+      color: var(--black);
+      text-decoration: underline;
+      text-underline-offset: 3px
+    }
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 64px;
+      padding: 0 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--line);
+      contain: layout;
+    }
+    [id] {
+      scroll-margin-top: 64px;
+    }
+    .nav-logo {
+      font-family: var(--head);
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+    .nav-logo em {
+      font-style: italic;
+      color: var(--gray2)
+    }
+    .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none
+    }
+    .nav-links a {
+      color: var(--gray4);
+      font-size: 13.5px;
+      font-weight: 500;
+      padding: 7px 13px;
+      border-radius: 8px;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, .06)
+    }
+    .nav-r {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+    .btn-login {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray4);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+    .btn-login:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, .06);
+    }
+    .btn-signup {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      background: var(--white);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+    .btn-signup:hover {
+      background: var(--gray1);
+      transform: translateY(-1px)
+    }
+    .cart-pill {
+      position: relative;
+      background: var(--gray8);
+      border: 1px solid var(--line);
+      color: var(--gray1);
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      transition: all .2s;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .cart-pill:hover {
+      border-color: var(--gray4)
+    }
+    .theme-toggle {
+      background: var(--gray8);
+      border: 1px solid var(--line);
+      color: var(--gray1);
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      transition: all .2s;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover {
+      border-color: var(--gray4);
+      background: var(--gray7);
+    }
+    .cbadge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 10px;
+      font-weight: 700;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ham {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      cursor: pointer
+    }
+    .ham span {
+      width: 22px;
+      height: 2px;
+      background: var(--gray2);
+      border-radius: 2px;
+      transition: all .3s;
+      transform-origin: center;
+    }
+    .ham.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .ham.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .ham.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    html.no-scroll,
+    body.no-scroll {
+      overflow: hidden !important;
+      height: 100% !important;
+    }
+    /* ── MOBILE NAV ── */
+    .mobnav {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 100vh;
+      background: var(--mobnav-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--line);
+      padding: 84px 24px 40px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
+    }
+    .mobnav.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 11px;
+      transition: all .25s;
+      border: none;
+      cursor: pointer;
+      font-family: var(--body);
+    }
+    .btn-white {
+      background: var(--white);
+      color: var(--black)
+    }
+    .btn-white:hover {
+      background: var(--gray1);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(255, 255, 255, .12)
+    }
+    .btn-border {
+      background: transparent;
+      color: var(--gray1);
+      border: 1px solid var(--line2)
+    }
+    .btn-border:hover {
+      border-color: rgba(255, 255, 255, .35);
+      color: var(--white);
+      background: rgba(255, 255, 255, .05)
+    }
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: calc(100vh - 100px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+      padding: 80px 80px 60px;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, transparent 30%, var(--black) 75%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1
+    }
+    .hero-eye {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--line2);
+      border-radius: 100px;
+      padding: 6px 18px 6px 12px;
+      margin-bottom: 30px;
+    }
+    .hero-eye .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--white);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1 }
+      50% { opacity: .3 }
+    }
+    .hero-eye span {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--gray2);
+      letter-spacing: .07em;
+      text-transform: uppercase
+    }
+    .hero-h1 {
+      font-family: var(--head);
+      font-size: clamp(58px, 6.5vw, 100px);
+      font-weight: 900;
+      line-height: .92;
+      letter-spacing: -.03em;
+      color: var(--white);
+    }
+    .hero-h1 .italic {
+      font-style: italic;
+      color: var(--gray2)
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--gray3);
+      line-height: 1.75;
+      margin: 26px 0 40px;
+      max-width: 440px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      margin-top: 52px;
+      padding-top: 40px;
+      border-top: 1px solid var(--line);
+    }
+    .hstat {
+      padding: 0 32px
+    }
+    .hstat:first-child {
+      padding-left: 0
+    }
+    .hstat-v {
+      font-family: var(--head);
+      font-size: clamp(32px, 3.5vw, 44px);
+      font-weight: 900;
+      line-height: .95;
+      color: var(--white);
+    }
+    .hstat-l {
+      font-size: 12.5px;
+      color: var(--gray4);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+    /* ── RESPONSIVE ── */
+    @media(max-width:1200px) {
+      nav { padding: 0 24px }
+      .hero { padding: 60px 44px; gap: 36px }
+    }
+    @media(max-width:900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 44px 24px 60px;
+        min-height: auto;
+        gap: 40px
+      }
+      nav {
+        padding: 0 12px !important;
+        gap: 10px !important;
+      }
+      .nav-logo {
+        font-size: 18px !important;
+      }
+      .nav-r {
+        gap: 6px !important;
+      }
+      #user-btn {
+        margin-right: 4px !important;
+      }
+      .nav-links, .btn-login, #auth-buttons, #nav-logout-btn {
+        display: none !important
+      }
+      .ham {
+        display: flex
+      }
+    }
+  </style>
+  <link rel="preload" href="css/index.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/index.min.css"></noscript>
 
   <!-- Preconnect to Supabase Storage domain to accelerate connection setup -->
   <link rel="preconnect" href="https://amzijtwogsibxganxsty.supabase.co" crossorigin>
@@ -542,14 +1027,14 @@
     <div class="cgrid">
       <form class="cform rev" onsubmit="submitForm(event)">
         <div class="frow">
-          <div class="fg"><label>Your Name *</label><input name="name" placeholder="Abc Xyz" required></div>
-          <div class="fg"><label>Phone *</label><input name="phone" type="tel" placeholder="+91 1234567890" required>
+          <div class="fg"><label for="contact-name">Your Name *</label><input id="contact-name" name="name" autocomplete="name" placeholder="Abc Xyz" required></div>
+          <div class="fg"><label for="contact-phone">Phone *</label><input id="contact-phone" name="phone" type="tel" autocomplete="tel" placeholder="+91 1234567890" required>
           </div>
         </div>
-        <div class="fg"><label>Email *</label><input name="email" type="email" placeholder="hello@example.com" required>
+        <div class="fg"><label for="contact-email">Email *</label><input id="contact-email" name="email" type="email" autocomplete="email" placeholder="hello@example.com" required>
         </div>
-        <div class="fg"><label>Service Type</label>
-          <select name="service">
+        <div class="fg"><label for="contact-service">Service Type</label>
+          <select id="contact-service" name="service">
             <option value="">Select a service…</option>
             <option>Custom Figurine</option>
             <option>Lithophane Portrait</option>
@@ -560,7 +1045,7 @@
             <option>Other</option>
           </select>
         </div>
-        <div class="fg"><label>About Your Project *</label><textarea name="message" rows="5"
+        <div class="fg"><label for="contact-message">About Your Project *</label><textarea id="contact-message" name="message" rows="5"
             placeholder="Describe what you want — size, color, references…" required></textarea></div>
         <button type="submit" class="btn btn-white" style="font-size:15px;border-radius:11px">Send Message →</button>
       </form>
@@ -642,7 +1127,8 @@
       <div class="ftcol ftnews">
         <h4>Stay Updated</h4>
         <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
-        <input type="email" placeholder="Your email address">
+        <label for="footer-email" class="sr-only">Your email address</label>
+        <input type="email" id="footer-email" name="email" autocomplete="email" placeholder="Your email address">
         <button class="btn btn-white"
           style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
       </div>

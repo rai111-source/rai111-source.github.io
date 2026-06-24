@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let cart = window.CartManager.getCart();
 
     // -- Elements --
-    const cartCountElements = document.querySelectorAll('#cart-count');
+    const cartCountElements = document.querySelectorAll('#cart-count, #cartCount');
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartTotalPriceElement = document.getElementById('cart-total-price');
@@ -484,12 +484,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="cartfloat-badge" id="cartFloatCount">0</div>
                 `;
                 document.body.appendChild(floatBtn);
-                
-                // Trigger reflow for transition
-                floatBtn.getBoundingClientRect();
             }
             
-            floatBtn.classList.add('show');
+            requestAnimationFrame(() => {
+                floatBtn.classList.add('show');
+            });
             const countEl = document.getElementById('cartFloatCount');
             if (countEl) countEl.textContent = totalItems;
         } else if (floatBtn) {
@@ -603,10 +602,27 @@ window.getCartTotal = function(cartArray) {
 
 window.toggleMob = function() {
     const mobnav = document.getElementById('mobnav');
-    if (mobnav) mobnav.classList.toggle('open');
+    const ham = document.getElementById('ham');
+    if (mobnav) {
+        const isOpen = mobnav.classList.toggle('open');
+        if (ham) ham.classList.toggle('open', isOpen);
+        if (isOpen) {
+            document.body.classList.add('no-scroll');
+            document.documentElement.classList.add('no-scroll');
+        } else {
+            document.body.classList.remove('no-scroll');
+            document.documentElement.classList.remove('no-scroll');
+        }
+    }
 };
 
 window.closeMob = function() {
     const mobnav = document.getElementById('mobnav');
-    if (mobnav) mobnav.classList.remove('open');
+    const ham = document.getElementById('ham');
+    if (mobnav) {
+        mobnav.classList.remove('open');
+        if (ham) ham.classList.remove('open');
+        document.body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('no-scroll');
+    }
 };

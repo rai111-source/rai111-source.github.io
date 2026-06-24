@@ -192,25 +192,25 @@
           <form id="profile-form" class="cform">
             <div class="fg">
               <label for="profile-name">Full Name</label>
-              <input type="text" id="profile-name" disabled placeholder="e.g. John Doe">
+              <input type="text" id="profile-name" name="name" autocomplete="name" disabled placeholder="e.g. John Doe">
             </div>
 
             <div class="frow" style="margin-top: 14px;">
               <div class="fg" style="flex: 1;">
                 <label for="profile-dob">Date of Birth</label>
-                <input type="date" id="profile-dob" disabled>
+                <input type="date" id="profile-dob" name="dob" autocomplete="bday" disabled>
               </div>
             </div>
 
             <div class="fg" style="margin-top: 14px;">
               <label for="profile-address">Shipping Address</label>
-              <textarea id="profile-address" disabled rows="3" placeholder="Enter your full mailing address"></textarea>
+              <textarea id="profile-address" name="address" autocomplete="street-address" disabled rows="3" placeholder="Enter your full mailing address"></textarea>
             </div>
 
             <div class="fg" style="margin-top: 14px;">
               <label for="profile-avatar-input">Profile Picture</label>
-              <input type="file" id="profile-avatar-input" disabled accept="image/*" style="padding: 10px 14px;">
-              <input type="hidden" id="profile-avatar" value="">
+              <input type="file" id="profile-avatar-input" name="avatar" disabled accept="image/*" style="padding: 10px 14px;">
+              <input type="hidden" id="profile-avatar" name="avatar_url" value="">
               <small style="color: var(--gray4); font-size: 12.5px; margin-top: 4px;">Pick an image from your device (max 2MB).</small>
             </div>
 
@@ -262,7 +262,8 @@
       <div class="ftcol ftnews">
         <h4>Stay Updated</h4>
         <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
-        <input type="email" placeholder="Your email address">
+        <label for="footer-email" class="sr-only">Your email address</label>
+        <input type="email" id="footer-email" name="email" autocomplete="email" placeholder="Your email address">
         <button class="btn btn-white"
           style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
       </div>

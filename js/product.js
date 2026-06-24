@@ -327,8 +327,8 @@
 
   function updateCartBadgeCount(cartArray) {
     const totalCount = window.CartManager.getCartCount(cartArray);
-    const countBadge = document.getElementById('cart-count');
-    if (countBadge) countBadge.textContent = totalCount;
+    const badges = document.querySelectorAll('#cart-count, #cartCount');
+    badges.forEach(badge => badge.textContent = totalCount);
   }
 
   function setupTabControls() {

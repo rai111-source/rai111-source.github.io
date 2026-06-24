@@ -151,7 +151,7 @@
               
               <!-- Colors -->
               <div class="option-group">
-                <label>Select Color</label>
+                <span class="option-label" style="font-size: 13.5px; font-weight: 500; color: var(--gray4); margin-bottom: 8px; display: block;">Select Color</span>
                 <div class="color-dots" id="color-dots-container">
                   <!-- Dynamically populated -->
                 </div>
@@ -162,7 +162,8 @@
             <div class="p-actions-box">
               <div class="qty-selector">
                 <button type="button" id="qty-minus" aria-label="Decrease quantity">−</button>
-                <input type="text" id="qty-input" value="1" readonly>
+                <label for="qty-input" class="sr-only">Quantity</label>
+                <input type="text" id="qty-input" name="quantity" autocomplete="off" value="1" readonly>
                 <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
               </div>
               <button type="button" id="btn-add-cart" class="btn btn-border" style="flex: 1;"><i class="ph ph-shopping-cart" style="font-size: 18px;"></i> Add to Cart</button>
@@ -228,12 +229,12 @@
                 <h4>Write a Customer Review</h4>
                 <form id="add-review-form">
                   <div class="fg" style="margin-bottom: 16px;">
-                    <label style="color: var(--gray3); margin-bottom: 6px; display: block; font-size: 14px;">Your Name *</label>
-                    <input type="text" id="review-user-name" required placeholder="E.g. Priya Sharma" style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--gray8); color: var(--white);">
+                    <label for="review-user-name" style="color: var(--gray3); margin-bottom: 6px; display: block; font-size: 14px;">Your Name *</label>
+                    <input type="text" id="review-user-name" name="name" autocomplete="name" required placeholder="E.g. Priya Sharma" style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--gray8); color: var(--white);">
                   </div>
 
                   <div class="fg" style="margin-bottom: 16px;">
-                    <label style="color: var(--gray3); margin-bottom: 6px; display: block; font-size: 14px;">Rating *</label>
+                    <span style="color: var(--gray3); margin-bottom: 6px; display: block; font-size: 14px;">Rating *</span>
                     <div class="rating-select" id="star-rating-select">
                       <button type="button" class="star-select-btn" data-rating="1">★</button>
                       <button type="button" class="star-select-btn" data-rating="2">★</button>
@@ -245,8 +246,8 @@
                   </div>
 
                   <div class="fg" style="margin-bottom: 20px;">
-                    <label style="color: var(--gray3); margin-bottom: 6px; display: block; font-size: 14px;">Review Comment *</label>
-                    <textarea id="review-comment" required rows="4" placeholder="What did you think of the print quality, packing, and overall experience?" style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--gray8); color: var(--white); font-family: inherit; line-height: 1.5; resize: vertical;"></textarea>
+                    <label for="review-comment" style="color: var(--gray3); margin-bottom: 6px; display: block; font-size: 14px;">Review Comment *</label>
+                    <textarea id="review-comment" name="comment" autocomplete="off" required rows="4" placeholder="What did you think of the print quality, packing, and overall experience?" style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--gray8); color: var(--white); font-family: inherit; line-height: 1.5; resize: vertical;"></textarea>
                   </div>
 
                   <button type="submit" class="btn btn-white" id="submit-review-btn" style="padding: 10px 20px; font-size: 14px; border-radius: 8px;">Submit Review</button>
@@ -308,7 +309,8 @@
       <div class="ftcol ftnews">
         <h4>Stay Updated</h4>
         <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
-        <input type="email" placeholder="Your email address">
+        <label for="footer-email" class="sr-only">Your email address</label>
+        <input type="email" id="footer-email" name="email" autocomplete="email" placeholder="Your email address">
         <button class="btn btn-white"
           style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
       </div>
@@ -333,3 +335,4 @@
   <script type="module" src="js/speed-insights.js"></script>
 </body>
 </html>
+

@@ -140,6 +140,7 @@
       font-size: 12.5px;
       font-weight: 600;
       letter-spacing: .02em;
+      contain: content;
     }
 
     .topbar a {
@@ -163,6 +164,7 @@
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
       border-bottom: 1px solid var(--line);
+      contain: layout;
     }
 
     /* Offset all anchor targets by the sticky nav height so clicking any
@@ -314,27 +316,57 @@
       height: 2px;
       background: var(--gray2);
       border-radius: 2px;
-      transition: all .3s
+      transition: all .3s;
+      transform-origin: center;
+    }
+
+    .ham.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .ham.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .ham.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    html.no-scroll,
+    body.no-scroll {
+      overflow: hidden !important;
+      height: 100% !important;
     }
 
     /* ── MOBILE NAV ─────────────────────────────────────────── */
     .mobnav {
-      display: none;
+      display: flex;
       position: fixed;
-      top: 64px;
+      top: 0;
       left: 0;
       right: 0;
+      bottom: 0;
+      height: 100vh;
       background: var(--mobnav-bg);
       backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--line);
-      padding: 14px 20px;
+      padding: 84px 24px 40px;
       z-index: 99;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
     }
 
     .mobnav.open {
-      display: flex
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
     .mobnav a {
@@ -2395,13 +2427,27 @@
         padding: 48px 24px 24px
       }
 
-      nav {
-        padding: 0 18px
+       nav {
+        padding: 0 12px;
+        gap: 10px;
+      }
+
+      .nav-logo {
+        font-size: 18px;
+      }
+
+      .nav-r {
+        gap: 6px;
+      }
+
+      #user-btn {
+        margin-right: 4px !important;
       }
 
       .nav-links,
       .btn-login,
-      #auth-buttons {
+      #auth-buttons,
+      #nav-logout-btn {
         display: none !important
       }
 
@@ -3655,4 +3701,17 @@
         gap: 30px;
       }
     }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border-width: 0 !important;
+    }
+
 

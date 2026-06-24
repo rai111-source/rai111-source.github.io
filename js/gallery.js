@@ -1,7 +1,8 @@
+(function() {
 let initialGalleryPromise = null;
 const sb = window.supabaseClient;
 
-if (typeof sb !== 'undefined') {
+if (typeof sb !== 'undefined' && sb) {
     initialGalleryPromise = sb.from('gallery')
         .select('*')
         .eq('active', true)
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await initialGalleryPromise;
                 data = res.data;
                 error = res.error;
-            } else if (typeof sb !== 'undefined') {
+            } else if (typeof sb !== 'undefined' && sb) {
                 const res = await sb.from('gallery')
                     .select('*')
                     .eq('active', true)
@@ -87,3 +88,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize gallery loading
     loadGallery();
 });
+})();

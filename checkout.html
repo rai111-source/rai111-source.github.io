@@ -154,33 +154,33 @@
           <form id="checkout-form" class="cform">
             <div class="fg">
               <label for="name">Full Name</label>
-              <input type="text" id="name" placeholder="Full Name" required>
+              <input type="text" id="name" name="name" autocomplete="name" placeholder="Full Name" required>
             </div>
             
             <div class="fg" style="margin-top: 14px;">
               <label for="address">Address</label>
-              <input type="text" id="address" placeholder="Address" required>
+              <input type="text" id="address" name="address" autocomplete="street-address" placeholder="Address" required>
             </div>
 
             <div class="frow" style="margin-top: 14px;">
               <div class="fg" style="flex: 1;">
                 <label for="city">City</label>
-                <input type="text" id="city" placeholder="City" required>
+                <input type="text" id="city" name="city" autocomplete="address-level2" placeholder="City" required>
               </div>
               <div class="fg" style="flex: 1;">
                 <label for="zip">Zip Code</label>
-                <input type="text" id="zip" placeholder="Zip Code" required>
+                <input type="text" id="zip" name="zip" autocomplete="postal-code" placeholder="Zip Code" required>
               </div>
             </div>
 
             <div class="frow" style="margin-top: 14px;">
               <div class="fg" style="flex: 1;">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="Phone Number" required>
               </div>
               <div class="fg" style="flex: 1;">
                 <label for="email">Email (Optional)</label>
-                <input type="email" id="email" placeholder="Email Address">
+                <input type="email" id="email" name="email" autocomplete="email" placeholder="Email Address">
               </div>
             </div>
 
@@ -283,7 +283,8 @@
       <div class="ftcol ftnews">
         <h4>Stay Updated</h4>
         <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
-        <input type="email" placeholder="Your email address">
+        <label for="footer-email" class="sr-only">Your email address</label>
+        <input type="email" id="footer-email" name="email" autocomplete="email" placeholder="Your email address">
         <button class="btn btn-white"
           style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
       </div>

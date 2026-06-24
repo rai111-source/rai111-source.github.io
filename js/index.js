@@ -262,12 +262,11 @@
             <div class="cartfloat-badge" id="cartFloatCount">0</div>
           `;
           document.body.appendChild(floatBtn);
-          
-          // Trigger reflow for transition
-          floatBtn.getBoundingClientRect();
         }
         
-        floatBtn.classList.add('show');
+        requestAnimationFrame(() => {
+          floatBtn.classList.add('show');
+        });
         const countEl = document.getElementById('cartFloatCount');
         if (countEl) countEl.textContent = totalItems;
       } else if (floatBtn) {
@@ -397,8 +396,31 @@
       if (!on) { btn.classList.add('on'); a.classList.add('on'); }
     }
 
-    function toggleMob() { document.getElementById('mobnav').classList.toggle('open'); }
-    function closeMob() { document.getElementById('mobnav').classList.remove('open'); }
+    function toggleMob() {
+      const mobnav = document.getElementById('mobnav');
+      const ham = document.getElementById('ham');
+      if (mobnav) {
+        const isOpen = mobnav.classList.toggle('open');
+        if (ham) ham.classList.toggle('open', isOpen);
+        if (isOpen) {
+          document.body.classList.add('no-scroll');
+          document.documentElement.classList.add('no-scroll');
+        } else {
+          document.body.classList.remove('no-scroll');
+          document.documentElement.classList.remove('no-scroll');
+        }
+      }
+    }
+    function closeMob() {
+      const mobnav = document.getElementById('mobnav');
+      const ham = document.getElementById('ham');
+      if (mobnav) {
+        mobnav.classList.remove('open');
+        if (ham) ham.classList.remove('open');
+        document.body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('no-scroll');
+      }
+    }
 
     function initReveal() {
       const ob = new IntersectionObserver((en) => { en.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); ob.unobserve(e.target); } }); }, { threshold: .07, rootMargin: '0px 0px -40px 0px' });
