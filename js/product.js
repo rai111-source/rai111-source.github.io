@@ -94,7 +94,7 @@
       currentProduct = product;
 
       // Update HTML metadata title
-      document.title = `${product.name} | LittleLayers.Co`;
+      document.title = `${product.name} | LittleLayers`;
 
       // Render details
       document.getElementById('product-title').textContent = product.name;

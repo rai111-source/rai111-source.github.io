@@ -217,7 +217,7 @@
           .insert([{
             session_id: sessionId,
             sender: 'admin',
-            message: `Hello ${name}! Welcome to LittleLayers.Co. How can we help you with your 3D printing choices or custom projects today?`
+            message: `Hello ${name}! Welcome to LittleLayers. How can we help you with your 3D printing choices or custom projects today?`
           }]);
       } catch (err) {
         console.error('Error starting logged-in chat:', err);

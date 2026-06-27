@@ -1,4 +1,4 @@
-// LittleLayers.Co - Track Order Script
+// LittleLayers - Track Order Script
 document.addEventListener('DOMContentLoaded', () => {
     
     // Load recent orders list on page load

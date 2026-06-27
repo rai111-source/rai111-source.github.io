@@ -1,4 +1,4 @@
-/* LittleLayers.Co - Main Scripts */
+/* LittleLayers - Main Scripts */
 let initialProductsPromise = null;
 const supabaseClientInstance = window.supabaseClient;
 if (supabaseClientInstance) {
