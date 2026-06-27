@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentUser) {
                 // Bug #15: use centralized window.ADMIN_EMAIL (defined in supabase.js)
                 if (currentUser.email === window.ADMIN_EMAIL) {
-                    window.location.href = 'admin.html';
+                    window.location.href = '/admin';
                 } else {
-                    window.location.href = 'profile.html';
+                    window.location.href = '/dashboard/user/' + currentUser.id;
                 }
             } else {
                 // Go to login page
-                window.location.href = 'login.html';
+                window.location.href = '/login';
             }
         });
     }
@@ -221,17 +221,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function checkUserSession() {
         const { data, error } = await supabaseClient.auth.getSession();
+        
+        const isProfilePage = window.location.pathname.includes('profile.html') || 
+                              window.location.pathname.startsWith('/profile') || 
+                              window.location.pathname.includes('/dashboard/user/');
+
         if (data && data.session) {
             currentUser = data.session.user;
             updateHeaderUI();
+            
+            // Mask URL with professional /dashboard/user/UUID format
+            const isRootProfilePage = window.location.pathname === '/profile' || 
+                                      window.location.pathname === '/profile.html' || 
+                                      window.location.pathname.endsWith('/profile') || 
+                                      window.location.pathname.endsWith('/profile.html');
+            if (isRootProfilePage) {
+                window.history.replaceState(null, '', '/dashboard/user/' + currentUser.id);
+            } else if (isProfilePage) {
+                // Security: if user manually changes the UUID in the URL path, redirect to their own
+                const pathParts = window.location.pathname.split('/');
+                const idInPath = pathParts[pathParts.indexOf('user') + 1];
+                if (idInPath && idInPath !== currentUser.id) {
+                    window.location.href = '/dashboard/user/' + currentUser.id;
+                    return;
+                }
+            }
+            
             handleProfilePageLoad();
         } else {
             currentUser = null;
             updateHeaderUI();
 
             // If on profile page and not logged in, redirect to login
-            if (window.location.pathname.includes('profile.html')) {
-                window.location.href = 'login.html';
+            if (isProfilePage) {
+                window.location.href = '/login';
             }
         }
 
@@ -280,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         sessionStorage.removeItem('redirectAfterAuth');
                         window.location.href = returnUrl;
                     } else {
-                        window.location.href = 'profile.html';
+                        window.location.href = '/dashboard/user/' + data.session.user.id;
                     }
                 }, 1000);
             } else {
@@ -310,14 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (email === window.ADMIN_EMAIL) {
                 sessionStorage.removeItem('redirectAfterAuth'); // Admin always goes to admin panel
-                window.location.href = 'admin.html';
+                window.location.href = '/admin';
             } else {
                 const returnUrl = sessionStorage.getItem('redirectAfterAuth');
                 if (returnUrl) {
                     sessionStorage.removeItem('redirectAfterAuth');
                     window.location.href = returnUrl;
                 } else {
-                    window.location.href = 'profile.html';
+                    window.location.href = '/dashboard/user/' + data.user.id;
                 }
             }
         } catch (error) {
@@ -363,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pageAuthErrorMsg.textContent = "Password updated successfully! Redirecting...";
             }
             alert('Password updated successfully! Redirecting to your profile...');
-            window.location.href = 'profile.html';
+            window.location.href = '/dashboard/user/' + data.user.id;
         } catch (error) {
             if (pageAuthErrorMsg) {
                 pageAuthErrorMsg.style.color = "#ff6b6b";
@@ -378,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // We keep redirectAfterAuth in sessionStorage — the onAuthStateChange
             // SIGNED_IN handler will read it after the OAuth callback and perform
             // the final redirect to the originally intended page.
-            const safeRedirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            const safeRedirectUrl = window.location.origin + '/profile.html';
 
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
@@ -400,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Same redirect strategy as Google — keep redirectAfterAuth in sessionStorage
             // and use a safe allowlisted URL; onAuthStateChange SIGNED_IN will finish the redirect.
-            const safeRedirectUrl = window.location.href.split('login.html')[0] + 'profile.html';
+            const safeRedirectUrl = window.location.origin + '/profile.html';
 
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'github',
