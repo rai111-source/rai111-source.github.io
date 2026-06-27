@@ -61,23 +61,20 @@
       <li><a href="index.html#contact">Contact</a></li>
     </ul>
     <div class="nav-r">
-      <div id="auth-buttons" style="display: flex; gap: 8px;">
-        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
-        <a href="login.html?mode=signup" class="btn-signup"
-          style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      <div id="auth-buttons">
+        <a href="login.html" class="btn-login">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup">Sign Up</a>
       </div>
-      <a href="profile.html" class="action-btn" id="user-btn"
-        style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
-        <span id="user-btn-text"
-          style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-        👤
+      <a href="profile.html" class="action-btn" id="user-btn">
+        <span id="user-btn-text">Login</span>
+        <i class="ph ph-user"></i>
       </a>
-      <a href="#" id="nav-logout-btn" class="btn-logout"
-        style="display: none; text-decoration:none; align-items:center; justify-content:center; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; color: var(--white); background: transparent; transition: all 0.2s; margin-right: 15px;">Sign Out</a>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" style="margin-right: 8px;">
+      <a href="#" id="nav-logout-btn" class="btn-logout">Sign Out</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
         <i class="ph ph-sun" id="theme-icon"></i>
       </button>
-      <div class="cart-pill" href="cart.html" style="text-decoration: none;">🛒<div class="cbadge" id="cartCount">0</div>
+      <div class="cart-pill" href="cart.html" style="text-decoration: none;"><i class="ph ph-shopping-cart"></i>
+        <div class="cbadge" id="cartCount">0</div>
       </div>
     </div>
     <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
@@ -145,9 +142,10 @@
         <div class="ftdesc">Custom 3D printing studio from Dibrugarh, Assam. Turning ideas into reality — one layer at a
           time.</div>
         <div class="socs">
-          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc">📸</a>
-          <a href="https://wa.me/916000061991" target="_blank" class="soc">💬</a>
-          <a href="mailto:hellolittlelayers@gmail.com" class="soc">✉️</a>
+          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc"><i
+              class="ph ph-instagram-logo"></i></a>
+          <a href="https://wa.me/916000061991" target="_blank" class="soc"><i class="ph ph-whatsapp-logo"></i></a>
+          <a href="mailto:hellolittlelayers@gmail.com" class="soc"><i class="ph ph-envelope"></i></a>
         </div>
       </div>
       <div class="ftcol">
@@ -173,11 +171,10 @@
       </div>
       <div class="ftcol ftnews">
         <h4>Stay Updated</h4>
-        <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
+        <p>New products, offers & tips.</p>
         <label for="footer-email" class="sr-only">Your email address</label>
         <input type="email" id="footer-email" name="email" autocomplete="email" placeholder="Your email address">
-        <button class="btn btn-white"
-          style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
+        <button class="btn btn-white btn-subscribe">Subscribe</button>
       </div>
     </div>
     <div class="ftbot">

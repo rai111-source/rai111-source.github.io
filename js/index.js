@@ -497,9 +497,26 @@
       const stepsEl = document.getElementById('process-steps-el');
       if (subEl && content.sub) { subEl.textContent = content.sub; }
       if (stepsEl && content.steps) {
+        const emojiMap = {
+          '💬': 'ph ph-chat-circle',
+          '🎨': 'ph ph-palette',
+          '🖨️': 'ph ph-printer',
+          '📦': 'ph ph-package'
+        };
         stepsEl.innerHTML = content.steps.map(s => {
           const isUrl = /^(https?:\/\/|\/|data:image\/)/.test(s.icon) || /\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i.test(s.icon);
-          const iconHtml = isUrl ? `<img src="${s.icon}" alt="${esc(s.title)}" onerror="this.style.display='none'">` : esc(s.icon);
+          let iconHtml = '';
+          if (isUrl) {
+            iconHtml = `<img src="${s.icon}" alt="${esc(s.title)}" onerror="this.style.display='none'">`;
+          } else {
+            const trimmedIcon = (s.icon || '').trim();
+            const mappedClass = emojiMap[trimmedIcon] || (trimmedIcon.startsWith('ph') ? trimmedIcon : '');
+            if (mappedClass) {
+              iconHtml = `<i class="${esc(mappedClass)}"></i>`;
+            } else {
+              iconHtml = esc(s.icon);
+            }
+          }
           return `
             <div class="step">
               <div class="step-n">${esc(s.step)}</div>

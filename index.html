@@ -14,8 +14,13 @@
     content="Custom 3D printing from Assam — figurines, portraits, prototypes, gifts. Starting ₹60. Pan-India delivery in 5–7 days.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"></noscript>
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
+    as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap">
+  </noscript>
   <!-- Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
   <style>
@@ -41,6 +46,7 @@
       --nav-bg: rgba(8, 8, 8, 0.93);
       --mobnav-bg: rgba(8, 8, 8, 0.97);
     }
+
     :root.light-theme {
       --black: #faf9f6;
       --gray9: #ffffff;
@@ -58,17 +64,22 @@
       --nav-bg: rgba(250, 249, 246, 0.93);
       --mobnav-bg: rgba(250, 249, 246, 0.97);
     }
+
     /* ── RESET ── */
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0
     }
+
     html {
       scroll-behavior: smooth;
       overflow-x: hidden;
       max-width: 100vw;
     }
+
     body {
       background: var(--black);
       color: var(--gray1);
@@ -79,6 +90,7 @@
       max-width: 100vw;
       -webkit-font-smoothing: antialiased;
     }
+
     body::after {
       content: '';
       position: fixed;
@@ -88,9 +100,24 @@
       opacity: .03;
       background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
-    img { display: block; max-width: 100% }
-    a { text-decoration: none; color: inherit }
-    button { cursor: pointer; font-family: inherit; border: none; background: none }
+
+    img {
+      display: block;
+      max-width: 100%
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      background: none
+    }
+
     /* ── UTILITY ── */
     .label {
       font-family: var(--body);
@@ -100,11 +127,13 @@
       text-transform: uppercase;
       color: var(--gray3);
     }
+
     .display {
       font-family: var(--head);
       letter-spacing: -.02em;
       line-height: .95;
     }
+
     .sr-only {
       position: absolute !important;
       width: 1px !important;
@@ -116,6 +145,7 @@
       white-space: nowrap !important;
       border-width: 0 !important;
     }
+
     /* ── TOPBAR ── */
     .topbar {
       position: relative;
@@ -129,11 +159,13 @@
       letter-spacing: .02em;
       contain: content;
     }
+
     .topbar a {
       color: var(--black);
       text-decoration: underline;
       text-underline-offset: 3px
     }
+
     /* ── NAV ── */
     nav {
       position: sticky;
@@ -151,9 +183,11 @@
       border-bottom: 1px solid var(--line);
       contain: layout;
     }
+
     [id] {
       scroll-margin-top: 64px;
     }
+
     .nav-logo {
       font-family: var(--head);
       font-size: 21px;
@@ -162,15 +196,18 @@
       letter-spacing: -.03em;
       white-space: nowrap;
     }
+
     .nav-logo em {
       font-style: italic;
       color: var(--gray2)
     }
+
     .nav-links {
       display: flex;
       gap: 2px;
       list-style: none
     }
+
     .nav-links a {
       color: var(--gray4);
       font-size: 13.5px;
@@ -180,15 +217,18 @@
       transition: all .2s;
       white-space: nowrap;
     }
+
     .nav-links a:hover {
       color: var(--white);
       background: rgba(255, 255, 255, .06)
     }
+
     .nav-r {
       display: flex;
       align-items: center;
       gap: 10px
     }
+
     .btn-login {
       font-size: 13px;
       font-weight: 600;
@@ -197,10 +237,12 @@
       border-radius: 8px;
       transition: all .2s;
     }
+
     .btn-login:hover {
       color: var(--white);
       background: rgba(255, 255, 255, .06);
     }
+
     .btn-signup {
       font-size: 13px;
       font-weight: 600;
@@ -210,10 +252,12 @@
       border-radius: 8px;
       transition: all .2s;
     }
+
     .btn-signup:hover {
       background: var(--gray1);
       transform: translateY(-1px)
     }
+
     .cart-pill {
       position: relative;
       background: var(--gray8);
@@ -230,9 +274,11 @@
       cursor: pointer;
       flex-shrink: 0;
     }
+
     .cart-pill:hover {
       border-color: var(--gray4)
     }
+
     .theme-toggle {
       background: var(--gray8);
       border: 1px solid var(--line);
@@ -248,10 +294,12 @@
       cursor: pointer;
       flex-shrink: 0;
     }
+
     .theme-toggle:hover {
       border-color: var(--gray4);
       background: var(--gray7);
     }
+
     .cbadge {
       position: absolute;
       top: -5px;
@@ -267,6 +315,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .ham {
       display: none;
       flex-direction: column;
@@ -274,6 +323,7 @@
       padding: 8px;
       cursor: pointer
     }
+
     .ham span {
       width: 22px;
       height: 2px;
@@ -282,20 +332,25 @@
       transition: all .3s;
       transform-origin: center;
     }
+
     .ham.open span:nth-child(1) {
       transform: translateY(7px) rotate(45deg);
     }
+
     .ham.open span:nth-child(2) {
       opacity: 0;
     }
+
     .ham.open span:nth-child(3) {
       transform: translateY(-7px) rotate(-45deg);
     }
+
     html.no-scroll,
     body.no-scroll {
       overflow: hidden !important;
       height: 100% !important;
     }
+
     /* ── MOBILE NAV ── */
     .mobnav {
       display: flex;
@@ -320,11 +375,13 @@
       transform: translateY(-8px);
       transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
     }
+
     .mobnav.open {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
     }
+
     /* ── BUTTONS ── */
     .btn {
       display: inline-flex;
@@ -339,25 +396,30 @@
       cursor: pointer;
       font-family: var(--body);
     }
+
     .btn-white {
       background: var(--white);
       color: var(--black)
     }
+
     .btn-white:hover {
       background: var(--gray1);
       transform: translateY(-2px);
       box-shadow: 0 12px 32px rgba(255, 255, 255, .12)
     }
+
     .btn-border {
       background: transparent;
       color: var(--gray1);
       border: 1px solid var(--line2)
     }
+
     .btn-border:hover {
       border-color: rgba(255, 255, 255, .35);
       color: var(--white);
       background: rgba(255, 255, 255, .05)
     }
+
     /* ── HERO ── */
     .hero {
       position: relative;
@@ -370,6 +432,7 @@
       padding: 80px 80px 60px;
       overflow: hidden;
     }
+
     .hero::before {
       content: '';
       position: absolute;
@@ -380,6 +443,7 @@
       background-size: 64px 64px;
       pointer-events: none;
     }
+
     .hero::after {
       content: '';
       position: absolute;
@@ -387,10 +451,12 @@
       background: radial-gradient(ellipse at 60% 50%, transparent 30%, var(--black) 75%);
       pointer-events: none;
     }
+
     .hero-inner {
       position: relative;
       z-index: 1
     }
+
     .hero-eye {
       display: inline-flex;
       align-items: center;
@@ -401,6 +467,7 @@
       padding: 6px 18px 6px 12px;
       margin-bottom: 30px;
     }
+
     .hero-eye .dot {
       width: 7px;
       height: 7px;
@@ -409,10 +476,19 @@
       flex-shrink: 0;
       animation: pulse 2.5s ease-in-out infinite;
     }
+
     @keyframes pulse {
-      0%, 100% { opacity: 1 }
-      50% { opacity: .3 }
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
     }
+
     .hero-eye span {
       font-size: 11.5px;
       font-weight: 600;
@@ -420,6 +496,7 @@
       letter-spacing: .07em;
       text-transform: uppercase
     }
+
     .hero-h1 {
       font-family: var(--head);
       font-size: clamp(58px, 6.5vw, 100px);
@@ -428,10 +505,12 @@
       letter-spacing: -.03em;
       color: var(--white);
     }
+
     .hero-h1 .italic {
       font-style: italic;
       color: var(--gray2)
     }
+
     .hero-sub {
       font-size: 17px;
       color: var(--gray3);
@@ -439,11 +518,13 @@
       margin: 26px 0 40px;
       max-width: 440px;
     }
+
     .hero-ctas {
       display: flex;
       gap: 14px;
       flex-wrap: wrap;
     }
+
     .hero-stats {
       display: flex;
       gap: 0;
@@ -451,12 +532,15 @@
       padding-top: 40px;
       border-top: 1px solid var(--line);
     }
+
     .hstat {
       padding: 0 32px
     }
+
     .hstat:first-child {
       padding-left: 0
     }
+
     .hstat-v {
       font-family: var(--head);
       font-size: clamp(32px, 3.5vw, 44px);
@@ -464,17 +548,26 @@
       line-height: .95;
       color: var(--white);
     }
+
     .hstat-l {
       font-size: 12.5px;
       color: var(--gray4);
       margin-top: 6px;
       font-weight: 500;
     }
+
     /* ── RESPONSIVE ── */
     @media(max-width:1200px) {
-      nav { padding: 0 24px }
-      .hero { padding: 60px 44px; gap: 36px }
+      nav {
+        padding: 0 24px
+      }
+
+      .hero {
+        padding: 60px 44px;
+        gap: 36px
+      }
     }
+
     @media(max-width:900px) {
       .hero {
         grid-template-columns: 1fr;
@@ -482,29 +575,40 @@
         min-height: auto;
         gap: 40px
       }
+
       nav {
         padding: 0 12px !important;
         gap: 10px !important;
       }
+
       .nav-logo {
         font-size: 18px !important;
       }
+
       .nav-r {
         gap: 6px !important;
       }
+
       #user-btn {
         margin-right: 4px !important;
       }
-      .nav-links, .btn-login, #auth-buttons, #nav-logout-btn {
+
+      .nav-links,
+      .btn-login,
+      #auth-buttons,
+      #nav-logout-btn {
         display: none !important
       }
+
       .ham {
         display: flex
       }
     }
   </style>
   <link rel="preload" href="css/index.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/index.min.css"></noscript>
+  <noscript>
+    <link rel="stylesheet" href="css/index.min.css">
+  </noscript>
 
   <!-- Preconnect to Supabase Storage domain to accelerate connection setup -->
   <link rel="preconnect" href="https://amzijtwogsibxganxsty.supabase.co" crossorigin>
@@ -539,23 +643,20 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-r">
-      <div id="auth-buttons" style="display: flex; gap: 8px;">
-        <a href="login.html" class="btn-login" style="text-decoration:none; display:flex; align-items:center;">Login</a>
-        <a href="login.html?mode=signup" class="btn-signup"
-          style="text-decoration:none; display:flex; align-items:center;">Sign Up</a>
+      <div id="auth-buttons">
+        <a href="login.html" class="btn-login">Login</a>
+        <a href="login.html?mode=signup" class="btn-signup">Sign Up</a>
       </div>
-      <a href="profile.html" class="action-btn" id="user-btn"
-        style="display: none; text-decoration:none; font-size:1.5rem; margin-right: 15px;">
-        <span id="user-btn-text"
-          style="display: none; font-size: 14px; margin-right: 5px; font-weight: 500;">Login</span>
-        👤
+      <a href="profile.html" class="action-btn" id="user-btn">
+        <span id="user-btn-text">Login</span>
+        <i class="ph ph-user"></i>
       </a>
-      <a href="#" id="nav-logout-btn" class="btn-logout"
-        style="display: none; text-decoration:none; align-items:center; justify-content:center; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; color: var(--white); background: transparent; transition: all 0.2s; margin-right: 15px;">Sign Out</a>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" style="margin-right: 8px;">
+      <a href="#" id="nav-logout-btn" class="btn-logout">Sign Out</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
         <i class="ph ph-sun" id="theme-icon"></i>
       </button>
-      <div class="cart-pill" onclick="toggleCart()">🛒<div class="cbadge" id="cartCount">0</div>
+      <div class="cart-pill" onclick="toggleCart()"><i class="ph ph-shopping-cart"></i>
+        <div class="cbadge" id="cartCount">0</div>
       </div>
     </div>
     <div class="ham" onclick="toggleMob()" id="ham"><span></span><span></span><span></span></div>
@@ -592,7 +693,7 @@
         prototypes & unique
         gifts. Delivered across India in 5–7 days.</p>
       <div class="hero-ctas">
-        <a href="#shop" class="btn btn-white">Shop Now →</a>
+        <a href="products.html" class="btn btn-white">Shop Now →</a>
         <a href="#contact" class="btn btn-border">Start a Custom Project</a>
       </div>
       <div class="hero-stats" id="hero-stats-el">
@@ -611,15 +712,21 @@
       </div>
     </div>
     <div class="hero-vis" id="hero-vis-el">
-      <div class="hvc"><img src="https://amzijtwogsibxganxsty.supabase.co/storage/v1/object/public/site-images/hero/2tmmobbi5qe.jpg" alt="3D Figurine" fetchpriority="high">
+      <div class="hvc"><img
+          src="https://amzijtwogsibxganxsty.supabase.co/storage/v1/object/public/site-images/hero/2tmmobbi5qe.jpg"
+          alt="3D Figurine" fetchpriority="high">
         <div class="hvc-lbl">Custom Figurines</div>
         <div class="hvc-price">From ₹499</div>
       </div>
-      <div class="hvc"><img src="https://amzijtwogsibxganxsty.supabase.co/storage/v1/object/public/site-images/hero/95sj3weachm.jpg" alt="Keychain" fetchpriority="high">
+      <div class="hvc"><img
+          src="https://amzijtwogsibxganxsty.supabase.co/storage/v1/object/public/site-images/hero/95sj3weachm.jpg"
+          alt="Keychain" fetchpriority="high">
         <div class="hvc-lbl">Keychains</div>
         <div class="hvc-price">₹149</div>
       </div>
-      <div class="hvc"><img src="https://amzijtwogsibxganxsty.supabase.co/storage/v1/object/public/site-images/hero/lqj8x69xqng.jpg" alt="Prototype" fetchpriority="high">
+      <div class="hvc"><img
+          src="https://amzijtwogsibxganxsty.supabase.co/storage/v1/object/public/site-images/hero/lqj8x69xqng.jpg"
+          alt="Prototype" fetchpriority="high">
         <div class="hvc-lbl">Prototypes</div>
         <div class="hvc-price">Custom Quote</div>
       </div>
@@ -648,47 +755,13 @@
     </div>
   </div>
 
-  <!-- ══ HOW IT WORKS ══════════════════════════════════════ -->
-  <section id="how" class="sec">
-    <div class="sec-h rev"><span class="label">Process</span>
-      <h2>How It Works</h2>
-      <p id="process-sub-el">From idea to your doorstep in 4 simple steps — no technical knowledge needed.</p>
-    </div>
-    <div class="steps rev" id="process-steps-el">
-      <div class="step">
-        <div class="step-n">Step 01</div>
-        <div class="step-ico">💬</div>
-        <h3>Share Your Idea</h3>
-        <p>Send a design file, reference image, or just a description. We'll take it from there.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">Step 02</div>
-        <div class="step-ico">🎨</div>
-        <h3>We Design & Quote</h3>
-        <p>Our team prepares your 3D model and sends a precise quote within 24 hours.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">Step 03</div>
-        <div class="step-ico">🖨️</div>
-        <h3>We Print & Package</h3>
-        <p>Printed with FDM or SLA precision, then carefully packaged to protect every layer.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">Step 04</div>
-        <div class="step-ico">📦</div>
-        <h3>Delivered to You</h3>
-        <p>Shipped pan-India in 5–7 days. Track your order on this page anytime.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ══ SHOP ══════════════════════════════════════════════ -->
-  <section id="shop" class="sec sec-alt">
+  <section id="shop" class="sec">
     <div class="sec-hrow rev">
-      <div><span class="label" style="display:block;margin-bottom:10px">Shop</span>
+      <div><span class="label">Shop</span>
         <h2>Featured Products</h2>
       </div>
-      <a href="#contact" class="btn btn-border" style="font-size:13.5px;padding:11px 20px">Request Custom →</a>
+      <a href="#contact" class="btn btn-border btn-sm">Request Custom →</a>
     </div>
     <div class="pgrid" id="productsGrid">
       <div class="loadbox">
@@ -696,8 +769,42 @@
         <p>Loading products…</p>
       </div>
     </div>
-    <div style="text-align: center; margin-top: 40px;" class="rev">
+    <div class="sec-footer rev">
       <a href="products.html" class="btn btn-white">View All Products →</a>
+    </div>
+  </section>
+
+  <!-- ══ HOW IT WORKS ══════════════════════════════════════ -->
+  <section id="how" class="sec sec-alt">
+    <div class="sec-h rev"><span class="label">Process</span>
+      <h2>How It Works</h2>
+      <p id="process-sub-el">From idea to your doorstep in 4 simple steps — no technical knowledge needed.</p>
+    </div>
+    <div class="steps rev" id="process-steps-el">
+      <div class="step">
+        <div class="step-n">Step 01</div>
+        <div class="step-ico"><i class="ph ph-chat-circle"></i></div>
+        <h3>Share Your Idea</h3>
+        <p>Send a design file, reference image, or just a description. We'll take it from there.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 02</div>
+        <div class="step-ico"><i class="ph ph-palette"></i></div>
+        <h3>We Design & Quote</h3>
+        <p>Our team prepares your 3D model and sends a precise quote within 24 hours.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 03</div>
+        <div class="step-ico"><i class="ph ph-printer"></i></div>
+        <h3>We Print & Package</h3>
+        <p>Printed with FDM or SLA precision, then carefully packaged to protect every layer.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 04</div>
+        <div class="step-ico"><i class="ph ph-package"></i></div>
+        <h3>Delivered to You</h3>
+        <p>Shipped pan-India in 5–7 days. Track your order on this page anytime.</p>
+      </div>
     </div>
   </section>
 
@@ -708,32 +815,32 @@
     </div>
     <div class="fgrid">
       <div class="fcard rev">
-        <div class="fico">⚡</div>
+        <div class="fico"><i class="ph ph-lightning"></i></div>
         <h3>5–7 Day Delivery</h3>
         <p>From print to your doorstep in under a week, anywhere in India. No vague timelines.</p>
       </div>
       <div class="fcard rev">
-        <div class="fico">🎯</div>
+        <div class="fico"><i class="ph ph-target"></i></div>
         <h3>High Precision</h3>
         <p>FDM and SLA printers ensuring exact dimensions and beautiful surface quality every time.</p>
       </div>
       <div class="fcard rev">
-        <div class="fico">🤝</div>
+        <div class="fico"><i class="ph ph-handshake"></i></div>
         <h3>Personal Support</h3>
         <p>We work with you directly — not a ticket number, a real conversation on WhatsApp.</p>
       </div>
       <div class="fcard rev">
-        <div class="fico">💰</div>
+        <div class="fico"><i class="ph ph-currency-inr"></i></div>
         <h3>Starting ₹60</h3>
         <p>Accessible pricing without compromising quality. Free delivery on orders above ₹299.</p>
       </div>
       <div class="fcard rev">
-        <div class="fico">🌿</div>
+        <div class="fico"><i class="ph ph-leaf"></i></div>
         <h3>Eco Materials</h3>
         <p>We use PLA — a plant-based biodegradable filament — wherever possible.</p>
       </div>
       <div class="fcard rev">
-        <div class="fico">📐</div>
+        <div class="fico"><i class="ph ph-ruler"></i></div>
         <h3>Any File Format</h3>
         <p>STL, OBJ, STEP, or just a sketch. We handle all the technical prep for you.</p>
       </div>
@@ -748,7 +855,7 @@
     </div>
     <div class="sgrid">
       <a href="#contact" class="scard rev">
-        <div class="sico">🧩</div>
+        <div class="sico"><i class="ph ph-cube"></i></div>
         <div>
           <div class="stit">Rapid Prototyping</div>
           <div class="sdesc">Engineers and makers — fast, accurate physical models from CAD designs for testing fit,
@@ -758,7 +865,7 @@
         <div class="sarr">→</div>
       </a>
       <a href="#contact" class="scard rev">
-        <div class="sico">🎁</div>
+        <div class="sico"><i class="ph ph-gift"></i></div>
         <div>
           <div class="stit">Custom Gifts</div>
           <div class="sdesc">Birthdays, anniversaries, graduations — personalized 3D printed gifts that are truly one of
@@ -768,7 +875,7 @@
         <div class="sarr">→</div>
       </a>
       <a href="#contact" class="scard rev">
-        <div class="sico">🖼️</div>
+        <div class="sico"><i class="ph ph-image"></i></div>
         <div>
           <div class="stit">Lithophane Portraits</div>
           <div class="sdesc">Turn your cherished photos into glowing 3D art — magical when backlit. A gift people never
@@ -778,7 +885,7 @@
         <div class="sarr">→</div>
       </a>
       <a href="#contact" class="scard rev">
-        <div class="sico">🏠</div>
+        <div class="sico"><i class="ph ph-house"></i></div>
         <div>
           <div class="stit">Room Décor</div>
           <div class="sdesc">Custom nameplates, wall art, desk organisers, and decorative objects designed for your
@@ -794,19 +901,17 @@
   <section id="about" class="sec">
     <div class="about-g">
       <div class="rev">
-        <span class="label" style="display:block;margin-bottom:12px">About</span>
-        <h2 id="about-title-el"
-          style="font-family:var(--head);font-size:clamp(36px,4vw,58px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:20px;line-height:1.0">
-          Born in Assam.<br>Built for India.</h2>
-        <div id="about-text-el">
-          <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:16px">Founded in Dibrugarh with a
+        <span class="label">About</span>
+        <h2 id="about-title-el">Born in Assam.<br>Built for India.</h2>
+        <div id="about-text-el" class="about-text">
+          <p>Founded in Dibrugarh with a
             passion for making, LittleLayers.Co brings digital designs into the physical world using FDM and SLA
             printers.
           </p>
-          <p style="font-size:15.5px;color:var(--gray3);line-height:1.8;margin-bottom:32px">Whether you're an engineer
+          <p>Whether you're an engineer
             needing a functional prototype or someone looking for a truly unique gift — we're here to make it real.</p>
         </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div class="btn-group">
           <a href="#contact" class="btn btn-white">Get in Touch →</a>
           <a href="https://wa.me/916000061991" target="_blank" class="btn btn-border">💬 WhatsApp Us</a>
         </div>
@@ -832,7 +937,7 @@
   </section>
 
   <!-- ══ GALLERY CTA ════════════════════════════════════════ -->
-  <section id="gallery-cta-sec" class="sec sec-alt" style="position:relative;overflow:hidden;">
+  <section id="gallery-cta-sec" class="sec sec-alt">
     <style>
       .bg-anim-img {
         position: absolute;
@@ -914,14 +1019,12 @@
       }
     </style>
     <!-- Background Animated Images Container -->
-    <div id="gallery-bg-container" style="position:absolute;inset:0;pointer-events:none;z-index:0;"></div>
+    <div id="gallery-bg-container"></div>
 
-    <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:1;" class="rev">
-      <span class="label" style="display:block;margin-bottom:12px">Gallery</span>
-      <h2
-        style="font-family:var(--head);font-size:clamp(36px,4vw,56px);font-weight:800;letter-spacing:-.03em;color:var(--white);margin-bottom:14px">
-        See Our Work In Action</h2>
-      <p style="color:var(--gray3);margin-bottom:30px">Browse our gallery of custom 3D printed objects, figurines,
+    <div class="gallery-cta-content rev">
+      <span class="label">Gallery</span>
+      <h2>See Our Work In Action</h2>
+      <p>Browse our gallery of custom 3D printed objects, figurines,
         keychains, and portraits.</p>
       <a href="gallery.html" class="btn btn-white">View Our Gallery →</a>
     </div>
@@ -1009,9 +1112,9 @@
         <h3>Still have questions?</h3>
         <p>WhatsApp for the fastest response, or drop us a message and we'll reply within 24 hours.</p>
         <div class="fctab-btns">
-          <a href="https://wa.me/916000061991" target="_blank" class="btn btn-white" style="justify-content:center">💬
+          <a href="https://wa.me/916000061991" target="_blank" class="btn btn-white btn-center"><i class="ph ph-whatsapp-logo"></i>
             Chat on WhatsApp</a>
-          <a href="#contact" class="btn btn-border" style="justify-content:center">Send a Message</a>
+          <a href="#contact" class="btn btn-border btn-center">Send a Message</a>
         </div>
       </div>
     </div>
@@ -1027,11 +1130,14 @@
     <div class="cgrid">
       <form class="cform rev" onsubmit="submitForm(event)">
         <div class="frow">
-          <div class="fg"><label for="contact-name">Your Name *</label><input id="contact-name" name="name" autocomplete="name" placeholder="Abc Xyz" required></div>
-          <div class="fg"><label for="contact-phone">Phone *</label><input id="contact-phone" name="phone" type="tel" autocomplete="tel" placeholder="+91 1234567890" required>
+          <div class="fg"><label for="contact-name">Your Name *</label><input id="contact-name" name="name"
+              autocomplete="name" placeholder="Abc Xyz" required></div>
+          <div class="fg"><label for="contact-phone">Phone *</label><input id="contact-phone" name="phone" type="tel"
+              autocomplete="tel" placeholder="+91 1234567890" required>
           </div>
         </div>
-        <div class="fg"><label for="contact-email">Email *</label><input id="contact-email" name="email" type="email" autocomplete="email" placeholder="hello@example.com" required>
+        <div class="fg"><label for="contact-email">Email *</label><input id="contact-email" name="email" type="email"
+            autocomplete="email" placeholder="hello@example.com" required>
         </div>
         <div class="fg"><label for="contact-service">Service Type</label>
           <select id="contact-service" name="service">
@@ -1045,42 +1151,43 @@
             <option>Other</option>
           </select>
         </div>
-        <div class="fg"><label for="contact-message">About Your Project *</label><textarea id="contact-message" name="message" rows="5"
-            placeholder="Describe what you want — size, color, references…" required></textarea></div>
-        <button type="submit" class="btn btn-white" style="font-size:15px;border-radius:11px">Send Message →</button>
+        <div class="fg"><label for="contact-message">About Your Project *</label><textarea id="contact-message"
+            name="message" rows="5" placeholder="Describe what you want — size, color, references…" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-white">Send Message →</button>
       </form>
       <div class="cinfo rev">
         <div class="ic">
-          <div class="icico">📍</div>
+          <div class="icico"><i class="ph ph-map-pin"></i></div>
           <div>
             <div class="icl">Location</div>
             <div class="icv">Dibrugarh, Assam, India</div>
           </div>
         </div>
         <div class="ic">
-          <div class="icico">✉️</div>
+          <div class="icico"><i class="ph ph-envelope"></i></div>
           <div>
             <div class="icl">Email</div>
             <div class="icv"><a href="mailto:hellolittlelayers@gmail.com">hellolittlelayers@gmail.com</a></div>
           </div>
         </div>
         <div class="ic">
-          <div class="icico">💬</div>
+          <div class="icico"><i class="ph ph-whatsapp-logo"></i></div>
           <div>
             <div class="icl">WhatsApp (Fastest)</div>
             <div class="icv"><a href="https://wa.me/916000061991" target="_blank">Chat with us →</a></div>
           </div>
         </div>
         <div class="ic">
-          <div class="icico">📸</div>
+          <div class="icico"><i class="ph ph-instagram-logo"></i></div>
           <div>
             <div class="icl">Instagram</div>
             <div class="icv"><a href="https://instagram.com/little_layers.co" target="_blank">@little_layers.co</a>
             </div>
           </div>
         </div>
-        <div class="ic" style="background:var(--gray8);border-color:var(--line2)">
-          <div class="icico">⏱️</div>
+        <div class="ic ic-highlight">
+          <div class="icico"><i class="ph ph-clock"></i></div>
           <div>
             <div class="icl">Response Time</div>
             <div class="icv">2h on WhatsApp · 24h on email</div>
@@ -1098,9 +1205,10 @@
         <div class="ftdesc">Custom 3D printing studio from Dibrugarh, Assam. Turning ideas into reality — one layer at a
           time.</div>
         <div class="socs">
-          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc">📸</a>
-          <a href="https://wa.me/916000061991" target="_blank" class="soc">💬</a>
-          <a href="mailto:hellolittlelayers@gmail.com" class="soc">✉️</a>
+          <a href="https://instagram.com/littlelayers.co" target="_blank" class="soc"><i
+              class="ph ph-instagram-logo"></i></a>
+          <a href="https://wa.me/916000061991" target="_blank" class="soc"><i class="ph ph-whatsapp-logo"></i></a>
+          <a href="mailto:hellolittlelayers@gmail.com" class="soc"><i class="ph ph-envelope"></i></a>
         </div>
       </div>
       <div class="ftcol">
@@ -1126,11 +1234,10 @@
       </div>
       <div class="ftcol ftnews">
         <h4>Stay Updated</h4>
-        <p style="font-size:13px;color:var(--gray4);margin-bottom:14px;line-height:1.6">New products, offers & tips.</p>
+        <p>New products, offers & tips.</p>
         <label for="footer-email" class="sr-only">Your email address</label>
         <input type="email" id="footer-email" name="email" autocomplete="email" placeholder="Your email address">
-        <button class="btn btn-white"
-          style="width:100%;justify-content:center;font-size:13px;border-radius:9px;padding:11px">Subscribe</button>
+        <button class="btn btn-white btn-subscribe">Subscribe</button>
       </div>
     </div>
     <div class="ftbot">
@@ -1149,19 +1256,15 @@
     </div>
     <div class="cart-bd" id="cartItems">
       <div class="c-empty">
-        <div class="ei">🛒</div>
+        <div class="ei"><i class="ph ph-shopping-cart"></i></div>
         <p>Your cart is empty.<br>Add something awesome!</p>
       </div>
     </div>
     <div class="cart-ft" id="cartFt" style="display:none">
       <div class="ct-row"><span class="ct-lbl">Total</span><span class="ct-val" id="cartTotal">₹0</span></div>
-      <div
-        style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; box-sizing: border-box;">
-        <a href="cart.html" class="chkbtn"
-          style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: var(--white); color: var(--black); box-sizing: border-box;">Proceed
-          to Checkout</a>
-        <button class="chkbtn" onclick="checkout()"
-          style="background: transparent; border: 1px solid var(--line); color: var(--white); display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;">Order
+      <div class="cart-actions">
+        <a href="cart.html" class="chkbtn">Proceed to Checkout</a>
+        <button class="chkbtn chkbtn-border" onclick="checkout()"><i class="ph ph-whatsapp-logo"></i> Order
           via WhatsApp →</button>
       </div>
     </div>
