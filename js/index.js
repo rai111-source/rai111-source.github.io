@@ -77,9 +77,9 @@
           data = res.data;
           error = res.error;
         }
-        if (!error && data && data.length) { allP = data.slice(0, 4); renderP(allP); return; }
+        if (!error && data && data.length) { allP = data; renderP(allP); return; }
       } catch (e) { console.error(e); }
-      allP = (cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat)).slice(0, 4);
+      allP = (cat === 'all' ? SAMPLES : SAMPLES.filter(p => p.category === cat));
       renderP(allP);
     }
 
@@ -141,6 +141,93 @@
         el.style.cssText = 'opacity:0;transform:translateY(18px);transition:opacity .4s ease,transform .4s ease,border-color .3s,box-shadow .35s';
         setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)' }, i * 55 + 60);
       });
+      initProductSlider();
+    }
+
+    function initProductSlider() {
+      const slider = document.getElementById('productsGrid');
+      if (!slider) return;
+
+      // Duplicate elements for seamless infinite looping
+      const cards = Array.from(slider.querySelectorAll('.pcard'));
+      if (cards.length > 0) {
+        cards.forEach(card => {
+          const clone = card.cloneNode(true);
+          slider.appendChild(clone);
+        });
+      }
+
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+      let isHovered = false;
+      const speed = 0.5; // pixel per frame
+
+      // Drag controls
+      slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('grabbing');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+
+      slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.classList.remove('grabbing');
+      });
+
+      slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.classList.remove('grabbing');
+      });
+
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        slider.scrollLeft = scrollLeft - walk;
+      });
+
+      slider.addEventListener('mouseenter', () => {
+        isHovered = true;
+      });
+
+      slider.addEventListener('mouseleave', () => {
+        isHovered = false;
+      });
+
+      // Mobile Touch Drag controls
+      slider.addEventListener('touchstart', (e) => {
+        isDown = true;
+        startX = e.touches[0].pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+
+      slider.addEventListener('touchend', () => {
+        isDown = false;
+      });
+
+      slider.addEventListener('touchmove', (e) => {
+        if (!isDown) return;
+        const x = e.touches[0].pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        slider.scrollLeft = scrollLeft - walk;
+      });
+
+      // Loop step
+      function step() {
+        if (!isDown && !isHovered) {
+          slider.scrollLeft += speed;
+          const maxScroll = slider.scrollWidth / 2;
+          if (slider.scrollLeft >= maxScroll) {
+            slider.scrollLeft = 0;
+          }
+        }
+        requestAnimationFrame(step);
+      }
+
+      step();
     }
 
     function filterP(cat, btn) {

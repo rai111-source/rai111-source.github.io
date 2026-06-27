@@ -3890,4 +3890,28 @@
       background: rgba(255, 255, 255, 0.05) !important;
     }
 
+    /* ── PRODUCT SLIDER ── */
+    .pgrid-slider {
+      display: flex !important;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-behavior: auto !important;
+      padding: 16px 0;
+      cursor: grab;
+      user-select: none;
+      -ms-overflow-style: none;  /* IE/Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .pgrid-slider::-webkit-scrollbar {
+      display: none; /* Safari/Chrome */
+    }
+    .pgrid-slider.grabbing {
+      cursor: grabbing;
+    }
+    .pgrid-slider .pcard {
+      flex: 0 0 280px;
+      width: 280px;
+      margin-bottom: 8px;
+    }
+
 
