@@ -12,8 +12,15 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 
 // Supabase JS v2 loaded via CDN in each HTML file
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var sb;
+if (SUPABASE_URL && SUPABASE_ANON_KEY && typeof supabase !== 'undefined') {
+  try {
+    const { createClient } = supabase;
+    sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (err) {
+    console.error('Failed to initialize Supabase client:', err);
+  }
+}
 window.supabaseClient = sb;
 
 // ── SHARED GLOBALS ────────────────────────────────────────────
@@ -53,12 +60,12 @@ window.CartManager = {
 
   getCartCount(cart) {
     if (!cart) cart = this.getCart();
-    return cart.reduce((s, i) => s + (i.quantity || i.qty || 1), 0);
+    return cart.reduce((s, i) => s + ((typeof i.quantity === 'number') ? i.quantity : ((typeof i.qty === 'number') ? i.qty : 1)), 0);
   },
 
   getCartTotal(cart) {
     if (!cart) cart = this.getCart();
-    return cart.reduce((s, i) => s + Number(i.price) * (i.quantity || i.qty || 1), 0);
+    return cart.reduce((s, i) => s + Number(i.price) * ((typeof i.quantity === 'number') ? i.quantity : ((typeof i.qty === 'number') ? i.qty : 1)), 0);
   },
 
   mapDbToLocal(dbItem) {
@@ -171,6 +178,7 @@ window.CartManager = {
 
 // ── PRODUCTS ─────────────────────────────────────────────────
 async function getProducts(category = null) {
+  if (typeof sb === 'undefined' || !sb) return [];
   let query = sb.from(TABLES.products).select('*').eq('active', true).order('created_at', { ascending: false });
   if (category && category !== 'all') query = query.eq('category', category);
   const { data, error } = await query;
@@ -182,6 +190,7 @@ async function getProducts(category = null) {
 
 // ── GALLERY ──────────────────────────────────────────────────
 async function getGallery() {
+  if (typeof sb === 'undefined' || !sb) return [];
   const { data, error } = await sb.from(TABLES.gallery).select('*').eq('active', true).order('sort_order', { ascending: true });
   if (error) { console.error('getGallery:', error); return []; }
   return data;
@@ -193,6 +202,7 @@ async function getGallery() {
 // Bug #14 fix: distinguish 'no rows found' (PGRST116) from real DB errors.
 // Previously all errors silently returned null, masking network/permission failures.
 async function getOrder(orderId) {
+  if (typeof sb === 'undefined' || !sb) return null;
   const { data, error } = await sb.from(TABLES.orders).select('*').eq('order_ref', orderId).single();
   if (error) {
     if (error.code !== 'PGRST116') console.error('getOrder:', error); // log real errors
@@ -205,6 +215,7 @@ async function getOrder(orderId) {
 
 // ── MESSAGES ──────────────────────────────────────────────────
 async function submitMessage(msg) {
+  if (typeof sb === 'undefined' || !sb) throw new Error('Supabase client is not initialized');
   const { error } = await sb.from(TABLES.messages).insert(msg);
   if (error) throw error;
 }

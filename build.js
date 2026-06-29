@@ -1,6 +1,21 @@
 const fs = require('fs');
 const path = require('path');
 
+// Load .env file if it exists (for local development)
+const dotenvPath = path.join(__dirname, '.env');
+if (fs.existsSync(dotenvPath)) {
+  const dotenvContent = fs.readFileSync(dotenvPath, 'utf8');
+  dotenvContent.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const firstEquals = trimmed.indexOf('=');
+    if (firstEquals === -1) return;
+    const key = trimmed.substring(0, firstEquals).trim();
+    const val = trimmed.substring(firstEquals + 1).trim().replace(/^["']|["']$/g, '');
+    process.env[key] = val;
+  });
+}
+
 // 1. Generate Environment
 const envFileContent = `
 window.ENV = {

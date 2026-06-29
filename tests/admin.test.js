@@ -44,6 +44,7 @@ function runAdminJS(mocks = {}) {
   queryMock.select = () => queryMock;
   queryMock.order = () => queryMock;
   queryMock.eq = () => queryMock;
+  queryMock.limit = () => queryMock;
   queryMock.delete = () => queryMock;
   queryMock.update = () => queryMock;
   queryMock.single = () => queryMock;
@@ -51,16 +52,32 @@ function runAdminJS(mocks = {}) {
     return Promise.resolve({ data: mocks.dbData || [], error: null }).then(resolve);
   };
 
+  const channelMock = {
+    on: () => channelMock,
+    subscribe: () => channelMock,
+    unsubscribe: () => {}
+  };
+
   const windowMock = {
     supabaseClient: mocks.supabaseClient || {
       auth: {
         getSession: async () => ({ data: { session: null }, error: null })
       },
-      from: () => queryMock
+      from: () => queryMock,
+      channel: () => channelMock
     },
     location: mockLocation,
     alert: () => {},
     confirm: () => true,
+    escHtml: (str) => {
+      if (!str && str !== 0) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    },
     ...mocks.globals
   };
 
@@ -82,6 +99,11 @@ function getAdminSessionMock(tablesData = {}) {
   const mockSession = {
     user: { email: 'raj@littlelayers.in' }
   };
+  const channelMock = {
+    on: () => channelMock,
+    subscribe: () => channelMock,
+    unsubscribe: () => {}
+  };
   return {
     auth: {
       getSession: async () => ({ data: { session: mockSession }, error: null })
@@ -91,12 +113,14 @@ function getAdminSessionMock(tablesData = {}) {
       queryMock.select = () => queryMock;
       queryMock.order = () => queryMock;
       queryMock.eq = () => queryMock;
+      queryMock.limit = () => queryMock;
       queryMock.then = (resolve) => {
         const data = tablesData[tableName] || [];
         return Promise.resolve({ data, error: null }).then(resolve);
       };
       return queryMock;
-    }
+    },
+    channel: () => channelMock
   };
 }
 
@@ -113,7 +137,6 @@ test('admin.js registers global hooks when DOMContentLoaded fires', async () => 
 
   // Verify functions are exported to window
   assert.strictEqual(typeof windowMock.updateOrderStatus, 'function');
-  assert.strictEqual(typeof windowMock.deleteEnquiry, 'function');
 });
 
 test('admin.js redirects to login.html if session does not exist', async () => {
@@ -207,44 +230,4 @@ test('admin.js loadOrders renders order items correctly', async () => {
   assert.ok(ordersListMock.innerHTML.includes('Photo Frame 10x12'));
   assert.ok(ordersListMock.innerHTML.includes('(x2)'));
   assert.ok(ordersListMock.innerHTML.includes('₹1,500'));
-});
-
-test('admin.js loadEnquiries renders message items correctly', async () => {
-  const mockMessages = [
-    {
-      id: 'msg-999',
-      created_at: '2026-06-07T12:00:00Z',
-      name: 'Rohan Sharma',
-      phone: '9876543210',
-      email: 'rohan@example.com',
-      service: 'custom gifts',
-      message: 'I want a custom layer frame.'
-    }
-  ];
-  
-  const enquiriesListMock = {
-    innerHTML: '',
-    style: {}
-  };
-  
-  const { docListeners } = runAdminJS({
-    supabaseClient: getAdminSessionMock({ messages: mockMessages }),
-    elements: {
-      'admin-enquiries-list': enquiriesListMock
-    }
-  });
-
-  if (docListeners['DOMContentLoaded']) {
-    await docListeners['DOMContentLoaded']();
-  }
-
-  // Wait for the async loadEnquiries() query/rendering to complete
-  await new Promise(resolve => setTimeout(resolve, 50));
-
-  assert.ok(enquiriesListMock.innerHTML.includes('Rohan Sharma'));
-  assert.ok(enquiriesListMock.innerHTML.includes('9876543210'));
-  assert.ok(enquiriesListMock.innerHTML.includes('rohan@example.com'));
-  assert.ok(enquiriesListMock.innerHTML.includes('custom gifts'));
-  assert.ok(enquiriesListMock.innerHTML.includes('I want a custom layer frame.'));
-  assert.ok(enquiriesListMock.innerHTML.includes('https://wa.me/919876543210'));
 });

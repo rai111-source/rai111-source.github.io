@@ -4,7 +4,18 @@ const fs = require('fs');
 const vm = require('vm');
 
 // Mock window object
-const windowMock = {};
+const windowMock = {
+    escHtml: (str) => str || '',
+    CartManager: {
+        getCart: () => [],
+        saveCart: () => {},
+        getCartCount: () => 0,
+        getCartTotal: (cart) => {
+            if (!cart) return 0;
+            return cart.reduce((s, i) => s + Number(i.price) * ((typeof i.quantity === 'number') ? i.quantity : ((typeof i.qty === 'number') ? i.qty : 1)), 0);
+        }
+    }
+};
 const context = vm.createContext({
     window: windowMock,
     document: {
