@@ -3,6 +3,9 @@
   "outputDirectory": ".",
   "buildCommand": "npm run build",
   "rewrites": [
-    { "source": "/dashboard/user/:id", "destination": "/profile.html" }
+    {
+      "source": "/dashboard/user/:id",
+      "destination": "/profile.html"
+    }
   ]
 }
