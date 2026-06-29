@@ -276,7 +276,7 @@
       const ex = cart.find(i => Number(i.id) === Number(id));
       if (ex) {
         ex.quantity++;
-        if (currentUser) await window.CartManager.updateDbItem(currentUser.id, id, ex.quantity);
+        if (currentUser) await window.CartManager.updateDbItem(currentUser.id, id, ex.name, ex.quantity);
       } else {
         const item = { id: Number(p.id), name: p.name, price: p.price, image: p.image_url, quantity: 1 };
         cart.push(item);
@@ -292,9 +292,9 @@
       item.quantity += d;
       if (item.quantity <= 0) {
         cart = cart.filter(i => Number(i.id) !== Number(id));
-        if (currentUser) await window.CartManager.removeDbItem(currentUser.id, id);
+        if (currentUser) await window.CartManager.removeDbItem(currentUser.id, id, item.name);
       } else {
-        if (currentUser) await window.CartManager.updateDbItem(currentUser.id, id, item.quantity);
+        if (currentUser) await window.CartManager.updateDbItem(currentUser.id, id, item.name, item.quantity);
       }
       window.CartManager.saveCart(cart);
       updateCart();

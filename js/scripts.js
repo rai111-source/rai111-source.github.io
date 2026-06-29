@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
             productsGrid.innerHTML = '<div class="loadbox">⚠️ Failed to load products. Please refresh the page.</div>';
             return;
         }
-        productsGrid.innerHTML = '<div class="loadbox">No products found.</div>';
     }
 
     function renderProducts(list) {
@@ -569,6 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderCheckout() {
+        if (!checkoutItemsContainer) return; // guard: not on checkout page
         if (cart.length === 0) {
             checkoutItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
             return;

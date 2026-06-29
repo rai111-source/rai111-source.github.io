@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formStatus = document.getElementById('form-status');
     const imageUpload = document.getElementById('product-image-upload');
     const imagePreviewContainer = document.getElementById('image-preview');
-    const imagePreviewImg = imagePreviewContainer.querySelector('img');
+    const imagePreviewImg = imagePreviewContainer ? imagePreviewContainer.querySelector('img') : null;
     
     // Specs, Colors, and Additional Images Form Elements
     const newColorNameInput = document.getElementById('new-color-name');
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const galleryFormStatus = document.getElementById('gallery-form-status');
     const galleryImageUpload = document.getElementById('gallery-image-upload');
     const galleryImagePreviewContainer = document.getElementById('gallery-image-preview');
-    const galleryImagePreviewImg = galleryImagePreviewContainer.querySelector('img');
+    const galleryImagePreviewImg = galleryImagePreviewContainer ? galleryImagePreviewContainer.querySelector('img') : null;
 
     // -- Authentication Check --
     const { data: { session }, error } = await supabaseClient.auth.getSession();
