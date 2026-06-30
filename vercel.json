@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/dashboard/user/:id",
-      "destination": "/profile.html"
+      "destination": "/profile"
     }
   ]
 }

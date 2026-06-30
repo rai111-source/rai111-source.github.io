@@ -2,6 +2,17 @@
 // Supabase client is initialized globally in js/supabase.js
 let supabaseClient = window.supabaseClient;
 
+const isLocal = window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1' || 
+                window.location.hostname.startsWith('192.168.') || 
+                window.location.hostname.startsWith('10.') || 
+                window.location.hostname.startsWith('172.') || 
+                window.location.protocol === 'file:';
+
+function getProfileUrl(userId) {
+    return isLocal ? '/profile.html' : '/dashboard/user/' + userId;
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // -- Elements --
@@ -67,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentUser.email === window.ADMIN_EMAIL) {
                     window.location.href = '/admin';
                 } else {
-                    window.location.href = '/dashboard/user/' + currentUser.id;
+                    window.location.href = getProfileUrl(currentUser.id);
                 }
             } else {
                 // Go to login page
@@ -232,17 +243,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Mask URL with professional /dashboard/user/UUID format
             const isRootProfilePage = window.location.pathname === '/profile' || 
-                                      window.location.pathname === '/profile.html' || 
-                                      window.location.pathname.endsWith('/profile') || 
-                                      window.location.pathname.endsWith('/profile.html');
-            if (isRootProfilePage) {
+                                       window.location.pathname === '/profile.html' || 
+                                       window.location.pathname.endsWith('/profile') || 
+                                       window.location.pathname.endsWith('/profile.html');
+            if (isRootProfilePage && !isLocal) {
                 window.history.replaceState(null, '', '/dashboard/user/' + currentUser.id);
             } else if (isProfilePage) {
                 // Security: if user manually changes the UUID in the URL path, redirect to their own
                 const pathParts = window.location.pathname.split('/');
                 const idInPath = pathParts[pathParts.indexOf('user') + 1];
                 if (idInPath && idInPath !== currentUser.id) {
-                    window.location.href = '/dashboard/user/' + currentUser.id;
+                    window.location.href = getProfileUrl(currentUser.id);
                     return;
                 }
             }
@@ -303,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         sessionStorage.removeItem('redirectAfterAuth');
                         window.location.href = returnUrl;
                     } else {
-                        window.location.href = '/dashboard/user/' + data.session.user.id;
+                        window.location.href = getProfileUrl(data.session.user.id);
                     }
                 }, 1000);
             } else {
@@ -340,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.removeItem('redirectAfterAuth');
                     window.location.href = returnUrl;
                 } else {
-                    window.location.href = '/dashboard/user/' + data.user.id;
+                    window.location.href = getProfileUrl(data.user.id);
                 }
             }
         } catch (error) {
@@ -386,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pageAuthErrorMsg.textContent = "Password updated successfully! Redirecting...";
             }
             alert('Password updated successfully! Redirecting to your profile...');
-            window.location.href = '/dashboard/user/' + data.user.id;
+            window.location.href = getProfileUrl(data.user.id);
         } catch (error) {
             if (pageAuthErrorMsg) {
                 pageAuthErrorMsg.style.color = "#ff6b6b";
